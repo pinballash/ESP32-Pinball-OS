@@ -1,3 +1,5 @@
+//ESP32PinballOS
+//Version 0.0.1
 #include <Arduino.h>
 //Over The Air Updater 
 #include <WiFi.h>
