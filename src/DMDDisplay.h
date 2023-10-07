@@ -5,7 +5,6 @@
 #include <SPI.h> 
 
 void oneTopOneBottomDisplay();
-void twoTopOneBottomDisplay();
 void resetDisplay();
 void DisplayControllerFunction(void * pvParameters);
 void DisplayBootModeFunction(void * pvParameters);
@@ -114,7 +113,7 @@ void DisplayControllerFunction(void * pvParameters)
       forceDisplayUpdate = false;
       Serial.println("Display Changing to Attract Mode");
 
-    }else if((MachineState == 2) && (forceDisplayUpdate == true) && (lastMachineState == 3)) //Chamnge from End Game to Game
+    }else if((MachineState == 2) && (forceDisplayUpdate == true) && (lastMachineState == 3)) //Change from End Game to Game
     {
       Serial.println("Deleting DisplayEOGMode Task");
       vTaskDelete(DisplayEndOfGameMode);
@@ -123,7 +122,7 @@ void DisplayControllerFunction(void * pvParameters)
       xTaskCreatePinnedToCore(DisplayGameModeFunction, "DisplayGameMode", 10000, NULL, 99, &DisplayGameMode,1);
       forceDisplayUpdate = false;
       Serial.println("Display Changing to Game Mode");
-    }else if((MachineState == 3) && (forceDisplayUpdate == true) && (lastMachineState == 2)) //Chamnge from Game to End Game
+    }else if((MachineState == 3) && (forceDisplayUpdate == true) && (lastMachineState == 2)) //Change from Game to End Game
     {
       Serial.println("Deleting DisplayGameMode Task");
       vTaskDelete(DisplayGameMode);
@@ -152,41 +151,41 @@ void DisplayAttractModeFunction(void * pvParameters)
   static unsigned long atractModeMillis = 0;
   String topTextArray[arrayLen];
   String bottomTextArray[arrayLen];
-  topTextArray[0] = "T1";
-  bottomTextArray[0] = "B1";
+  topTextArray[0] = "The Early";
+  bottomTextArray[0] = "Gamers Present";
 
-  topTextArray[1] = "T2";
-  bottomTextArray[1] = "B2";
+  topTextArray[1] = "An Arctic Monkeys";
+  bottomTextArray[1] = "Inspired Game";
 
-  topTextArray[2] = "T3";
-  bottomTextArray[2] = "B3";
+  topTextArray[2] = "The Little Shop";
+  bottomTextArray[2] = "of Rock";
 
-  topTextArray[3] = "T4";
-  bottomTextArray[3] = "B4";
+  topTextArray[3] = "Theme Design";
+  bottomTextArray[3] = "Lottie";
 
-  topTextArray[4] = "T5";
-  bottomTextArray[4] = "B5";
+  topTextArray[4] = "Development";
+  bottomTextArray[4] = "Ash";
 
-  topTextArray[5] = "T6";
-  bottomTextArray[5] = "B6";
+  topTextArray[5] = "Machine Build";
+  bottomTextArray[5] = "AlanJ";
 
-  topTextArray[6] = "T7";
-  bottomTextArray[6] = "B7";
+  topTextArray[6] = "Technical Design";
+  bottomTextArray[6] = "AlanJ";
 
-  topTextArray[7] = "T8";
-  bottomTextArray[7] = "B8";
+  topTextArray[7] = "Free Play";
+  bottomTextArray[7] = "-->Press Start<--";
 
-  topTextArray[8] = "T9";
-  bottomTextArray[8] = "B9";
+  topTextArray[8] = "Free Play";
+  bottomTextArray[8] = "Press Start";
 
-  topTextArray[9] = "T10";
-  bottomTextArray[9] = "B10";
+  topTextArray[9] = "Free Play";
+  bottomTextArray[9] = "-->Press Start<--";
 
-  topTextArray[10] = "T11";
-  bottomTextArray[10] = "B11";
+  topTextArray[10] = "Free Play";
+  bottomTextArray[10] = "Press Start";
 
-  topTextArray[11] = "T12";
-  bottomTextArray[11] = "B12";
+  topTextArray[11] = "Free Play";
+  bottomTextArray[11] = "-->Press Start<--";
 
   int atractCounter = 0;
   resetDisplay();  

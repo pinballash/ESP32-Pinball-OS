@@ -12,7 +12,7 @@
 int core1Hz = 0;
 int DisplayControllerHz = 0;
 
-int MachineState = 0; //this can be Bootup-0, Atract-1, Game-2, End Game-3
+int MachineState = 0; //this can be Bootup-0, Atract-1, Game-2, End Game-3, End Ball-4
 int lastMachineState = 0;
 bool forceDisplayUpdate = false;
 bool WifiConnected = false;
@@ -24,6 +24,7 @@ String ScoreboardBText = "";
 #include "CoreMachineOperations.h"
 #include "DMDDisplay.h"
 #include "WebOperations.h"
+#include "machineState.h"
 
 void setup() {
   // put your setup code here, to run once:
@@ -160,90 +161,4 @@ void loop() {
  
   //do nothing
 }
-
-void changeState(int newState)
-{
-    /* states accepted are Bootup-0, Atract-1, Game-2, End Game-3
-    Bootup, this is set during initialisation and cannot be set again
-    Atract, this is fired automatically following bootup or end game
-    Game, this can be triggered by start button press
-    End Game, this is triggered when all balls played
-    */
-    //lets process based on current state then deal with the change request if we are allowed
-    switch(MachineState){
-      case 0: //Bootup
-          {
-            //only one valid change here - from Bootup to Atract
-            if(newState == 1)
-            {
-              //moving from Bootup to Atract : OK
-              Serial.println("[Function] changeState - Boot->Atract");
-              MachineState = 1;
-              lastMachineState = 0;
-              forceDisplayUpdate = true;
-            }
-            break;
-          }
-      case 1: //Attract
-          {
-            //only one valid change here - from Atract to Game
-            if(newState == 2)
-            {
-              //moving from Bootup to Atract : OK
-              Serial.println("[Function] changeState - Attract->Game");
-              ScoreboardTText = "Lets, Play,";
-              ScoreboardBText = "Pool!";
-              MachineState = 2;
-              lastMachineState = 1;
-              forceDisplayUpdate = true;
-              g_myPinballGame.newGame();
-            }
-            break;
-          }    
-      case 2: //Game
-          {
-            //only one valid change here - from Game to End Game
-            if(newState == 3)
-            {
-              //moving from BGame to End Game : OK
-              Serial.println("[Function] changeState - Game->End Game");
-
-              MachineState = 3;
-              lastMachineState = 2;
-              forceDisplayUpdate = true;
-              g_myPinballGame.endGame(); //end the game - this resets a load of stuff, we may want to run this on a new game start??
-
-
-            }
-            break;
-          }
-      case 3: //End Game
-          {
-            //Two valid changes here - from End Game to Game and from End Game to Atract (later HSTD entry)
-            if(newState == 2)
-            {
-              //moving from End Game to Game : OK
-              Serial.println("[Function] changeState - End Game->Game");
-              ScoreboardTText = "Lets, Play,";
-              ScoreboardBText = "Pool!";
-              MachineState = 2;
-              lastMachineState = 3;
-              forceDisplayUpdate = true;
-              g_myPinballGame.newGame();
-            }else if (newState == 1)
-            {
-              //moving from End Game to Atract : OK
-              Serial.println("[Function] changeState - End Game->Attract");
-              MachineState = 1;
-              lastMachineState = 3;
-              forceDisplayUpdate = true;
-            }
-            break;
-          }
-    }
-    
-
-
-}
-
 
