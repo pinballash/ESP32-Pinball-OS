@@ -10,6 +10,7 @@
 #include "userSettings.h"
 
 int core1Hz = 0;
+int DisplayControllerHz = 0;
 
 int MachineState = 0; //this can be Bootup-0, Atract-1, Game-2, End Game-3
 int lastMachineState = 0;

@@ -14,12 +14,14 @@ void DisplayGameModeFunction(void * pvParameters);
 void DisplayEndOfBallModeFunction(void * pvParameters);
 void DisplayEndOfGameModeFunction(void * pvParameters);
 
-//setup a task to run on core 0;
-TaskHandle_t DisplayAttractMode;
-TaskHandle_t DisplayBootMode;
-TaskHandle_t DisplayGameMode;
-TaskHandle_t DisplayEndOfGameMode;
+//setup a task handler;
 TaskHandle_t DisplayController;
+TaskHandle_t DisplayBootMode;
+TaskHandle_t DisplayAttractMode;
+TaskHandle_t DisplayGameMode;
+TaskHandle_t DisplayEndOfBallMode;
+TaskHandle_t DisplayEndOfGameMode;
+
 
 // Definitions for the dot matrix score displays
 #define HARDWARE_TYPE MD_MAX72XX::FC16_HW
@@ -75,15 +77,8 @@ void DisplayControllerFunction(void * pvParameters)
    for(;;)
    {
     displayControllerCounter++;
-    if (millis() - displayCounterLastMillis > 2000 ){
-      
-        /*Serial.print("DisplayController : CORE ");
-        Serial.print(xPortGetCoreID());
-        Serial.print(" : is currently running at approimatly ");
-        Serial.print(counter/2);
-        Serial.println("Hz (full program cycles per second)");*/
-    
-      core1Hz = counter/2;  
+    if (millis() - displayCounterLastMillis > 2000 ){    
+      DisplayControllerHz =  displayControllerCounter/2;  
       displayControllerCounter = 0;
       displayCounterLastMillis = millis();
     }
@@ -139,8 +134,6 @@ void DisplayControllerFunction(void * pvParameters)
       Serial.println("Display Changing to End of Game Mode");
     }
     vTaskDelay(10);
-
-     
   }
 }
 void DisplayBootModeFunction(void * pvParameters)
@@ -149,8 +142,7 @@ void DisplayBootModeFunction(void * pvParameters)
   resetDisplay();  
   for(;;){
     oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay();        
+    vTaskDelay(500);       
   }
 }
 void DisplayAttractModeFunction(void * pvParameters)
@@ -215,110 +207,7 @@ void DisplayAttractModeFunction(void * pvParameters)
           atractCounter = 0;
         }
     }
-    vTaskDelay(1);
-
-    /*ScoreboardBText = "http://"+ (String)host + ".local";
-    ScoreboardTText = "Browser Access";
-    oneTopOneBottomDisplay();
-    vTaskDelay(5000);
-    //resetDisplay(); 
-    
-    ScoreboardTText = "The Early Gamers";
-    ScoreboardBText = "Present";
-    oneTopOneBottomDisplay();
-    vTaskDelay(5000);
-    //resetDisplay(); 
-       
-    ScoreboardTText = "--The Little Shop";
-    ScoreboardBText = "Of Rock--";
-    oneTopOneBottomDisplay();
-    vTaskDelay(5000);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Inspired By";
-    ScoreboardBText = "The Arctic Monkeys";
-    oneTopOneBottomDisplay();
-    vTaskDelay(5000);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Theme Design";
-    ScoreboardBText = "Lottie";
-    oneTopOneBottomDisplay();
-    vTaskDelay(5000);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Code and Dev";
-    ScoreboardBText = "Ash";
-    oneTopOneBottomDisplay();
-    vTaskDelay(5000);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Original Build";
-    ScoreboardBText = "AlanJ";
-    oneTopOneBottomDisplay();
-    vTaskDelay(5000);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "-->Free Play<--";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "Free Play";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "-->Free Play<--";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "Free Play";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "-->Free Play<--";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "Free Play";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "-->Free Play<--";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "Free Play";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "-->Free Play<--";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); 
-
-    ScoreboardTText = "Press Start";
-    ScoreboardBText = "Free Play";
-    oneTopOneBottomDisplay();
-    vTaskDelay(500);
-    //resetDisplay(); */
-       
+    vTaskDelay(1); 
   }
 }
 void DisplayGameModeFunction(void * pvParameters) //more regular updates to cope with changes
@@ -335,7 +224,7 @@ void DisplayGameModeFunction(void * pvParameters) //more regular updates to cope
   }
   
 }
-void DisplayEndOfBallModeFunction(void * pvParameters)
+void DisplayEndOfBallModeFunction(void * pvParameters)  //this is where we should acknolege end of ball before moving back to Game Mode or End of Game
 {
   for(;;){
     oneTopOneBottomDisplay();
@@ -379,9 +268,8 @@ void DisplayEndOfGameModeFunction(void * pvParameters)
   }
   
 }
-void resetDisplay()
+void resetDisplay() //to be done when changing layout on the display
 {
-  //Serial.println("Ressetting display");
   DMDDisplay.begin(MAX_ZONES);
   DMDDisplay.setInvert(false);
   for (uint8_t i=0; i<MAX_ZONES; i++)
@@ -390,7 +278,7 @@ void resetDisplay()
   }
 }
 
-void oneTopOneBottomDisplay()
+void oneTopOneBottomDisplay() // Simple layout with a top line and a bottom line.
 {
   DMDDisplay.setZone(0,12,23); // Make zone 0 the whole top display
   char scoreboardTChar[40];

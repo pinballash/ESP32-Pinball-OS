@@ -252,11 +252,6 @@ void web_handle_AJAXP4Ball()
   server.send(200, "text/plane", (String)g_myPinballGame.getCurrentBallNumber(4));
 }
 
-
-
-
-
-
 /* Button Actions */
 void web_handle_switchDebug()
 {
