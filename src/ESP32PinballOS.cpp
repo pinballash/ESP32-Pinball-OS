@@ -77,7 +77,7 @@ void setup() {
     NULL,
     1,
     &MonitorSwitchesAndRegister,
-    1);
+    0);
 
   xTaskCreatePinnedToCore(
     WebOperationsFunction,

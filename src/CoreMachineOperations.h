@@ -6,7 +6,7 @@
 bool switchDebug = false;
 bool coilDebug = false;
 bool loopDebug = false;
-bool threadDebug = true;
+bool threadDebug = false;
 bool srDebug = false;
 bool generalMODebug = false;
 byte flipper1Col = -1;
@@ -128,8 +128,8 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
   Serial.print("MonitorSwitches running on core ");
   Serial.println(xPortGetCoreID());
   identifyFlippers();
-  int counterSw;
-  unsigned long lastMillisSw;
+  int counterSw = 0;
+  unsigned long lastMillisSw = 0;
   for(;;)
   {
       
@@ -140,7 +140,7 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
     {
       if(threadDebug)
       {
-        Serial.print("MonitorSwitches Loop: CORE ");
+        Serial.print("[yhreadDebug] MonitorSwitches Loop: CORE ");
         Serial.print(xPortGetCoreID());
         Serial.print(" : is currently running at approximatly ");
         Serial.print(counterSw/10);
@@ -152,39 +152,22 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
       lastMillisSw = millis();
     }// End of debug stuff 
       
-    if(generalMODebug) Serial.println("Switch Matrix Processing...");
+    if(generalMODebug) Serial.println("[generalMODebug] Switch Matrix Processing...");
     //Check for switch triggers
-    //scanSwitchMatrix();
-    for ( byte col = 0; col < tableCols ; col++) 
-    {
-      outgoing = 0;
-      bitSet(outgoing,(7-col));  
-      write_sr();  // So sets the column high,
-      bitClear(outgoing,col); //no longer needs to be set, we sent it
-      //delayMicroseconds(2); // give the register time to update
-      vTaskDelay(1);
-      read_sr();
-      for (byte row = 0; row < tableRows; row++) 
-      {    
-        switchActive[col][row] = false;
-        if (bitRead(incoming,row)) 
-        {
-          switchActive[col][row] = true; 
-        } 
-      }
-    }
-    if(generalMODebug) Serial.println("Flipper triggering...");  
+    scanSwitchMatrix();
+
+    if(generalMODebug) Serial.println("[generalMODebug] Flipper triggering...");  
     //fire off flippers if triggered 
     triggerFlippers();
-    if(generalMODebug) Serial.println("Switch triggering...");
+    if(generalMODebug) Serial.println("[generalMODebug] Switch triggering...");
     //process switch events
     triggerSwitches();
-    if(generalMODebug) Serial.println("Coil processing...");
+    if(generalMODebug) Serial.println("[generalMODebug] Coil processing...");
     //manage coils - release if needed
     manageCoils();
-    if(generalMODebug) Serial.println("Switch processing...");
+    if(generalMODebug) Serial.println("[generalMODebug] Switch processing...");
     processAllSwitches();
-    //vTaskDelay(1);
+    vTaskDelay(1);
   }
 }
 /*
@@ -231,9 +214,19 @@ void identifyFlippers()
         {
           flipper1Col = col;
           flipper1Row = row;
+          Serial.print("Flipper1 Detected on Column[");
+          Serial.print(col);
+          Serial.print("] x Row[");
+          Serial.print(row);
+          Serial.println("]");
         }else{
           flipper2Col = col;
           flipper2Row = row;
+          Serial.print("Flipper2 Detected on Column[");
+          Serial.print(col);
+          Serial.print("] x Row[");
+          Serial.print(row);
+          Serial.println("]");
         }
         
       }

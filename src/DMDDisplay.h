@@ -194,7 +194,7 @@ void DisplayAttractModeFunction(void * pvParameters)
     if (millis() - atractModeMillis > 1500 ){
         
         //every five seconds change display
-        Serial.println("Attract mode - next display");
+        //Serial.println("Attract mode - next display");
         atractModeMillis = millis();
         if(atractCounter < arrayLen)
         {
