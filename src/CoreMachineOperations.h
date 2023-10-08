@@ -6,9 +6,13 @@
 bool switchDebug = false;
 bool coilDebug = false;
 bool loopDebug = false;
-bool threadDebug = false;
+bool threadDebug = true;
 bool srDebug = false;
 bool generalMODebug = false;
+byte flipper1Col = -1;
+byte flipper1Row = -1;
+byte flipper2Col = -1;
+byte flipper2Row = -1;
 
 int core0Hz = 0;
 
@@ -22,6 +26,7 @@ PinballGame g_myPinballGame("--The Little Shop of Rock--");
 
 void MonitorSwitchesAndRegisterFunction( void * pvParameters);
 void scanSwitchMatrix();
+void identifyFlippers();
 void triggerFlippers();
 void triggerSwitches();
 void processAllSwitches();
@@ -109,8 +114,7 @@ bool needsRegisterUpdate = false;
 int counter;
 unsigned long lastMillis;
 
-int counterSw;
-unsigned long lastMillisSw;
+
 
 int timerSw;
 unsigned long lastMillisTimerSw;
@@ -123,29 +127,52 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
 {
   Serial.print("MonitorSwitches running on core ");
   Serial.println(xPortGetCoreID());
-  for(;;){
-    
-      // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
-      counterSw++;
-      //static int tempSound=1;
-      if (millis() - lastMillisSw > 10000 ){
-        if(threadDebug)
-        {
-          Serial.print("MonitorSwitches Loop: CORE ");
-          Serial.print(xPortGetCoreID());
-          Serial.print(" : is currently running at approximatly ");
-          Serial.print(counterSw/10);
-          Serial.println("Hz (full program cycles per second)");
-          
-        }
-        core0Hz = counterSw/10;
-        counterSw = 0;
-        lastMillisSw = millis();
+  identifyFlippers();
+  int counterSw;
+  unsigned long lastMillisSw;
+  for(;;)
+  {
+      
+    // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
+    counterSw++;
+    //static int tempSound=1;
+    if (millis() - lastMillisSw > 10000 )
+    {
+      if(threadDebug)
+      {
+        Serial.print("MonitorSwitches Loop: CORE ");
+        Serial.print(xPortGetCoreID());
+        Serial.print(" : is currently running at approximatly ");
+        Serial.print(counterSw/10);
+        Serial.println("Hz (full program cycles per second)");
+        
+      }
+      core0Hz = counterSw/10;
+      counterSw = 0;
+      lastMillisSw = millis();
     }// End of debug stuff 
-    
+      
     if(generalMODebug) Serial.println("Switch Matrix Processing...");
     //Check for switch triggers
-    scanSwitchMatrix();
+    //scanSwitchMatrix();
+    for ( byte col = 0; col < tableCols ; col++) 
+    {
+      outgoing = 0;
+      bitSet(outgoing,(7-col));  
+      write_sr();  // So sets the column high,
+      bitClear(outgoing,col); //no longer needs to be set, we sent it
+      //delayMicroseconds(2); // give the register time to update
+      vTaskDelay(1);
+      read_sr();
+      for (byte row = 0; row < tableRows; row++) 
+      {    
+        switchActive[col][row] = false;
+        if (bitRead(incoming,row)) 
+        {
+          switchActive[col][row] = true; 
+        } 
+      }
+    }
     if(generalMODebug) Serial.println("Flipper triggering...");  
     //fire off flippers if triggered 
     triggerFlippers();
@@ -157,7 +184,7 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
     manageCoils();
     if(generalMODebug) Serial.println("Switch processing...");
     processAllSwitches();
-    vTaskDelay(1);
+    //vTaskDelay(1);
   }
 }
 /*
@@ -186,12 +213,11 @@ void scanSwitchMatrix()
  }
 } 
 /*
-* Function triggerFlippers
+* Function identifyFlippers
 * loop through all columns and rows and check for a switches that are marked as flippers.  
-* If a switch is closed, and its a flipper - enable the flipper solenoid.
-* If a switch is open, and its a flipper and the solenoid id on - disable the flipper solenoid.
+* When they are identified, set the leftFlipperCol, LeftFlipperRow, rightFlipperCol, rightFlipperRow variables.
 */
-void triggerFlippers()
+void identifyFlippers()
 {
   //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
   for ( byte col = 0; col < tableCols ; col++) 
@@ -201,47 +227,83 @@ void triggerFlippers()
       activeSwitchID = (col*8)+row;
       if(switches[activeSwitchID].switchObject->isFlipper()==true) //we are desling with flippers
       { 
-        PinballCoil* flipperCoil = coils[flipperCoilBindings[activeSwitchID].coilNumber].coilObject;
-        if((switchActive[col][row]==true)) //flipper button is pressed
+        if(flipper1Col == -1)
         {
-          activeSwitchID = (col*8)+row;
-          if(generalMODebug)
-          {
-            Serial.print("Flipper button pressed....");
-            Serial.println(activeSwitchID);
-            Serial.print("need to locate coil associated ");
-            Serial.println(flipperCoilBindings[activeSwitchID].coilNumber);
-          } 
-          if(flipperCoil->checkStatus()==false) //coil is currently off
-          {
-            if(generalMODebug)
-            {
-              Serial.print("Coil disabled but button pressed, enabling ");
-              Serial.println(flipperCoil->getName());
-            }
-            if(MachineState == 2) //only if game is active
-            {
-              flipperCoil->enable(); //mark the coil as enabled - perminantly on
-              ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
-              write_sr();  //action shift register changes
-              flipperCoil->actioned(); //mark the coil changes as done
-            }
-
-          }
-        }else if(flipperCoil->checkStatus()==true)//so the button isnt on, but the coil is
-        {
-          if(generalMODebug)
-          {
-            Serial.println("Coil enable but button not pressed, starting manage() function to determine if it can be turned off");
-            Serial.println("Coil insists it needs action to turn on or off");  
-          } 
-          flipperCoil->disable(); //mark the coil as off
-          flipperCoil->manage(); //run management routine to do the needful
-          ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
-          write_sr(); //action shift register changes
-          flipperCoil->actioned(); //mark the coil changes as done
-        }//end button not presesed
+          flipper1Col = col;
+          flipper1Row = row;
+        }else{
+          flipper2Col = col;
+          flipper2Row = row;
+        }
+        
       }
+    }
+  }   
+}
+
+/*
+* Function triggerFlippers
+* loop through all columns and rows and check for a switches that are marked as flippers.  
+* If a switch is closed, and its a flipper - enable the flipper solenoid.
+* If a switch is open, and its a flipper and the solenoid id on - disable the flipper solenoid.
+*/
+void triggerFlippers()
+{
+  //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
+  for ( byte i = 0; i < 2 ; i++) 
+  {    
+    byte col;
+    byte row;
+    if(i = 0){
+      col = flipper1Col;
+      row = flipper1Row;
+    }else{
+      col = flipper2Col;
+      row = flipper2Row;
+    }
+    activeSwitchID = (col*8)+row;
+    if(switches[activeSwitchID].switchObject->isFlipper()==true) //we are desling with flippers
+    { 
+      PinballCoil* flipperCoil = coils[flipperCoilBindings[activeSwitchID].coilNumber].coilObject;
+      if((switchActive[col][row]==true)) //flipper button is pressed
+      {
+        activeSwitchID = (col*8)+row;
+        if(generalMODebug)
+        {
+          Serial.print("Flipper button pressed....");
+          Serial.println(activeSwitchID);
+          Serial.print("need to locate coil associated ");
+          Serial.println(flipperCoilBindings[activeSwitchID].coilNumber);
+        } 
+        if(flipperCoil->checkStatus()==false) //coil is currently off
+        {
+          if(generalMODebug)
+          {
+            Serial.print("Coil disabled but button pressed, enabling ");
+            Serial.println(flipperCoil->getName());
+          }
+          if(MachineState == 2) //only if game is active
+          {
+            flipperCoil->enable(); //mark the coil as enabled - perminantly on
+            ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
+            write_sr();  //action shift register changes
+            flipperCoil->actioned(); //mark the coil changes as done
+          }
+
+        }
+      }else if(flipperCoil->checkStatus()==true)//so the button isnt on, but the coil is
+      {
+        if(generalMODebug)
+        {
+          Serial.println("Coil enable but button not pressed, starting manage() function to determine if it can be turned off");
+          Serial.println("Coil insists it needs action to turn on or off");  
+        } 
+        flipperCoil->disable(); //mark the coil as off
+        flipperCoil->manage(); //run management routine to do the needful
+        ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
+        write_sr(); //action shift register changes
+        flipperCoil->actioned(); //mark the coil changes as done
+      }//end button not presesed
     }
   }   
 }

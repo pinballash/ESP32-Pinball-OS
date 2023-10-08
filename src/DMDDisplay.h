@@ -191,7 +191,7 @@ void DisplayAttractModeFunction(void * pvParameters)
   resetDisplay();  
   for(;;){
 
-    if (millis() - atractModeMillis > 5000 ){
+    if (millis() - atractModeMillis > 1500 ){
         
         //every five seconds change display
         Serial.println("Attract mode - next display");
@@ -223,7 +223,7 @@ void DisplayGameModeFunction(void * pvParameters) //more regular updates to cope
   }
   
 }
-void DisplayEndOfBallModeFunction(void * pvParameters)  //this is where we should acknolege end of ball before moving back to Game Mode or End of Game
+void DisplayEndOfBallModeFunction(void * pvParameters)  //this is where we should acknowlege end of ball before moving back to Game Mode or End of Game
 {
   for(;;){
     oneTopOneBottomDisplay();
@@ -276,7 +276,6 @@ void resetDisplay() //to be done when changing layout on the display
     DMDDisplay.setZone(i, ZONE_SIZE*i, (ZONE_SIZE*(i+1))-1);
   }
 }
-
 void oneTopOneBottomDisplay() // Simple layout with a top line and a bottom line.
 {
   DMDDisplay.setZone(0,12,23); // Make zone 0 the whole top display
