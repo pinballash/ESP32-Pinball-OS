@@ -9,8 +9,10 @@
 
 #include "userSettings.h"
 
-int core1Hz = 0;
+int WEBHz = 0;
+int CMOHz = 0;
 int DisplayControllerHz = 0;
+
 
 int MachineState = 0; //this can be Bootup-0, Atract-1, Game-2, End Game-3, End Ball-4
 int lastMachineState = 0;
@@ -159,6 +161,6 @@ void setup() {
 
 void loop() {
  
-  //do nothing
+  vTaskDelay(1);//do nothing
 }
 

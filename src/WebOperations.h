@@ -33,10 +33,40 @@ void web_handle_firmwareUpload();
 void web_handle_switchDebug();
 void web_handle_coilDebug();
 void web_handle_opsDebug();
+
+
 void web_handle_action_startbutton();
 void web_handle_action_restart();
 void web_handle_action_outholeswitch();
 void web_handle_action_rolloverswitch();
+void web_handle_action_leftrolloverswitch();
+void web_handle_action_rightrolloverswitch();
+void web_handle_action_leftflipperswitch();
+void web_handle_action_rightflipperswitch();
+void web_handle_action_leftslingswitch();
+void web_handle_action_rightslingswitch();
+void web_handle_action_leftpopswitch();
+void web_handle_action_rightpopswitch();
+void web_handle_action_spinnerswitch();
+void web_handle_action_leftoutlaneswitch();
+void web_handle_action_rightoutlaneswitch();
+void web_handle_action_leftinlaneswitch();
+void web_handle_action_rightinlaneswitch();
+void web_handle_action_lefttoplaneswitch();
+void web_handle_action_righttoplaneswitch();
+void web_handle_action_centertoplaneswitch();
+void web_handle_action_saucerswitch();
+void web_handle_action_standup1switch();
+void web_handle_action_standup2switch();
+void web_handle_action_standup3switch();
+void web_handle_action_standup4switch();
+void web_handle_action_standup5switch();
+void web_handle_action_drop1switch();
+void web_handle_action_drop2switch();
+void web_handle_action_drop3switch();
+void web_handle_action_drop4switch();
+void web_handle_action_drop5switch();
+
 
 //setup a task to run on core 0;
 TaskHandle_t WebOperationsTask;
@@ -44,6 +74,8 @@ TaskHandle_t WebOperationsTask;
 
 void WebOperationsFunction( void * pvParameters)
 {
+    int counterWeb = 0;
+    unsigned long lastMillisWeb = 0;
     //Setup functions
     //Actual Web Pages
     server.on("/viewState", web_handle_viewState);
@@ -126,9 +158,9 @@ void WebOperationsFunction( void * pvParameters)
 
   for(;;){
     // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
-    counter++;
+    counterWeb++;
     //static int tempSound=1;
-    if (millis() - lastMillis > 10000 ){
+    if (millis() - lastMillisWeb > 10000 ){
         if(loopDebug)
         {
           Serial.print("WebOperations : CORE ");
@@ -137,9 +169,9 @@ void WebOperationsFunction( void * pvParameters)
           Serial.print(counter/10);
           Serial.println("Hz (full program cycles per second)");
         }
-      core1Hz = counter/10;  
-      counter = 0;
-      lastMillis = millis();
+      WEBHz = counterWeb/10;  
+      counterWeb = 0;
+      lastMillisWeb = millis();
     }
     // End of debug stuff 
       //webserver code
@@ -182,11 +214,11 @@ void web_handle_AJAXState()
 }
 void web_handle_AJAXCPU0Hz()
 {
-    server.send(200, "text/plane", (String)core0Hz); //Send ADC value only to client ajax request
+    server.send(200, "text/plane", (String)CMOHz); //Send ADC value only to client ajax request
 }
 void web_handle_AJAXCPU1Hz()
 {
-    server.send(200, "text/plane", (String)core1Hz); //Send ADC value only to client ajax request
+    server.send(200, "text/plane", (String)WEBHz); //Send ADC value only to client ajax request
 }
 void web_handle_AJAXPlayerNumber()
 {
@@ -300,6 +332,43 @@ void web_handle_action_rolloverswitch()
   switch_event_rollover_center(27);
   server.send(200, "text/html", "OK - Center Rollover Virtually Pressed"); //Send web page
 }
+
+void web_handle_action_leftrolloverswitch()
+{
+  switch_event_rollover_left(12);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_rightrolloverswitch()
+{
+  switch_event_rollover_right(11);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_leftflipperswitch(){}
+void web_handle_action_rightflipperswitch(){}
+void web_handle_action_leftslingswitch(){}
+void web_handle_action_rightslingswitch(){}
+void web_handle_action_leftpopswitch(){}
+void web_handle_action_rightpopswitch(){}
+void web_handle_action_spinnerswitch(){}
+void web_handle_action_leftoutlaneswitch(){}
+void web_handle_action_rightoutlaneswitch(){}
+void web_handle_action_leftinlaneswitch(){}
+void web_handle_action_rightinlaneswitch(){}
+void web_handle_action_lefttoplaneswitch(){}
+void web_handle_action_righttoplaneswitch(){}
+void web_handle_action_centertoplaneswitch(){}
+void web_handle_action_saucerswitch(){}
+void web_handle_action_standup1switch(){}
+void web_handle_action_standup2switch(){}
+void web_handle_action_standup3switch(){}
+void web_handle_action_standup4switch(){}
+void web_handle_action_standup5switch(){}
+void web_handle_action_drop1switch(){}
+void web_handle_action_drop2switch(){}
+void web_handle_action_drop3switch(){}
+void web_handle_action_drop4switch(){}
+void web_handle_action_drop5switch(){}
+
 
 
 void web_handle_action_restart()

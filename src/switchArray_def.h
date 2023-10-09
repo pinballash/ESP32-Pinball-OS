@@ -1,8 +1,8 @@
 //create PinballSwitch class instances - we use these to determine if an event needs to happen or not
-PinballSwitch sw_outhole("sw_outhole",200,false,switchDebug);
+PinballSwitch sw_outhole("sw_outhole",2000,false,switchDebug);
 PinballSwitch sw_rebounds("sw_rebounds",200,false,switchDebug);
 PinballSwitch sw_credit("sw_credit",200,false,switchDebug);
-PinballSwitch sw_saucer("sw_saucer",200,false,switchDebug);
+PinballSwitch sw_saucer("sw_saucer",2000,false,switchDebug);
 PinballSwitch sw_sling_left("sw_sling_left",200,false,switchDebug);
 PinballSwitch sw_sling_right("sw_sling_right",200,false,switchDebug);
 PinballSwitch sw_pop_left("sw_pop_left",200,false,switchDebug);
@@ -13,8 +13,8 @@ PinballSwitch sw_tilt_slam("sw_tilt_slam",200,false,switchDebug);
 PinballSwitch sw_rollover_right("sw_rollover_right",1000,false,switchDebug);
 PinballSwitch sw_rollover_left("sw_rollover_left",1000,false,switchDebug);
 PinballSwitch sw_start("sw_start",2000,false,switchDebug);
-PinballSwitch sw_flipper_right("sw_flipper_right",50,true,switchDebug);
-PinballSwitch sw_flipper_left("sw_flipper_left",50,true,switchDebug);
+PinballSwitch sw_flipper_right("sw_flipper_right",20,true,switchDebug);
+PinballSwitch sw_flipper_left("sw_flipper_left",20,true,switchDebug);
 PinballSwitch sw_outlane_right("sw_outlane_right",1000,false,switchDebug);
 PinballSwitch sw_outlane_left("sw_outlane_left",1000,false,switchDebug);
 PinballSwitch sw_lane_p("sw_lane_p",1000,false,switchDebug);

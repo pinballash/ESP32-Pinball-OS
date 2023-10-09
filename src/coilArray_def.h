@@ -1,6 +1,6 @@
 //create PinballCoil class instances
-PinballCoil c_flipper_left("c_flipper_left",0,0,50,100);
-PinballCoil c_flipper_right("c_flipper_right",0,1,50,100);
+PinballCoil c_flipper_left("c_flipper_left",0,0,0,20);
+PinballCoil c_flipper_right("c_flipper_right",0,1,0,20);
 PinballCoil c_pop_left("c_pop_left",1,1,50,100);
 PinballCoil c_pop_right("c_pop_right",1,2,50,100);
 PinballCoil c_sling_left("c_sling_left",0,7,50,100);

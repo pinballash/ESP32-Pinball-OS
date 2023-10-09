@@ -23,7 +23,7 @@ class PinballCoil
 
    
   //constructor
-  PinballCoil(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff);
+  PinballCoil(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff); //String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff
   
   //Public Functions
   void init();
