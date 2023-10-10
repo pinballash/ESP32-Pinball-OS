@@ -87,159 +87,166 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_rightrolloverswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_leftrolloverswitch_click();' class='w3-button w3-red'>leftrolloverswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_leftflipperswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_rightrolloverswitch_click();' class='w3-button w3-red'>rightrolloverswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_rightflipperswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_leftflipperswitch_click();' class='w3-button w3-red'>leftflipperswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_leftslingswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_rightflipperswitch_click();' class='w3-button w3-red'>rightflipperswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_rightslingswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_leftslingswitch_click();' class='w3-button w3-red'>leftslingswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_leftpopswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_rightslingswitch_click();' class='w3-button w3-red'>rightslingswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_rightpopswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_leftpopswitch_click();' class='w3-button w3-red'>leftpopswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_spinnerswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_rightpopswitch_click();' class='w3-button w3-red'>rightpopswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_leftoutlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_spinnerswitch_click();' class='w3-button w3-red'>spinnerswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_rightoutlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_leftoutlaneswitch_click();' class='w3-button w3-red'>leftoutlaneswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_leftinlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_rightoutlaneswitch_click();' class='w3-button w3-red'>rightoutlaneswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_rightinlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_leftinlaneswitch_click();' class='w3-button w3-red'>leftinlaneswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_lefttoplaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_rightinlaneswitch_click();' class='w3-button w3-red'>rightinlaneswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_righttoplaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_lefttoplaneswitch_click();' class='w3-button w3-red'>lefttoplaneswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_centertoplaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_righttoplaneswitch_click();' class='w3-button w3-red'>righttoplaneswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_saucerswitch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_centertoplaneswitch_click();' class='w3-button w3-red'>centertoplaneswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_standup1switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_saucerswitch_click();' class='w3-button w3-red'>saucerswitch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_standup2switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_standup1switch_click();' class='w3-button w3-red'>standup1switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_standup3switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_standup2switch_click();' class='w3-button w3-red'>standup2switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_standup4switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_standup3switch_click();' class='w3-button w3-red'>standup3switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_standup5switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_standup4switch_click();' class='w3-button w3-red'>standup4switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_drop1switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_standup5switch_click();' class='w3-button w3-red'>standup5switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_drop2switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_drop1switch_click();' class='w3-button w3-red'>drop1switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_drop3switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_drop2switch_click();' class='w3-button w3-red'>drop2switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_drop4switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_drop3switch_click();' class='w3-button w3-red'>drop3switch</button>
         </div>
     </div><!-- button end-->
 <!-- button start--><div class='w3-quarter'>
         <div class='w3-container w3-red w3-padding-16'>
             <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-                <button onclick='event_drop5switch_click();' class='w3-button w3-red'>Rollover</button>
+                <button onclick='event_drop4switch_click();' class='w3-button w3-red'>drop4switch</button>
         </div>
     </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_drop5switch_click();' class='w3-button w3-red'>drop5switch</button>
+        </div>
+    </div><!-- button end-->
+
 
     
   </div>
