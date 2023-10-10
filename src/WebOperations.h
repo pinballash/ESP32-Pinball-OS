@@ -41,10 +41,6 @@ void web_handle_action_outholeswitch();
 void web_handle_action_rolloverswitch();
 void web_handle_action_leftrolloverswitch();
 void web_handle_action_rightrolloverswitch();
-void web_handle_action_leftflipperswitch();
-void web_handle_action_rightflipperswitch();
-void web_handle_action_leftslingswitch();
-void web_handle_action_rightslingswitch();
 void web_handle_action_leftpopswitch();
 void web_handle_action_rightpopswitch();
 void web_handle_action_spinnerswitch();
@@ -110,6 +106,31 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/action/outholeswitch", web_handle_action_outholeswitch);
     server.on("/action/rolloverswitch", web_handle_action_rolloverswitch);
     server.on("/action/restart", web_handle_action_restart);    
+   
+    server.on("/action/leftrolloverswitch", web_handle_action_leftrolloverswitch);
+    server.on("/action/rightrolloverswitch", web_handle_action_rightrolloverswitch);
+    server.on("/action/leftpopswitch", web_handle_action_leftpopswitch);
+    server.on("/action/rightpopswitch", web_handle_action_rightpopswitch);
+    server.on("/action/spinnerswitch", web_handle_action_spinnerswitch);
+    server.on("/action/leftoutlaneswitch", web_handle_action_leftoutlaneswitch);
+    server.on("/action/rightoutlaneswitch", web_handle_action_rightoutlaneswitch);
+    server.on("/action/leftinlaneswitch", web_handle_action_leftinlaneswitch);
+    server.on("/action/rightinlaneswitch", web_handle_action_rightinlaneswitch);
+    server.on("/action/lefttoplaneswitch", web_handle_action_lefttoplaneswitch);
+    server.on("/action/righttoplaneswitch", web_handle_action_righttoplaneswitch);
+    server.on("/action/centertoplaneswitch", web_handle_action_centertoplaneswitch);
+    server.on("/action/saucerswitch", web_handle_action_saucerswitch);
+    server.on("/action/standup1switch", web_handle_action_standup1switch);
+    server.on("/action/standup2switch", web_handle_action_standup2switch);
+    server.on("/action/standup3switch", web_handle_action_standup3switch);
+    server.on("/action/standup4switch", web_handle_action_standup4switch);
+    server.on("/action/standup5switch", web_handle_action_standup5switch);
+    server.on("/action/drop1switch", web_handle_action_drop1switch);
+    server.on("/action/drop2switch", web_handle_action_drop2switch);
+    server.on("/action/drop3switch", web_handle_action_drop3switch);
+    server.on("/action/drop4switch", web_handle_action_drop4switch);
+    server.on("/action/drop5switch", web_handle_action_drop5switch);
+
 
     server.on("/", web_handle_viewState);
         /*handling uploading firmware file */
@@ -343,31 +364,112 @@ void web_handle_action_rightrolloverswitch()
   switch_event_rollover_right(11);
   server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
 }
-void web_handle_action_leftflipperswitch(){}
-void web_handle_action_rightflipperswitch(){}
-void web_handle_action_leftslingswitch(){}
-void web_handle_action_rightslingswitch(){}
-void web_handle_action_leftpopswitch(){}
-void web_handle_action_rightpopswitch(){}
-void web_handle_action_spinnerswitch(){}
-void web_handle_action_leftoutlaneswitch(){}
-void web_handle_action_rightoutlaneswitch(){}
-void web_handle_action_leftinlaneswitch(){}
-void web_handle_action_rightinlaneswitch(){}
-void web_handle_action_lefttoplaneswitch(){}
-void web_handle_action_righttoplaneswitch(){}
-void web_handle_action_centertoplaneswitch(){}
-void web_handle_action_saucerswitch(){}
-void web_handle_action_standup1switch(){}
-void web_handle_action_standup2switch(){}
-void web_handle_action_standup3switch(){}
-void web_handle_action_standup4switch(){}
-void web_handle_action_standup5switch(){}
-void web_handle_action_drop1switch(){}
-void web_handle_action_drop2switch(){}
-void web_handle_action_drop3switch(){}
-void web_handle_action_drop4switch(){}
-void web_handle_action_drop5switch(){}
+
+void web_handle_action_leftpopswitch()
+{
+  switch_event_pop(6);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_rightpopswitch()
+{
+  switch_event_pop(7);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_spinnerswitch()
+{
+  switch_event_spinner(24);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_leftoutlaneswitch()
+{
+  switch_event_outane_left(17);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_rightoutlaneswitch()
+{
+  switch_event_outane_right(16);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_leftinlaneswitch()
+{
+  switch_event_lane_c(23);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_rightinlaneswitch()
+{
+  switch_event_lane_p(19);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_lefttoplaneswitch()
+{
+  switch_event_lane_h(22);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_righttoplaneswitch()
+{
+  switch_event_lane_m(20);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_centertoplaneswitch()
+{
+  switch_event_lane_a(21);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_saucerswitch()
+{
+  switch_event_saucer(3);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_standup1switch()
+{
+  switch_event_standup_e(39);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_standup2switch()
+{
+  switch_event_standup_i(38);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_standup3switch()
+{
+  switch_event_standup_g(37);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_standup4switch()
+{
+  switch_event_standup_h(36);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_standup5switch()
+{
+  switch_event_standup_t(35);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_drop1switch()
+{
+  switch_event_drop1(31);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_drop2switch()
+{
+  switch_event_drop2(29);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_drop3switch()
+{
+  switch_event_drop3(28);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_drop4switch()
+{
+  switch_event_drop4(26);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
+void web_handle_action_drop5switch()
+{
+  switch_event_drop5(25);
+  server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
+}
 
 
 

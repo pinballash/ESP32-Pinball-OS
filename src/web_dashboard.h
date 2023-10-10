@@ -78,6 +78,169 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
         </div>
     </div>
     <!-- button end-->
+    <!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_leftrolloverswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_rightrolloverswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_leftflipperswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_rightflipperswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_leftslingswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_rightslingswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_leftpopswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_rightpopswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_spinnerswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_leftoutlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_rightoutlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_leftinlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_rightinlaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_lefttoplaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_righttoplaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_centertoplaneswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_saucerswitch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_standup1switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_standup2switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_standup3switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_standup4switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_standup5switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_drop1switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_drop2switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_drop3switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_drop4switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+<!-- button start--><div class='w3-quarter'>
+        <div class='w3-container w3-red w3-padding-16'>
+            <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+                <button onclick='event_drop5switch_click();' class='w3-button w3-red'>Rollover</button>
+        </div>
+    </div><!-- button end-->
+
     
   </div>
 
@@ -521,6 +684,142 @@ function event_rollover_click() {
     xhttp.open('GET', './action/rolloverswitch', true);
     xhttp.send();
 }
+function event_leftrolloverswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/leftrolloverswitch', true);
+    xhttp.send();
+}
+function event_rightrolloverswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/rightrolloverswitch', true);
+    xhttp.send();
+}
+function event_leftflipperswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/leftflipperswitch', true);
+    xhttp.send();
+}
+function event_rightflipperswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/rightflipperswitch', true);
+    xhttp.send();
+}
+function event_leftslingswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/leftslingswitch', true);
+    xhttp.send();
+}
+function event_rightslingswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/rightslingswitch', true);
+    xhttp.send();
+}
+function event_leftpopswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/leftpopswitch', true);
+    xhttp.send();
+}
+function event_rightpopswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/rightpopswitch', true);
+    xhttp.send();
+}
+function event_spinnerswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/spinnerswitch', true);
+    xhttp.send();
+}
+function event_leftoutlaneswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/leftoutlaneswitch', true);
+    xhttp.send();
+}
+function event_rightoutlaneswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/rightoutlaneswitch', true);
+    xhttp.send();
+}
+function event_leftinlaneswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/leftinlaneswitch', true);
+    xhttp.send();
+}
+function event_rightinlaneswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/rightinlaneswitch', true);
+    xhttp.send();
+}
+function event_lefttoplaneswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/lefttoplaneswitch', true);
+    xhttp.send();
+}
+function event_righttoplaneswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/righttoplaneswitch', true);
+    xhttp.send();
+}
+function event_centertoplaneswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/centertoplaneswitch', true);
+    xhttp.send();
+}
+function event_saucerswitch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/saucerswitch', true);
+    xhttp.send();
+}
+function event_standup1switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/standup1switch', true);
+    xhttp.send();
+}
+function event_standup2switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/standup2switch', true);
+    xhttp.send();
+}
+function event_standup3switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/standup3switch', true);
+    xhttp.send();
+}
+function event_standup4switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/standup4switch', true);
+    xhttp.send();
+}
+function event_standup5switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/standup5switch', true);
+    xhttp.send();
+}
+function event_drop1switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/drop1switch', true);
+    xhttp.send();
+}
+function event_drop2switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/drop2switch', true);
+    xhttp.send();
+}
+function event_drop3switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/drop3switch', true);
+    xhttp.send();
+}
+function event_drop4switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/drop4switch', true);
+    xhttp.send();
+}
+function event_drop5switch_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open('GET', './action/drop5switch', true);
+    xhttp.send();
+}
+
 
 function event_debugSwitch_click() {
     var xhttp = new XMLHttpRequest();
