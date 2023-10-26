@@ -36,6 +36,8 @@ void changeState(int newState)
               lastMachineState = 1;
               forceDisplayUpdate = true;
               g_myPinballGame.newGame();
+              //enable power to coils
+              digitalWrite(hvrPin, HIGH);
             }
             break;
           }    
@@ -51,7 +53,8 @@ void changeState(int newState)
               lastMachineState = 2;
               forceDisplayUpdate = true;
               g_myPinballGame.endGame(); //end the game - this resets a load of stuff, we may want to run this on a new game start??
-
+              //disable power to coils
+              digitalWrite(hvrPin, LOW);
 
             }
             break;
@@ -69,6 +72,8 @@ void changeState(int newState)
               lastMachineState = 3;
               forceDisplayUpdate = true;
               g_myPinballGame.newGame();
+              //enable power to coils
+              digitalWrite(hvrPin, HIGH);
             }else if (newState == 1)
             {
               //moving from End Game to Atract : OK
@@ -76,6 +81,7 @@ void changeState(int newState)
               MachineState = 1;
               lastMachineState = 3;
               forceDisplayUpdate = true;
+              
             }
             break;
           }
