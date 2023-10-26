@@ -18,16 +18,26 @@ PinballGame g_myPinballGame("--My Pinball Game--");
 #include "flipperBindings_def.h"
 #include "coilBindings_def.h"
 
+void fireFlipper(int firedSwitchID);
+void releaseFlipper(int firedSwitchID);
+void IRAM_ATTR fireFlipper1();
+void IRAM_ATTR releaseFlipper1();
+void IRAM_ATTR fireFlipper2();
+void IRAM_ATTR releaseFlipper2();
+
+
 void MonitorSwitchesAndRegisterFunction( void * pvParameters);
 void scanSwitchMatrix();
-void identifyFlippers();
-void triggerFlippers();
+void identifyFlippers(); //depriciated
+void triggerFlippers(); //depriciated
 void triggerSwitches();
 void processAllSwitches();
 void ProcessShifts(PinballCoil* CoilObject);
 void manageCoils();
 void read_sr();
-void write_sr();
+void write_sr_matrix();
+void write_sr_audio();
+void write_sr_coils();
 void switch_event_outhole();
 void switch_event_saucer(int switchID);
 void switch_event_drop1(int switchID);
@@ -117,6 +127,15 @@ byte outgoing4=0;//used for solenoids
 
 bool needsRegisterUpdate = false;
 
+//High Voltage Relay pin
+const int hvrPin = 27;
+
+//Flipper 1 pin
+const int flipper1Pin = 34;
+
+//Flipper 2 pin
+const int flipper2Pin = 35;
+
 int counter;
 unsigned long lastMillis;
 
@@ -178,21 +197,21 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
       //if(generalMODebug) Serial.println("[generalMODebug] Flipper triggering...");  
       //fire off flippers if triggered 
       measureMicro = micros();
-      triggerFlippers();
+      triggerFlippers();//soon to be redundant when flipper switches are direct connected to GPIO pins.
       flipperMicro = flipperMicro + (micros() - measureMicro);
       //if(generalMODebug) Serial.println("[generalMODebug] Switch triggering...");
       //process switch events
       measureMicro = micros();
-      triggerSwitches();
+      triggerSwitches();//Needs to be done on a separate thread on a timer.
       triggerSwitchMicro = triggerSwitchMicro + (micros() - measureMicro);
       //if(generalMODebug) Serial.println("[generalMODebug] Coil processing...");
       //manage coils - release if needed
       measureMicro = micros();
-      manageCoils();
+      manageCoils();//Needs to be done on a separate thread on a timer.
       manageCoilMicro = manageCoilMicro + (micros() - measureMicro);
       //if(generalMODebug) Serial.println("[generalMODebug] Switch processing...");
       measureMicro = micros();
-      processAllSwitches();
+      processAllSwitches();//Needs to be done on a separate thread on a timer.
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
 
@@ -298,7 +317,6 @@ void identifyFlippers()
     }
   }   
 }
-
 /*
 * Function triggerFlippers
 * loop through all columns and rows and check for a switches that are marked as flippers.  
@@ -362,6 +380,82 @@ void triggerFlippers()
 * If a switch is closed and bound to a coil, fire the associated coil.
 * If a switch is closed and nat bound to a coil, do no more work.
 */
+
+void IRAM_ATTR fireFlipper(int flipperSwitchID)
+{
+  PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
+
+  if(generalMODebug)
+  {
+    Serial.print("Flipper button pressed....");
+    Serial.println(flipperSwitchID);
+    Serial.print("need to locate coil associated ");
+    Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
+  } 
+  if(flipperCoil->checkStatus()==false) //coil is currently off
+  {
+    if(generalMODebug)
+    {
+      Serial.print("Coil disabled but button pressed, enabling ");
+      Serial.println(flipperCoil->getName());
+    }
+    if(MachineState == 2) //only if game is active
+    {
+      flipperCoil->enable(); //mark the coil as enabled - perminantly on
+      ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
+      write_sr_coils();  //action shift register changes
+      flipperCoil->actioned(); //mark the coil changes as done
+    }
+  }  
+}
+
+void IRAM_ATTR releaseFlipper(int flipperSwitchID)
+{
+  PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
+
+  if(generalMODebug)
+  {
+    Serial.print("Flipper button pressed....");
+    Serial.println(flipperSwitchID);
+    Serial.print("need to locate coil associated ");
+    Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
+  } 
+  if(flipperCoil->checkStatus()==true) //coil is currently off
+  {
+    
+    if(MachineState == 2) //only if game is active
+    {
+      if(generalMODebug)
+      {
+        Serial.println("Coil enable but button not pressed, starting manage() function to determine if it can be turned off");
+        Serial.println("Coil insists it needs action to turn on or off");  
+      } 
+      flipperCoil->disable(); //mark the coil as off
+      flipperCoil->manage(); //run management routine to do the needful
+      ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
+      write_sr_coils(); //action shift register changes
+      flipperCoil->actioned(); //mark the coil changes as done
+    }
+  }  
+}
+void IRAM_ATTR fireFlipper1()
+{
+  fireFlipper(1);
+}
+void IRAM_ATTR releaseFlipper1()
+{
+  releaseFlipper(1);
+}
+void IRAM_ATTR fireFlipper2()
+{
+  fireFlipper(2);
+}
+void IRAM_ATTR releaseFlipper2()
+{
+  fireFlipper(2);
+}
+
+
 void triggerSwitches()
 {
   //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
@@ -649,7 +743,8 @@ void read_sr() {//Read input shift registers
     Serial.println("]");
   }
 }
-void write_sr_matrix() { // Write to the output shift registers
+void write_sr_matrix() 
+{ // Write to the output shift registers
   digitalWrite(osr1latchPin, LOW);
   shiftOut(osr1dataPin, osr1clockPin, LSBFIRST, outgoing); // changed to MSB to reflect physical wiring
   digitalWrite(osr1latchPin, HIGH);   
@@ -659,7 +754,8 @@ void write_sr_matrix() { // Write to the output shift registers
     Serial.println("]");
   }   
 }  
-void write_sr_audio() { // Write to the output shift registers
+void write_sr_audio() 
+{ // Write to the output shift registers
   digitalWrite(osr2latchPin, LOW);
   shiftOut(osr2dataPin, osr2clockPin, LSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
   digitalWrite(osr2latchPin, HIGH);   
@@ -669,8 +765,8 @@ void write_sr_audio() { // Write to the output shift registers
     Serial.println("]");
   }   
 }   
-
-void write_sr_coils() { // Write to the output shift registers
+void write_sr_coils() 
+{ // Write to the output shift registers
   digitalWrite(osr3latchPin, LOW);
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
@@ -685,7 +781,6 @@ void write_sr_coils() { // Write to the output shift registers
     Serial.println("]");
   }   
 }   
-
 void switch_event_outhole()
 {
   

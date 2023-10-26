@@ -38,29 +38,41 @@ void setup() {
   Serial.begin(115200);
 
   //Need to set up LEDs, flippers, high power relay
-  
-  // Setup pins as Outputs
+
+  pinMode(flipper1Pin, INPUT);
+  attachInterrupt(flipper1Pin, fireFlipper1, RISING);
+  attachInterrupt(flipper1Pin, releaseFlipper1, FALLING);
+  pinMode(flipper2Pin, INPUT);
+  attachInterrupt(flipper2Pin, fireFlipper2, RISING);
+  attachInterrupt(flipper2Pin, releaseFlipper2, FALLING);
+
+  pinMode(hvrPin, OUTPUT);
+  //turn off High Voltage Relay
+  digitalWrite(hvrPin, LOW);
+
+  // Setup pins for Switch Matrix Out
   pinMode(osr1latchPin, OUTPUT);
   pinMode(osr1clockPin, OUTPUT);
   pinMode(osr1dataPin, OUTPUT);
 
-  // Setup pins as Outputs
+  // Setup pin for Audio Out
   pinMode(osr2latchPin, OUTPUT);
   pinMode(osr2clockPin, OUTPUT);
   pinMode(osr2dataPin, OUTPUT);
   
-  // Setup pins as Outputs
+  // Setup pins for Coil Out
   pinMode(osr3latchPin, OUTPUT);
   pinMode(osr3clockPin, OUTPUT);
   pinMode(osr3dataPin, OUTPUT);
   
-  // Setup 74HC165 connections
+  // Setup 74HC165 connections for SMatrix in and Audio in
   pinMode(isrload, OUTPUT);
   pinMode(isrclockEnablePin, OUTPUT);
   pinMode(isrclockIn, OUTPUT);
   pinMode(isrdataIn, INPUT);
   
   // Set all outputs to zero
+  //Open latch
   digitalWrite(osr1latchPin, LOW);
   digitalWrite(osr2latchPin, LOW);
   digitalWrite(osr3latchPin, LOW);
@@ -69,7 +81,7 @@ void setup() {
   shiftOut(osr2dataPin, osr2clockPin, MSBFIRST, 0);
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, 0);
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, 0); // 2 registers so we have to shift both
-  // ST_CP HIGH change LEDs
+  // Close Latch
   digitalWrite(osr1latchPin, HIGH);
   digitalWrite(osr2latchPin, HIGH);
   digitalWrite(osr3latchPin, HIGH);
