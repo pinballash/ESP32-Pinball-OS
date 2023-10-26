@@ -1,5 +1,9 @@
 //ESP32PinballOS
-//Version 0.0.1
+//Version 0.0.2
+//0.0.2 - Updating to account for differnet PCB design.  The shift registers are connected differently
+//a pair of inouts shared for switch matrix and audio, 
+//and then a single IC for switch matrix out, 
+//one IC for audio and two for outputs to solenoids
 #include <Arduino.h>
 //Over The Air Updater 
 #include <WiFi.h>
@@ -32,37 +36,57 @@ void setup() {
   // put your setup code here, to run once:
   // Setup Serial Monitor
   Serial.begin(115200);
+
+  //Need to set up LEDs, flippers, high power relay
   
   // Setup pins as Outputs
-  pinMode(latchPin, OUTPUT);
-  pinMode(clockPin, OUTPUT);
-  pinMode(dataPin, OUTPUT);
+  pinMode(osr1latchPin, OUTPUT);
+  pinMode(osr1clockPin, OUTPUT);
+  pinMode(osr1dataPin, OUTPUT);
+
+  // Setup pins as Outputs
+  pinMode(osr2latchPin, OUTPUT);
+  pinMode(osr2clockPin, OUTPUT);
+  pinMode(osr2dataPin, OUTPUT);
+  
+  // Setup pins as Outputs
+  pinMode(osr3latchPin, OUTPUT);
+  pinMode(osr3clockPin, OUTPUT);
+  pinMode(osr3dataPin, OUTPUT);
   
   // Setup 74HC165 connections
-  pinMode(load, OUTPUT);
-  pinMode(clockEnablePin, OUTPUT);
-  pinMode(clockIn, OUTPUT);
-  pinMode(dataIn, INPUT);
+  pinMode(isrload, OUTPUT);
+  pinMode(isrclockEnablePin, OUTPUT);
+  pinMode(isrclockIn, OUTPUT);
+  pinMode(isrdataIn, INPUT);
   
   // Set all outputs to zero
-  digitalWrite(latchPin, LOW);
+  digitalWrite(osr1latchPin, LOW);
+  digitalWrite(osr2latchPin, LOW);
+  digitalWrite(osr3latchPin, LOW);
   // Shift out the bits
-  shiftOut(dataPin, clockPin, MSBFIRST, 0);
-  shiftOut(dataPin, clockPin, MSBFIRST, 0);
-  shiftOut(dataPin, clockPin, MSBFIRST, 0);
-  shiftOut(dataPin, clockPin, MSBFIRST, 0); // 4 registers so we have to shift all 4
+  shiftOut(osr1dataPin, osr1clockPin, MSBFIRST, 0);
+  shiftOut(osr2dataPin, osr2clockPin, MSBFIRST, 0);
+  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, 0);
+  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, 0); // 2 registers so we have to shift both
   // ST_CP HIGH change LEDs
-  digitalWrite(latchPin, HIGH);
+  digitalWrite(osr1latchPin, HIGH);
+  digitalWrite(osr2latchPin, HIGH);
+  digitalWrite(osr3latchPin, HIGH);
 
 
   Serial.print("Flushing the shift registers.");
-  write_sr(); // flush out the shift registers
+  write_sr_matrix(); // flush out the shift registers
+  write_sr_audio(); // flush out the shift registers
+  write_sr_coils(); // flush out the shift registers
   Serial.print(".");
   read_sr(); // read the shift registers. get rid of any spurious crap on power up.
   Serial.print(".");
   delay(200);
   Serial.print(".");
-  write_sr(); // flush out the shift registers
+  write_sr_matrix(); // flush out the shift registers
+  write_sr_audio(); // flush out the shift registers
+  write_sr_coils(); // flush out the shift registers
   Serial.print(".");
   read_sr(); // read again after a short delay
   Serial.print(".");

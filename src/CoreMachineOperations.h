@@ -86,16 +86,26 @@ const int coilCount = 15;
 bool coilActive[coilCount+1];
 
 
-// Define Connections to 74HC595 - Output Shift Registers
-const int latchPin = 19;
-const int clockPin = 18;
-const int dataPin = 17;
+// Define Connections to 74HC595 - Matrix Output Shift Register
+const int osr1latchPin = 18;
+const int osr1clockPin = 5;
+const int osr1dataPin = 17;
+
+// Define Connections to 74HC595 - Audio Output Shift Register
+const int osr2latchPin = 3;
+const int osr2clockPin = 21;
+const int osr2dataPin = 19;
+
+// Define Connections to 74HC595 - Coil Output Shift Registers
+const int osr3latchPin = 23;
+const int osr3clockPin = 22;
+const int osr3dataPin = 1;
 
 //Comms to 74HC165 - Input Shift Registers
-int load = 25;
-int clockEnablePin = 32;
-int dataIn = 33;
-int clockIn = 26;
+int isrload = 25;
+int isrclockEnablePin = 32; //latch
+int isrdataIn = 33;
+int isrclockIn = 26;
 
 // input and output bytes for the shift registers
 byte incoming;
@@ -243,7 +253,7 @@ void scanSwitchMatrix()
  {
   outgoing = 0;
   bitSet(outgoing,(7-col));  
-  write_sr();  // So sets the column high,
+  write_sr_matrix();  // So sets the column high,
   bitClear(outgoing,col); //no longer needs to be set, we sent it
   delayMicroseconds(2); // give the register time to update
   read_sr();
@@ -325,7 +335,7 @@ void triggerFlippers()
         {
           flipperCoil->enable(); //mark the coil as enabled - perminantly on
           ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
-          write_sr();  //action shift register changes
+          write_sr_coils();  //action shift register changes
           flipperCoil->actioned(); //mark the coil changes as done
         }
 
@@ -340,7 +350,7 @@ void triggerFlippers()
       flipperCoil->disable(); //mark the coil as off
       flipperCoil->manage(); //run management routine to do the needful
       ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
-      write_sr(); //action shift register changes
+      write_sr_coils(); //action shift register changes
       flipperCoil->actioned(); //mark the coil changes as done
     }//end button not presesed  
   } 
@@ -385,7 +395,7 @@ void triggerSwitches()
               if(switchCoil->fireCoil()){ //try and fire the coil
                 coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
                 ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
-                write_sr(); //update shift register
+                write_sr_coils(); //update shift register
               }
             }
           }else{
@@ -613,7 +623,7 @@ void manageCoils()
       if(activeCoil->checkStatus()==false)
       {
         ProcessShifts(activeCoil); 
-        write_sr();
+        write_sr_coils();
         coilActive[coilNumber]=false;
       }
     }
@@ -621,15 +631,15 @@ void manageCoils()
 }
 void read_sr() {//Read input shift registers
   // Write pulse to load pin
-  digitalWrite(load, LOW);
-  digitalWrite(load, HIGH);
+  digitalWrite(isrload, LOW);
+  digitalWrite(isrload, HIGH);
   incoming = 0;
   incoming2 = 0;
-  digitalWrite(clockEnablePin, LOW);
-  incoming = shiftIn(dataIn, clockIn, LSBFIRST);
-  incoming2 = shiftIn(dataIn, clockIn, LSBFIRST);
+  digitalWrite(isrclockEnablePin, LOW);
+  incoming = shiftIn(isrdataIn, isrclockIn, LSBFIRST);
+  incoming2 = shiftIn(isrdataIn, isrclockIn, LSBFIRST);
   // read twice to simulate reading 2 165's
-  digitalWrite(clockEnablePin, HIGH);
+  digitalWrite(isrclockEnablePin, HIGH);
   if(srDebug){
     Serial.print("read_sr : incoming");
     Serial.print("1->2[");
@@ -639,27 +649,43 @@ void read_sr() {//Read input shift registers
     Serial.println("]");
   }
 }
-void write_sr() { // Write to the output shift registers
-  digitalWrite(latchPin, LOW);
-  shiftOut(dataPin, clockPin, MSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
-  shiftOut(dataPin, clockPin, MSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
-  shiftOut(dataPin, clockPin, LSBFIRST, outgoing2);
-  shiftOut(dataPin, clockPin, LSBFIRST, outgoing);
-  // do it 4 times to simulate writing to 4 595s at once
-  digitalWrite(latchPin, HIGH);   
+void write_sr_matrix() { // Write to the output shift registers
+  digitalWrite(osr1latchPin, LOW);
+  shiftOut(osr1dataPin, osr1clockPin, LSBFIRST, outgoing); // changed to MSB to reflect physical wiring
+  digitalWrite(osr1latchPin, HIGH);   
   if(srDebug){
-    Serial.print("write_sr : outgoing");
-    Serial.print("4->1[");
-    Serial.print(outgoing4);
-    Serial.print(",");
-    Serial.print(outgoing3);
-    Serial.print(",");
-    Serial.print(outgoing2);
-    Serial.print(",");
+    Serial.print("write_sr : outgoing [");
     Serial.print(outgoing);
     Serial.println("]");
   }   
+}  
+void write_sr_audio() { // Write to the output shift registers
+  digitalWrite(osr2latchPin, LOW);
+  shiftOut(osr2dataPin, osr2clockPin, LSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
+  digitalWrite(osr2latchPin, HIGH);   
+  if(srDebug){
+    Serial.print("write_sr : outgoing2 [");
+    Serial.print(outgoing2);
+    Serial.println("]");
+  }   
 }   
+
+void write_sr_coils() { // Write to the output shift registers
+  digitalWrite(osr3latchPin, LOW);
+  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
+  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
+  // do it 4 times to simulate writing to 4 595s at once
+  digitalWrite(osr3latchPin, HIGH);   
+  if(srDebug){
+    Serial.print("write_sr : outgoing");
+    Serial.print("4->3[");
+    Serial.print(outgoing4);
+    Serial.print(",");
+    Serial.print(outgoing3);
+    Serial.println("]");
+  }   
+}   
+
 void switch_event_outhole()
 {
   
@@ -684,7 +710,7 @@ void switch_event_outhole()
       if(switchCoil->fireCoil()){
         coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
         ProcessShifts(switchCoil); //action the turning on
-        write_sr(); //update shift register
+        write_sr_coils(); //update shift register
       }
     }else
     {
@@ -712,7 +738,7 @@ void switch_event_saucer(int switchID)
   if(switchCoil->fireCoil()){
     coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
     ProcessShifts(switchCoil); //action the turning on
-    write_sr(); //update shift register
+    write_sr_coils(); //update shift register
   }
   addScore(switchID);
 }
@@ -734,7 +760,7 @@ void switch_event_drop1(int switchID)
   if(switchCoil->fireCoil()){
     coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
     ProcessShifts(switchCoil); //action the turning on
-    write_sr(); //update shift register
+    write_sr_coils(); //update shift register
   }
   addScore(switchID);
 }
@@ -748,7 +774,7 @@ void switch_event_drop2(int switchID)
   if(switchCoil->fireCoil()){
     coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
     ProcessShifts(switchCoil); //action the turning on
-    write_sr(); //update shift register
+    write_sr_coils(); //update shift register
   }
   addScore(switchID);
 }
@@ -762,7 +788,7 @@ void switch_event_drop3(int switchID)
   if(switchCoil->fireCoil()){
     coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
     ProcessShifts(switchCoil); //action the turning on
-    write_sr(); //update shift register
+    write_sr_coils(); //update shift register
   }
   addScore(switchID);
 }
@@ -776,7 +802,7 @@ void switch_event_drop4(int switchID)
   if(switchCoil->fireCoil()){
     coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
     ProcessShifts(switchCoil); //action the turning on
-    write_sr(); //update shift register
+    write_sr_coils(); //update shift register
   }
   addScore(switchID);
 }
@@ -790,7 +816,7 @@ void switch_event_drop5(int switchID)
   if(switchCoil->fireCoil()){
     coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
     ProcessShifts(switchCoil); //action the turning on
-    write_sr(); //update shift register
+    write_sr_coils(); //update shift register
   }
   addScore(switchID);
 }

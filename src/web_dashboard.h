@@ -46,38 +46,22 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
   </header>
   <!-- button row 1 -->
   <div class='w3-row-padding w3-margin-bottom'>
-    <!-- button start-->
-    <div class='w3-quarter'>
-      <div class='w3-container w3-green w3-padding-16'>
-        <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-            <button onclick='event_start_click();' class='w3-button w3-green'>Press Start</button>
+      <!-- button start-->
+      <div class='w3-quarter'>
+        <div class='w3-container w3-green w3-padding-16'>
+          <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
+              <button onclick='event_start_click();' class='w3-button w3-green'>Press Start</button>
+        </div>
       </div>
-    </div>
     
  
     <!-- button start-->
-    <div class='w3-quarter'>
-        <div class='w3-container w3-red w3-padding-16'>
-            <div class='w3-left'><i class='fa fa-power-off w3-xxlarge'></i></div>
-                <button onclick='event_restart_click();' class='w3-button w3-red'>Restart</button>
-        </div>
-    </div>
-    
- 
-   
-               
-
-    
- 
-    <!-- button start-->
-    <div class='w3-quarter'>
-        <div class='w3-container w3-grey w3-padding-16'>
-            <div class='w3-left'></div>
-                
-        </div>
-    </div>
-    
- 
+      <div class='w3-quarter'>
+          <div class='w3-container w3-red w3-padding-16'>
+              <div class='w3-left'><i class='fa fa-power-off w3-xxlarge'></i></div>
+                  <button onclick='event_restart_click();' class='w3-button w3-red'>Restart</button>
+          </div>
+      </div>
     </div>
     <!-- button row 2 -->
     <div class='w3-row-padding w3-margin-bottom'>
