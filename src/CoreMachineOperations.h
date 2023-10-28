@@ -102,14 +102,14 @@ const int osr1clockPin = 5;
 const int osr1dataPin = 17;
 
 // Define Connections to 74HC595 - Audio Output Shift Register
-const int osr2latchPin = 3;
+const int osr2latchPin = 2; //changed from 3
 const int osr2clockPin = 21;
 const int osr2dataPin = 19;
 
 // Define Connections to 74HC595 - Coil Output Shift Registers
 const int osr3latchPin = 23;
 const int osr3clockPin = 22;
-const int osr3dataPin = 1;
+const int osr3dataPin = 15; //changed from 1
 
 //Comms to 74HC165 - Input Shift Registers
 int isrload = 25;
@@ -152,7 +152,7 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
 {
   Serial.print("MonitorSwitches running on core ");
   Serial.println(xPortGetCoreID());
-  identifyFlippers();
+  //identifyFlippers();
   int counterSw = 0;
   unsigned long lastMillisSw = 0;
   unsigned long lastMicrosLoopRan = 0;
@@ -709,8 +709,8 @@ void manageCoils()
   for ( byte coilNumber = 1; coilNumber < coilCount+1 ; coilNumber++) {
     if(coilActive[coilNumber]==true)
     {
-      if(generalMODebug) Serial.print("Attempting to manage coil....");
-      if(generalMODebug) Serial.println(coilNumber);
+      //if(generalMODebug) Serial.print("Attempting to manage coil....");
+      //if(generalMODebug) Serial.println(coilNumber);
       //need to understand if its time to turn off the coil....
       PinballCoil* activeCoil = coils[coilNumber].coilObject;
       activeCoil->manage();
@@ -768,18 +768,18 @@ void write_sr_audio()
 void write_sr_coils() 
 { // Write to the output shift registers
   digitalWrite(osr3latchPin, LOW);
-  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
-  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
+  shiftOut(osr3dataPin, osr3clockPin, LSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
+  shiftOut(osr3dataPin, osr3clockPin, LSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
   // do it 4 times to simulate writing to 4 595s at once
   digitalWrite(osr3latchPin, HIGH);   
-  if(srDebug){
+  //if(srDebug){
     Serial.print("write_sr : outgoing");
     Serial.print("4->3[");
     Serial.print(outgoing4);
     Serial.print(",");
     Serial.print(outgoing3);
     Serial.println("]");
-  }   
+  //}   
 }   
 void switch_event_outhole()
 {

@@ -13,8 +13,8 @@ PinballSwitch sw_tilt_slam("sw_tilt_slam",200,false,switchDebug);
 PinballSwitch sw_rollover_right("sw_rollover_right",1000,false,switchDebug);
 PinballSwitch sw_rollover_left("sw_rollover_left",1000,false,switchDebug);
 PinballSwitch sw_start("sw_start",2000,false,switchDebug);
-PinballSwitch sw_flipper_right("sw_flipper_right",20,true,switchDebug);
-PinballSwitch sw_flipper_left("sw_flipper_left",20,true,switchDebug);
+//PinballSwitch sw_flipper_right("sw_flipper_right",20,true,switchDebug);
+//PinballSwitch sw_flipper_left("sw_flipper_left",20,true,switchDebug);
 PinballSwitch sw_outlane_right("sw_outlane_right",1000,false,switchDebug);
 PinballSwitch sw_outlane_left("sw_outlane_left",1000,false,switchDebug);
 PinballSwitch sw_lane_p("sw_lane_p",1000,false,switchDebug);
@@ -61,8 +61,8 @@ SwitchList switches = {
   {11,&sw_rollover_right,10000},
   {12,&sw_rollover_left,10000},
   {13,&sw_start,0},
-  {14,&sw_flipper_right,0},
-  {15,&sw_flipper_left,0},
+  {14,&sw_notused,0},
+  {15,&sw_notused,0},
   {16,&sw_outlane_right,1000},
   {17,&sw_outlane_left,1000},
   {18,&sw_notused,0},

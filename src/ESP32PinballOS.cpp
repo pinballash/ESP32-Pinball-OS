@@ -40,11 +40,13 @@ void setup() {
   //Need to set up LEDs, flippers, high power relay
 
   pinMode(flipper1Pin, INPUT);
-  attachInterrupt(flipper1Pin, fireFlipper1, RISING);
-  attachInterrupt(flipper1Pin, releaseFlipper1, FALLING);
+  
+  //attachInterrupt(flipper1Pin, fireFlipper1, RISING);
+  //attachInterrupt(flipper1Pin, releaseFlipper1, FALLING);
   pinMode(flipper2Pin, INPUT);
-  attachInterrupt(flipper2Pin, fireFlipper2, RISING);
-  attachInterrupt(flipper2Pin, releaseFlipper2, FALLING);
+
+  //attachInterrupt(flipper2Pin, fireFlipper2, RISING);
+  //attachInterrupt(flipper2Pin, releaseFlipper2, FALLING);
 
   pinMode(hvrPin, OUTPUT);
   //turn off High Voltage Relay
