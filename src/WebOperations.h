@@ -63,6 +63,8 @@ void web_handle_action_drop3switch();
 void web_handle_action_drop4switch();
 void web_handle_action_drop5switch();
 
+void web_handle_action_solenoidTest();
+
 
 //setup a task to run on core 0;
 TaskHandle_t WebOperationsTask;
@@ -130,6 +132,7 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/action/drop3switch", web_handle_action_drop3switch);
     server.on("/action/drop4switch", web_handle_action_drop4switch);
     server.on("/action/drop5switch", web_handle_action_drop5switch);
+    server.on("/action/solenoidTest", web_handle_action_solenoidTest);
 
 
     server.on("/", web_handle_viewState);
@@ -471,6 +474,26 @@ void web_handle_action_drop5switch()
   server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
 }
 
+void web_handle_action_solenoidTest()
+{
+  //for each coil, fire it
+  String webText = "";
+  for(char coilNumber = 1; coilNumber < coilCount; coilNumber++)
+  {
+    delay(1000);
+    PinballCoil* thisCoil = coils[coilNumber].coilObject; //get the PinballCoil instance associated
+    Serial.print("Solenod Test : ");
+    thisCoil->fireCoil();
+    Serial.println(thisCoil->getName());
+    ProcessShifts(thisCoil); //set shift register bytes to turn on solenoid
+    //delay(1000);
+    write_sr_coils();
+    //delay(1000);
+    coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+   
+  }
+   server.send(200, "text/html", "OK - SolenoidTest Complete"); //Send web page
+}
 
 
 void web_handle_action_restart()

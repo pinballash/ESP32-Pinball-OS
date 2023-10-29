@@ -8,6 +8,7 @@ bool coilDebug = false;
 bool loopDebug = false;
 bool threadDebug = false;
 bool srDebug = false;
+bool osrDebug = true;
 bool generalMODebug = true;
 unsigned long ScanSwitchMatrixEveryMicroSeconds = 800; //this seems to be the value where we can operate at around 500 times per second
 
@@ -92,8 +93,8 @@ unsigned long player4score = 0;
 int playfieldMultiplier = 1;
 
 //setup array fo maintaining the state of coils
-const int coilCount = 15;
-bool coilActive[coilCount+1];
+const int coilCount = 17;
+bool coilActive[coilCount];
 
 
 // Define Connections to 74HC595 - Matrix Output Shift Register
@@ -679,12 +680,22 @@ void ProcessShifts(PinballCoil* CoilObject)
   {
     if(CoilObject->checkStatus())
     {
-      if(srDebug) Serial.println("Turning on coil ");
+      if(osrDebug)
+      {
+        Serial.print("Turning on coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR3 - BIT:");
+        Serial.println(CoilObject->getSRBit());
+
+      } 
       bitSet(outgoing3,CoilObject->getSRBit());
 
     }else
     {
-      if(srDebug) Serial.println("Turning off coil ");
+      Serial.print("Turning off coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR3 - BIT:");
+        Serial.println(CoilObject->getSRBit());
       bitClear(outgoing3,CoilObject->getSRBit());
 
     }
@@ -692,12 +703,18 @@ void ProcessShifts(PinballCoil* CoilObject)
   {
     if(CoilObject->checkStatus())
     {
-      if(srDebug) Serial.println("Turning on coil ");
+      Serial.print("Turning on coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR4 - BIT:");
+        Serial.println(CoilObject->getSRBit());
       bitSet(outgoing4,CoilObject->getSRBit());
 
     }else
     {
-      if(srDebug) Serial.println("Turning off coil ");
+      Serial.print("Turning off coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR4 - BIT:");
+        Serial.println(CoilObject->getSRBit());
       bitClear(outgoing4,CoilObject->getSRBit());
     }
     
@@ -749,7 +766,7 @@ void write_sr_matrix()
   shiftOut(osr1dataPin, osr1clockPin, LSBFIRST, outgoing); // changed to MSB to reflect physical wiring
   digitalWrite(osr1latchPin, HIGH);   
   if(srDebug){
-    Serial.print("write_sr : outgoing [");
+    Serial.print("write_sr_matrix : outgoing [");
     Serial.print(outgoing);
     Serial.println("]");
   }   
@@ -760,7 +777,7 @@ void write_sr_audio()
   shiftOut(osr2dataPin, osr2clockPin, LSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
   digitalWrite(osr2latchPin, HIGH);   
   if(srDebug){
-    Serial.print("write_sr : outgoing2 [");
+    Serial.print("write_sr_audio : outgoing2 [");
     Serial.print(outgoing2);
     Serial.println("]");
   }   
@@ -768,18 +785,19 @@ void write_sr_audio()
 void write_sr_coils() 
 { // Write to the output shift registers
   digitalWrite(osr3latchPin, LOW);
-  shiftOut(osr3dataPin, osr3clockPin, LSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
-  shiftOut(osr3dataPin, osr3clockPin, LSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
+  
+  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
+  shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
   // do it 4 times to simulate writing to 4 595s at once
   digitalWrite(osr3latchPin, HIGH);   
-  //if(srDebug){
-    Serial.print("write_sr : outgoing");
+  if(osrDebug){
+    Serial.print("write_sr_coils : outgoing");
     Serial.print("4->3[");
     Serial.print(outgoing4);
     Serial.print(",");
     Serial.print(outgoing3);
     Serial.println("]");
-  //}   
+  }   
 }   
 void switch_event_outhole()
 {
