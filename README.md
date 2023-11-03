@@ -38,7 +38,7 @@ Later on in the coilArray_def.h we build a coil array.  The coil numbers should 
 
 <b>coilBindings_def.h</b> is the file where we define which coils fire as soon as a switch is triggered.  Think Pops and Slings.  The array is should be the same size as the one in switchArray_def.h, the first number in each row refers to a switch id (as per the switchArray_def.h), the second number is 0 for no coil or the number of a coil you want to fire every switch trigger. 
 
-<b>web.h</b> controls the web page elements.  Now there are links in the page that run commands to trigger switches (using AJAX).  You can edit what the links are called in web_dashboard.h.  The actions are at the foot of web.h. 
+<b>webOperations.h</b> controls the web page elements.  Now there are links in the page that run commands to trigger switches (using AJAX).  You can edit what the links are called in web_dashboard.h.  The actions are at the foot of web.h. 
 
 
 
