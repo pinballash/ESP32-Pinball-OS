@@ -1,5 +1,5 @@
 # ESP32-Pinball-OS
-Simple Pinball Machine Operating System, designed for the ESP32 chip
+<h1>Simple Pinball Machine Operating System, designed for the ESP32 chip</h1>
 
 <b>Very early days</b> - this repository is nowhere near release yet, but is actively being worked on.
 
@@ -7,7 +7,7 @@ Based upon the excellent Mishmash Homebrew Pinball found here: <a href="https://
 
 Progress on this project also documented here: <a href="https://www.pinballinfo.com/community/threads/mishmash-homebrew-pt-ii.57332/">Here</a>
 
-<b>Bill of materials</b><br />
+<h2>Bill of materials</h2><br />
 A PCB - you can use the Gerber files in this repository or create your own.  I use 2 x 595 Shift Registers to drive up to 16 MOSFETs which then drive up to 16 coils, you could add more to drive more if needed. 
 
 This project uses Arduino C++ and makes use of a ESP32 DevKit v1: <a href="https://www.amazon.co.uk/dp/B076HK8DCN?ref_=cm_sw_r_apan_dp_JYHN494QPACA0QZ0KHBW">Here</a>
@@ -25,7 +25,7 @@ To drive solenoids, you will need
 
 4 x DollaTek 4 Channels 4 Route MOSFET Button IRF540 V2.0 for Arduino <a href="https://www.amazon.co.uk/DollaTek-Channels-MOSFET-Button-Arduino/dp/B07MPB52GC/ref=sr_1_15?crid=2H95ZT40UJE51&keywords=mosfet+board&qid=1699020505&sprefix=mosfet+board%2Caps%2C93&sr=8-15">Here</a>
 
-<b>The code will need customising to your environment<b>
+<h2>The code will need customising to your environment</h2>
 
 <b>userSettings.h</b> will need updating to meet your wifi environment.  Your ESP32 will need to be quite close to your wireless to work.  I use a cheap netgear wireless extender to achieve this
 
