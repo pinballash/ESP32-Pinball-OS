@@ -1,16 +1,16 @@
 # ESP32-Pinball-OS
 Simple Pinball Machine Operating System, designed for the ESP32 chip
 
-Based upon the excellent Mishmash Homebrew Pinball found here: https://www.pinballinfo.com/community/threads/mishmash-self-build-let%E2%80%99s-make-a-pinball-machine.50005/post-451003
+Based upon the excellent Mishmash Homebrew Pinball found here: <a href="https://www.pinballinfo.com/community/threads/mishmash-self-build-let%E2%80%99s-make-a-pinball-machine.50005/post-451003">Here</a>
 
-Progress on this project also documented here: https://www.pinballinfo.com/community/threads/mishmash-homebrew-pt-ii.57332/
+Progress on this project also documented here: <a href="https://www.pinballinfo.com/community/threads/mishmash-homebrew-pt-ii.57332/">Here</a>
 
 <b>Bill of materials</b><br />
 A PCB - you can use the Gerber files in this repository or create your own.  I use 2 x 595 Shift Registers to drive up to 16 MOSFETs which then drive up to 16 coils, you could add more to drive more if needed. 
 
-This project uses Arduino C++ and makes use of a ESP32 DevKit v1: https://www.amazon.co.uk/dp/B076HK8DCN?ref_=cm_sw_r_apan_dp_JYHN494QPACA0QZ0KHBW
+This project uses Arduino C++ and makes use of a ESP32 DevKit v1: <a href="https://www.amazon.co.uk/dp/B076HK8DCN?ref_=cm_sw_r_apan_dp_JYHN494QPACA0QZ0KHBW">Here</a>
 
-4 x SN74HC595N Shift Register <br/>(https://www.amazon.co.uk/10-Pack-SN74HC595N-Registers-Integrated-Circuits/dp/B0C349T5XN/ref=sr_1_3?crid=34UUS453QPZ7X&keywords=SN74HC595N+Shift+Register&qid=1699019877&s=electronics&sprefix=sn74hc595n+shift+register%2Celectronics%2C75&sr=1-3-catcorr)
+4 x SN74HC595N Shift Register <a href="https://www.amazon.co.uk/10-Pack-SN74HC595N-Registers-Integrated-Circuits/dp/B0C349T5XN/ref=sr_1_3?crid=34UUS453QPZ7X&keywords=SN74HC595N+Shift+Register&qid=1699019877&s=electronics&sprefix=sn74hc595n+shift+register%2Celectronics%2C75&sr=1-3-catcorr">Here</a>
 
 2 x SN74HC165N Shift Register <br/>(https://www.amazon.co.uk/Reland-Sun-SN74HC165N-SN74HC157N-SN74HC161N/dp/B09BFNCG97/ref=sr_1_2?crid=354YY8B0O1KRC&keywords=SN74HC165N%2BShift%2BRegister&qid=1699019932&s=electronics&sprefix=sn74hc165n%2Bshift%2Bregister%2Celectronics%2C153&sr=1-2-catcorr&th=1)
 
