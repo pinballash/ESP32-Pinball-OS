@@ -5,6 +5,7 @@ Based upon the excellent Mishmash Homebrew Pinball found here: https://www.pinba
 
 Progress on this project also documented here: https://www.pinballinfo.com/community/threads/mishmash-homebrew-pt-ii.57332/
 
+<b>Bill of materials</b>
 This project uses Arduino C++ and makes use of a ESP32 DevKit v1: https://www.amazon.co.uk/dp/B076HK8DCN?ref_=cm_sw_r_apan_dp_JYHN494QPACA0QZ0KHBW
 
 4 x SN74HC595N Shift Register (https://www.amazon.co.uk/10-Pack-SN74HC595N-Registers-Integrated-Circuits/dp/B0C349T5XN/ref=sr_1_3?crid=34UUS453QPZ7X&keywords=SN74HC595N+Shift+Register&qid=1699019877&s=electronics&sprefix=sn74hc595n+shift+register%2Celectronics%2C75&sr=1-3-catcorr)
