@@ -14,6 +14,7 @@ unsigned long ScanSwitchMatrixEveryMicroSeconds = 800; //this seems to be the va
 
 PinballGame g_myPinballGame("--My Pinball Game--");
 
+
 #include "switchArray_def.h"
 #include "coilArray_def.h"
 #include "flipperBindings_def.h"

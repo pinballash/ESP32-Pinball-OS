@@ -1,9 +1,9 @@
 #include <Arduino.h>
-const char UPLOAD_page[] PROGMEM = R"=====(
+const char CONFIG_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 <head>
-<title>ESP32 Pinball OS - Firmware Upload</title>
+<title>ESP32 Pinball OS</title>
 <meta charset='UTF-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <link rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css'>
@@ -12,7 +12,6 @@ const char UPLOAD_page[] PROGMEM = R"=====(
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 </style>
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
 </head>
 <body class='w3-light-grey'>
 
@@ -32,7 +31,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
     <a href='./viewState' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-play'></i> Live View</a>
     <a href='./uploadDev' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Update</a>
     <a href='./action/solenoidTest' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Solenoid Test</a>
-    <a href='./config' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config</a>
+	<a href='./config' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config</a>
   </div>
 </nav>
 
@@ -45,27 +44,20 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 
   <!-- Header -->
   <header class='w3-container' style='padding-top:22px'>
-    <h5><b><i class='fa fa-chalkboard-user'></i>Firmware Upload</b></h5>
+    <h5><b><i class='fa fa-chalkboard-user'></i>Configuration</b></h5>
   </header>
-  <div class="w3-container">
-    <div class="w3-padding w3-white w3-display-container">
-      <p>Please use the <b>Choose File</b> button tp select a <em>firmware.bin</em> file and click <b>Upload</a>.</p>
-      <p><i class="fa-solid fa-circle-exclamation"></i><em>Only use a firmware.bin file from a source you can trust.</em></p> 
-
-    </div>
-    <form class="w3-container w3-card-4" method='POST' action='#' enctype='multipart/form-data' id='upload_form'>
-      <div class="w3-section">
-          <input class="w3-input" type='file' name='update'>
-          <input class="w3-input" type='submit' value='Upload'>
-      </div>
-      <hr/>
-    </form>
-    <div id='prgCont' class='w3-padding w3-white w3-display-container' style='display:none;'>
-      <div class="w3-light-gray">
-        <div id='prg' class='w3-green w3-center w3-padding w3-theme' style='width:0%;'></div>
-      </div>
-    </div>
+  <div>
+	<code>
+	<span id='config'>Not Read Yet</span>
+	</code>
   </div>
+
+  <!-- Footer -->
+  <footer class='w3-container w3-padding-16 w3-light-grey'>
+    <!--<h4>FOOTER</h4>-->
+    <!--<p>Powered by <a href='https://www.w3schools.com/w3css/default.asp' target='_blank'>w3.css</a></p>-->
+  </footer>
+
   <!-- End page content -->
 </div>
 
@@ -92,45 +84,24 @@ function w3_close() {
   mySidebar.style.display = 'none';
   overlayBg.style.display = 'none';
 }
-$('form').submit(function(e)
-{
-  e.preventDefault();
-  var form = $('#upload_form')[0];
-  var data = new FormData(form);
-  $.ajax(
-  {
-    url: '/update',
-    type: 'POST',
-    data: data,
-    contentType: false,
-    processData:false,
-    xhr: function() 
-    {
-      var xhr = new window.XMLHttpRequest();
-      xhr.upload.addEventListener('progress', function(evt) {
-      if (evt.lengthComputable) 
-      {
-        var per = evt.loaded / evt.total;
-        var width = Math.round(per*100);
-        var elem = document.getElementById("prg");
-        var parElem = document.getElementById("prgCont");   
-        parElem.style.display = 'block'; 
-        elem.style.width = width + '%'; 
-        elem.innerHTML = width * 1  + '%';
 
-      }
-      }, false);
-      return xhr;
-    },
-    success:function(d, s) 
-    {
-      window.location.href = './viewState';
+setInterval(function() {
+  // Call a function repetatively with 2 Second interval
+  getConfig();
+}, 1000); //1 Second update rate
 
-    },
-      error: function (a, b, c) {
+function getConfig() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById('config').innerHTML =
+      this.responseText ;
     }
-  });
-});
+  };
+  xhttp.open('GET', 'ajax_getConfig', true);
+  xhttp.send();
+}
+
 </script>
 
 </body>

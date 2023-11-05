@@ -3,6 +3,7 @@
 #include <Update.h>
 
 #include "web_dashboard.h"
+#include "web_config.h"
 #include "web_upload.h"
 
 WebServer server(80);
@@ -27,7 +28,10 @@ void web_handle_AJAXP2Ball();
 void web_handle_AJAXP3Ball();
 void web_handle_AJAXP4Ball();
 
+void web_handle_AJAXConfig();
+
 void web_handle_viewState();
+void web_handle_config();
 void web_handle_firmwareUpload();
 
 void web_handle_switchDebug();
@@ -77,6 +81,7 @@ void WebOperationsFunction( void * pvParameters)
     //Setup functions
     //Actual Web Pages
     server.on("/viewState", web_handle_viewState);
+    server.on("/config", web_handle_config);
     server.on("/uploadDev", web_handle_firmwareUpload);
 
     //AJAX calls
@@ -97,6 +102,7 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/ajax_getP2Ball",  web_handle_AJAXP2Ball);
     server.on("/ajax_getP3Ball",  web_handle_AJAXP3Ball);
     server.on("/ajax_getP4Ball",  web_handle_AJAXP4Ball);
+    server.on("/ajax_getConfig",  web_handle_AJAXConfig);
 
     //Toggle the debug messgaes seen on serial
     server.on("/debug/switch", web_handle_switchDebug);
@@ -307,7 +313,16 @@ void web_handle_AJAXP4Ball()
 {
   server.send(200, "text/plane", (String)g_myPinballGame.getCurrentBallNumber(4));
 }
-
+void web_handle_AJAXConfig()
+{
+    String jsonConfig;
+    File file = SPIFFS.open(localConfigFile);
+    while (file.available()) {
+        // Extract each characters by one by one
+        jsonConfig = file.readString();
+    }
+    server.send(200, "text/plane", jsonConfig); //Send ADC value only to client ajax request
+}
 /* Button Actions */
 void web_handle_switchDebug()
 {
@@ -505,6 +520,12 @@ void web_handle_action_restart()
 void web_handle_viewState()
 {
     String s = MAIN_page; //Read HTML contents
+    server.send(200, "text/html", s); //Send web page
+ 
+}
+void web_handle_config()
+{
+    String s = CONFIG_page; //Read HTML contents
     server.send(200, "text/html", s); //Send web page
  
 }

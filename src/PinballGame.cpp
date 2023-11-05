@@ -150,6 +150,15 @@ PinballGame::PinballGame(String GameName)
   {
     return this->_ballSave;
   }
+  int PinballGame::getMaxBalls(){
+    return this->_maxBalls;
+  }
+  void PinballGame::setMaxBalls(int maxBalls){
+    this->_maxBalls = maxBalls;
+  }
+
+
+
   String PinballGame::getName()
   {
     return this->_gameName;

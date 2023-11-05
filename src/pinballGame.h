@@ -31,9 +31,22 @@ class PinballGame
     int _player4CurrentBall = 0;
     int _player4ExtraBalls = 0;
     unsigned long _player4score = 0;
+    
+
+    /*
+    Variables from AlanJ - these used to exist in params.h in a gameParams Struct
+    int ballsPerGame;
+    bool playAttractMusic;
+    int attractMusicNo;
+    unsigned long HSTD[10];
+    String HSTDName[10];
+    bool extraBallsAllowed;
+    int extraBallSetting; //0=easy,1=medium,2=hard*/
   
   public:
-  //set up ShiftRegisterItem
+    unsigned long HSTD[10];
+    String HSTDName[10];
+
 
    
   //constructor
@@ -46,6 +59,8 @@ class PinballGame
   void endOfBall(int playerNumber);
   bool isGameActive();
   bool isBallSave();
+  int getMaxBalls();
+  void setMaxBalls(int maxBalls);
   int getCurrentBallNumber(int playerNumber);
   unsigned long getPlayerScore(int playerNumber);
   void setPlayerScore(int playerNumber, unsigned long playerScore);

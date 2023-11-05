@@ -11,6 +11,10 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
+#include "setupSPIFFS.h"
+
+#include "jsonSettings.h"
+//these files set up switches and colis - later it would be good to do this based on a config file - this means we can have a web ui that gives configuration away from code
 #include "userSettings.h"
 
 int WEBHz = 0;
@@ -106,6 +110,53 @@ void setup() {
   Serial.println(".");
   delay(1000);
   Serial.println("done.");
+  Serial.println("Now read settings files...");
+  Serial.println("Starting SPIFFS"); // Alan - Not needed at present but we WILL use it later
+  
+  // Create a eSPIFFS class
+  #ifndef USE_SERIAL_DEBUG_FOR_eSPIFFS
+
+
+    // Check Flash Size - Always try to incorrperate a check when not debugging to know if you have set the SPIFFS correctly
+    if (!fileSystem.checkFlashConfig()) {
+      Serial.println("Flash size was not correct!");
+      if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
+          Serial.println("SPIFFS Mount Failed");
+          Serial.println("Formatting the file system, please wait for a few minutes, I will reboot");
+          return;
+      }
+      listDir(SPIFFS, "/", 0);
+      writeFile(SPIFFS, "/hello.txt", "Hello ");
+      appendFile(SPIFFS, "/hello.txt", "World!\r\n");
+      readFile(SPIFFS, "/hello.txt");
+      renameFile(SPIFFS, "/hello.txt", "/foo.txt");
+      readFile(SPIFFS, "/foo.txt");
+      deleteFile(SPIFFS, "/foo.txt");
+      testFileIO(SPIFFS, "/test.txt");
+      deleteFile(SPIFFS, "/test.txt");
+      Serial.println( "Test complete" );
+      ESP.restart();
+    }else
+    {
+      //load config or create first one
+      fileSystem.openFromFile(localConfigFile, configJsonDocument);  // This will open the value of writeToFlash
+
+      if (configJsonDocument.isNull()) {
+        Serial.println();
+        Serial.println("** Need to set up our config files - this is a clean install **");
+        listDir(SPIFFS, "/", 0);
+        createConfigFiles();
+      } else {
+        Serial.println();
+        Serial.println("**  Need to open up last saved config files **");
+        listDir(SPIFFS, "/", 0);
+        openConfigFiles();
+      }
+    }
+  #else
+    // Create fileSystem with debug output
+    eSPIFFS fileSystem(&Serial);  // Optional - allow the methods to print debug
+  #endif
 
   Serial.print("Setup running on core ");
   Serial.println(xPortGetCoreID());
