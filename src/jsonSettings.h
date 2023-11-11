@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <ArduinoJson.h> // JSON soft config file
+//adding comment to test GIT on new laptop
 
 #include <Effortless_SPIFFS.h>
 // Create fileSystem
