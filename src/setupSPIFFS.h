@@ -105,6 +105,7 @@ void deleteFile(fs::FS &fs, const char * path){
 }
 
 void testFileIO(fs::FS &fs, const char * path){
+
    Serial.printf("Testing file I/O with %s\r\n", path);
 
    static uint8_t buf[512];
@@ -156,4 +157,51 @@ void testFileIO(fs::FS &fs, const char * path){
    } else {
       Serial.println("- failed to open file for reading");
    }
+}
+
+void setupFileSystem(){
+    // Create a eSPIFFS class
+  #ifndef USE_SERIAL_DEBUG_FOR_eSPIFFS
+
+
+    // Check Flash Size - Always try to incorrperate a check when not debugging to know if you have set the SPIFFS correctly
+    if (!fileSystem.checkFlashConfig()) {
+      Serial.println("Flash size was not correct!");
+      if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
+          Serial.println("SPIFFS Mount Failed");
+          Serial.println("Formatting the file system, please wait for a few minutes, I will reboot");
+          return;
+      }
+      listDir(SPIFFS, "/", 0);
+      writeFile(SPIFFS, "/hello.txt", "Hello ");
+      appendFile(SPIFFS, "/hello.txt", "World!\r\n");
+      readFile(SPIFFS, "/hello.txt");
+      renameFile(SPIFFS, "/hello.txt", "/foo.txt");
+      readFile(SPIFFS, "/foo.txt");
+      deleteFile(SPIFFS, "/foo.txt");
+      testFileIO(SPIFFS, "/test.txt");
+      deleteFile(SPIFFS, "/test.txt");
+      Serial.println( "Test complete" );
+      ESP.restart();
+    }else
+    {
+      //load config or create first one
+      fileSystem.openFromFile(localConfigFile, configJsonDocument);  // This will open the value of writeToFlash
+
+      if (configJsonDocument.isNull()) {
+        Serial.println();
+        Serial.println("** Need to set up our config files - this is a clean install **");
+        listDir(SPIFFS, "/", 0);
+        createConfigFiles();
+      } else {
+        Serial.println();
+        Serial.println("**  Need to open up last saved config files **");
+        listDir(SPIFFS, "/", 0);
+        openConfigFiles();
+      }
+    }
+  #else
+    // Create fileSystem with debug output
+    eSPIFFS fileSystem(&Serial);  // Optional - allow the methods to print debug
+  #endif
 }

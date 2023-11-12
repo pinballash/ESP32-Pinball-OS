@@ -5,8 +5,10 @@
 #include "web_dashboard.h"
 #include "web_config.h"
 #include "web_upload.h"
+#include "web_css.h"
 
 WebServer server(80);
+
 
 void WebOperationsFunction( void * pvParameters);
 
@@ -30,9 +32,15 @@ void web_handle_AJAXP4Ball();
 
 void web_handle_AJAXConfig();
 
+void web_handle_captive_toLocalIP();
+void web_handle_captive_connecttest();//[](AsyncWebServerRequest *request) { request->redirect("http://logout.net"); });	// windows 11 captive portal workaround
+void web_handle_captive_ffx2();//[](AsyncWebServerRequest *request) { request->send(200); });					   // firefox captive portal call home
+
 void web_handle_viewState();
+void web_handle_404();
 void web_handle_config();
 void web_handle_firmwareUpload();
+void web_handle_css();
 
 void web_handle_switchDebug();
 void web_handle_coilDebug();
@@ -79,10 +87,28 @@ void WebOperationsFunction( void * pvParameters)
     int counterWeb = 0;
     unsigned long lastMillisWeb = 0;
     //Setup functions
+    //captive portal pages
+    // Required
+    server.on("/connecttest.txt", web_handle_captive_connecttest);//[](AsyncWebServerRequest *request) { request->redirect("http://logout.net"); });	// windows 11 captive portal workaround
+    server.on("/wpad.dat", web_handle_404);//[](AsyncWebServerRequest *request) { request->send(404); });								// Honestly don't understand what this is but a 404 stops win 10 keep calling this repeatedly and panicking the esp32 :)
+
+    // Background responses: Probably not all are Required, but some are. Others might speed things up?
+    // A Tier (commonly used by modern systems)
+    server.on("/generate_204", web_handle_captive_toLocalIP);//[](AsyncWebServerRequest *request) { request->redirect(localIPURL); });		   // android captive portal redirect
+    server.on("/redirect", web_handle_captive_toLocalIP);//[](AsyncWebServerRequest *request) { request->redirect(localIPURL); });			   // microsoft redirect
+    server.on("/hotspot-detect.html", web_handle_captive_toLocalIP);//[](AsyncWebServerRequest *request) { request->redirect(localIPURL); });  // apple call home
+    server.on("/canonical.html", web_handle_captive_toLocalIP);//[](AsyncWebServerRequest *request) { request->redirect(localIPURL); });	   // firefox captive portal call home
+    server.on("/success.txt", web_handle_captive_ffx2);//[](AsyncWebServerRequest *request) { request->send(200); });					   // firefox captive portal call home
+    server.on("/ncsi.txt", web_handle_captive_toLocalIP);//[](AsyncWebServerRequest *request) { request->redirect(localIPURL); });			   // windows call home
+    
+    
     //Actual Web Pages
     server.on("/viewState", web_handle_viewState);
     server.on("/config", web_handle_config);
     server.on("/uploadDev", web_handle_firmwareUpload);
+
+    //CSS
+     server.on("/css/w3c.css", web_handle_css);
 
     //AJAX calls
     server.on("/ajax_getState",  web_handle_AJAXState);
@@ -142,6 +168,7 @@ void WebOperationsFunction( void * pvParameters)
 
 
     server.on("/", web_handle_viewState);
+    server.onNotFound(web_handle_404);
         /*handling uploading firmware file */
     server.on("/update", HTTP_POST, []() {
         server.sendHeader("Connection", "close");
@@ -170,21 +197,32 @@ void WebOperationsFunction( void * pvParameters)
     });
     int WifiWaitCounter = 0;
     int MaxWait = 10;
-    while ((WifiConnected != true) && (WifiWaitCounter < MaxWait)) {
+    /*while ((WifiConnected != true) && (WifiWaitCounter < MaxWait)) {
       Serial.println("Webserver Waiting for Wifi");
       vTaskDelay(1000);
       WifiWaitCounter +=1;
     }
-    if(WifiConnected == true)
+    if(WifiConnected ==  WL_CONNECTED)
     {
       server.begin();
       Serial.println("Webserver Started");
     }else
     {
       Serial.println("Webserver NOT Started");
-      //Lets forget about fifi and webserver
+      //Lets forget about wifi and webserver
       vTaskDelete(NULL);
+    }*/
+    while ((WifiConnected != true) && (wifiSoftAPInUse != true)) {
+      Serial.println("Webserver Waiting for Wifi");
+      vTaskDelay(1000);
+      //WifiWaitCounter +=1;
     }
+  
+    server.begin();
+    Serial.println("Webserver Started");
+    
+  bool clientConnected = false;
+  bool lastConnectionStatus = false;
 
   for(;;){
     // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
@@ -196,7 +234,7 @@ void WebOperationsFunction( void * pvParameters)
           Serial.print("WebOperations : CORE ");
           Serial.print(xPortGetCoreID());
           Serial.print(" : is currently running at approimatly ");
-          Serial.print(counter/10);
+          Serial.print(counterWeb/10);
           Serial.println("Hz (full program cycles per second)");
         }
       WEBHz = counterWeb/10;  
@@ -205,10 +243,29 @@ void WebOperationsFunction( void * pvParameters)
     }
     // End of debug stuff 
       //webserver code
-    if(WifiConnected ==true)
+    if(WiFi.status() == WL_CONNECTED)
     {
-        server.handleClient();
+        if(lastConnectionStatus == false)
+        {
+          Serial.println("Client Connected");
+          lastConnectionStatus = true;
+          clientConnected = true;
+        }
+    }else{
+      //no client connected
+      if(lastConnectionStatus == true)
+        {
+          Serial.println("Client Disconnected");
+          lastConnectionStatus = false;
+          clientConnected = false;
+        }
     }
+    if(wifiSoftAPInUse == true)
+    {
+      dnsServer.processNextRequest();
+    }
+    server.handleClient();
+    
     vTaskDelay(2);
   }
 }
@@ -523,6 +580,12 @@ void web_handle_viewState()
     server.send(200, "text/html", s); //Send web page
  
 }
+void web_handle_404()
+{
+    String s = "<!DOCTYPE html> <html><body><h1>404</h1></body></html>"; //Read HTML contents
+    server.send(404, "text/html", s); //Send web page
+ 
+}
 void web_handle_config()
 {
     String s = CONFIG_page; //Read HTML contents
@@ -534,5 +597,39 @@ void web_handle_firmwareUpload()
   String s = UPLOAD_page; //Read HTML contents
   server.send(200, "text/html", s); //Send web page
 }
+void web_handle_captive_connecttest()
+{
+    //[](AsyncWebServerRequest *request) { request->redirect("http://logout.net"); });	// windows 11 captive portal workaround
+    server.sendHeader("Location", "http://logout.net",true);
+    server.send(302, "text/plain", "");
+}
+void web_handle_captive_wpad()
+{
+    //[](AsyncWebServerRequest *request) { request->send(404); }); //Windows proxy check, 404 staps it asking
+    web_handle_404();
+}								
+void web_handle_captive_toLocalIP()
+{
+  //[](AsyncWebServerRequest *request) { request->redirect(localIPURL); });		   // android captive portal redirect
+    String localIPURL = "http://" + localIP.toString();
+    server.sendHeader("Location", localIPURL,true);
+    server.send(302, "text/plain", "");
+
+}
+
+void  web_handle_captive_ffx2()
+{
+    //[](AsyncWebServerRequest *request) { request->send(200); });					   // firefox captive portal call home
+    String s = ""; //Read HTML contents
+    server.send(200, "text/html", s); //Send web page
+}
+
+void web_handle_css()
+{
+    String s = W3C_CSS; //Read HTML contents
+    server.send(200, "text/css", s); //Send web page
+}
+
+
 /* END web page functions */
 
