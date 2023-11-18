@@ -51,6 +51,19 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 	<span id='config'>Not Read Yet</span>
 	</code>
   </div>
+  <div>
+	<form class="generated-form"  method="POST" action="#" enctype="multipart/form-data" target="_self">
+		<fieldset>
+		  <legend> Machine Parameters:: </legend>
+		   <label for="text">Machine Name:</label><br>
+		   <input type="text" id="machineNameInput" name="machineNameInput"</label><br>
+        <label for="text">Machine Version:</label><br>
+		   <input type="text" id="machineVersionInput" name="machineVersionInput"><br>
+		   <input type="submit" value="Submit" onclick="updateSettings();"><br><br>
+		</fieldset>
+	</form>
+
+  </div>
 
   <!-- Footer -->
   <footer class='w3-container w3-padding-16 w3-light-grey'>
@@ -62,6 +75,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 </div>
 
 <script>
+getConfig(); //on loading this page, lets get the configuration
 // Get the Sidebar
 var mySidebar = document.getElementById('mySidebar');
 
@@ -87,7 +101,7 @@ function w3_close() {
 
 setInterval(function() {
   // Call a function repetatively with 2 Second interval
-  getConfig();
+  //getConfig();
 }, 1000); //1 Second update rate
 
 function getConfig() {
@@ -96,11 +110,50 @@ function getConfig() {
     if (this.readyState == 4 && this.status == 200) {
       document.getElementById('config').innerHTML =
       this.responseText ;
+      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
+      const json =  this.responseText;
+      const obj = JSON.parse(json);
+      document.getElementById('machineNameInput').value = obj.Name;
+      document.getElementById('machineVersionInput').value = obj.Version;
+
     }
   };
   xhttp.open('GET', 'ajax_getConfig', true);
   xhttp.send();
 }
+
+function updateSettings() 
+{
+  let machineName = document.getElementById('machineNameInput');
+  let machineVersion = document.getElementById('machineVersionInput');
+    
+  // Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "/updateConfig";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+          // Print received data from server
+          document.getElementById('config').innerHTML = this.responseText;
+
+      }
+  };
+
+  // Converting JSON data to string
+  var data = JSON.stringify({ "Name": machineName.value, "Version": machineVersion.value });
+
+  // Sending data with the request
+  xhttp.send(data);
+}
+
 
 </script>
 

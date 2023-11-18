@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WebServer.h>
 #include <Update.h>
+#include <ArduinoJson.h>
 
 #include "web_dashboard.h"
 #include "web_config.h"
@@ -8,6 +9,7 @@
 #include "web_css.h"
 
 WebServer server(80);
+
 
 
 void WebOperationsFunction( void * pvParameters);
@@ -41,6 +43,7 @@ void web_handle_404();
 void web_handle_config();
 void web_handle_firmwareUpload();
 void web_handle_css();
+bool web_handle_configUpdate();
 
 void web_handle_switchDebug();
 void web_handle_coilDebug();
@@ -168,6 +171,7 @@ void WebOperationsFunction( void * pvParameters)
 
 
     server.on("/", web_handle_viewState);
+    server.on("/updateConfig", HTTP_POST, web_handle_configUpdate);
     server.onNotFound(web_handle_404);
         /*handling uploading firmware file */
     server.on("/update", HTTP_POST, []() {
@@ -586,6 +590,30 @@ void web_handle_404()
     server.send(404, "text/html", s); //Send web page
  
 }
+
+bool web_handle_configUpdate()
+{
+  if(server.args() == 0)
+  {
+    return false; //no JSON no webpage my friend ;)
+  }
+  Serial.println("plain: " + server.arg("plain"));
+  DynamicJsonDocument postedJSON(2048);
+  deserializeJson(postedJSON,server.arg("plain"));
+  Serial.println((const char*)postedJSON["Name"]);
+  Serial.println((const char*)postedJSON["Version"]);
+  setting_MachineName = (const char*)postedJSON["Name"];
+  setting_MachineVersion = (const char*)postedJSON["Version"];
+  updateConfigFiles();
+  
+  
+
+
+
+  return true;
+}
+
+
 void web_handle_config()
 {
     String s = CONFIG_page; //Read HTML contents

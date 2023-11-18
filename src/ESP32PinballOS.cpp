@@ -11,7 +11,7 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include "wifi_functions.h"
-
+#define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
 #include "jsonSettings.h"
 #include "setupSPIFFS.h"
 
