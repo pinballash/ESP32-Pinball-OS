@@ -7,6 +7,7 @@
 #include "web_config.h"
 #include "web_upload.h"
 #include "web_css.h"
+#include "web_jquery.h"
 
 WebServer server(80);
 
@@ -43,6 +44,7 @@ void web_handle_404();
 void web_handle_config();
 void web_handle_firmwareUpload();
 void web_handle_css();
+void web_handle_js();
 bool web_handle_configUpdate();
 
 void web_handle_switchDebug();
@@ -112,7 +114,9 @@ void WebOperationsFunction( void * pvParameters)
 
     //CSS
      server.on("/css/w3c.css", web_handle_css);
-
+    //CSS
+     server.on("/js/jquery.min.js", web_handle_js);
+    
     //AJAX calls
     server.on("/ajax_getState",  web_handle_AJAXState);
     server.on("/ajax_getCPU0",  web_handle_AJAXCPU0Hz);
@@ -656,6 +660,12 @@ void web_handle_css()
 {
     String s = W3C_CSS; //Read HTML contents
     server.send(200, "text/css", s); //Send web page
+}
+
+void web_handle_js()
+{
+    String s = W3C_JQUERY; //Read HTML contents
+    server.send(200, "text/js", s); //Send web page
 }
 
 

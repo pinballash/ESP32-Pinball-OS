@@ -12,7 +12,7 @@ bool osrDebug = true;
 bool generalMODebug = true;
 unsigned long ScanSwitchMatrixEveryMicroSeconds = 800; //this seems to be the value where we can operate at around 500 times per second
 
-PinballGame g_myPinballGame("--My Pinball Game--");
+PinballGame g_myPinballGame(setting_MachineName);
 
 
 #include "switchArray_def.h"
