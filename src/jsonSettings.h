@@ -12,9 +12,9 @@ bool writeToFlash = false;
 String setting_MachineName;
 String setting_MachineVersion;
 
-
 void createConfigFiles();
 void openConfigFiles();
+void updateConfigFiles();
 
 const char * localConfigFile = "/ESPPinballOSConfig.json";
 
