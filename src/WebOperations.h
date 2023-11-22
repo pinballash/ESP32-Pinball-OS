@@ -116,6 +116,9 @@ void WebOperationsFunction( void * pvParameters)
     //CSS
      server.on("/css/w3c.css", web_handle_css);
 
+    //JS
+     server.on("/js/jquery.js", web_handle_js);
+
     //AJAX calls
     server.on("/ajax_getState",  web_handle_AJAXState);
     server.on("/ajax_getCPU0",  web_handle_AJAXCPU0Hz);
@@ -304,28 +307,28 @@ void web_handle_AJAXState()
             break;
           }
     }
-    server.send(200, "text/plane", MachineStateWrite); //Send ADC value only to client ajax request
+    server.send(200, "text/plain", MachineStateWrite); //Send ADC value only to client ajax request
 }
 void web_handle_AJAXCPU0Hz()
 {
-    server.send(200, "text/plane", (String)CMOHz); //Send ADC value only to client ajax request
+    server.send(200, "text/plain", (String)CMOHz); //Send ADC value only to client ajax request
 }
 void web_handle_AJAXCPU1Hz()
 {
-    server.send(200, "text/plane", (String)WEBHz); //Send ADC value only to client ajax request
+    server.send(200, "text/plain", (String)WEBHz); //Send ADC value only to client ajax request
 }
 void web_handle_AJAXPlayerNumber()
 {
   String PlayerNmuberText = (String)g_myPinballGame.getCurrentPlayerNumber() + " of " + (String)g_myPinballGame.getCurrentPlayerNumbers();
-  server.send(200, "text/plane", PlayerNmuberText);
+  server.send(200, "text/plain", PlayerNmuberText);
 }
 void web_handle_AJAXBallNumber()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getCurrentBallNumber(g_myPinballGame.getCurrentPlayerNumber()));
+  server.send(200, "text/plain", (String)g_myPinballGame.getCurrentBallNumber(g_myPinballGame.getCurrentPlayerNumber()));
 }
 void web_handle_AJAXPlayerScore()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getPlayerScore(g_myPinballGame.getCurrentPlayerNumber()));
+  server.send(200, "text/plain", (String)g_myPinballGame.getPlayerScore(g_myPinballGame.getCurrentPlayerNumber()));
 }
 void web_handle_AJAXBallSave()
 {
@@ -335,47 +338,47 @@ void web_handle_AJAXBallSave()
   {
     BallSaveTextReturn = "ON";
   }
-  server.send(200, "text/plane", BallSaveTextReturn);
+  server.send(200, "text/plain", BallSaveTextReturn);
 }
 void web_handle_AJAXTopDisplay()
 {
-  server.send(200, "text/plane", (String)ScoreboardTText);
+  server.send(200, "text/plain", (String)ScoreboardTText);
 }
 void web_handle_AJAXBottomDisplay()
 {
-  server.send(200, "text/plane", (String)ScoreboardBText);
+  server.send(200, "text/plain", (String)ScoreboardBText);
 }
 void web_handle_AJAXP1Score()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getPlayerScore(1));
+  server.send(200, "text/plain", (String)g_myPinballGame.getPlayerScore(1));
 }
 void web_handle_AJAXP2Score()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getPlayerScore(2));
+  server.send(200, "text/plain", (String)g_myPinballGame.getPlayerScore(2));
 }
 void web_handle_AJAXP3Score()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getPlayerScore(3));
+  server.send(200, "text/plain", (String)g_myPinballGame.getPlayerScore(3));
 }
 void web_handle_AJAXP4Score()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getPlayerScore(4));
+  server.send(200, "text/plain", (String)g_myPinballGame.getPlayerScore(4));
 }
 void web_handle_AJAXP1Ball()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getCurrentBallNumber(1));
+  server.send(200, "text/plain", (String)g_myPinballGame.getCurrentBallNumber(1));
 }
 void web_handle_AJAXP2Ball()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getCurrentBallNumber(2));
+  server.send(200, "text/plain", (String)g_myPinballGame.getCurrentBallNumber(2));
 }
 void web_handle_AJAXP3Ball()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getCurrentBallNumber(3));
+  server.send(200, "text/plain", (String)g_myPinballGame.getCurrentBallNumber(3));
 }
 void web_handle_AJAXP4Ball()
 {
-  server.send(200, "text/plane", (String)g_myPinballGame.getCurrentBallNumber(4));
+  server.send(200, "text/plain", (String)g_myPinballGame.getCurrentBallNumber(4));
 }
 void web_handle_AJAXConfig()
 {
@@ -385,7 +388,7 @@ void web_handle_AJAXConfig()
         // Extract each characters by one by one
         jsonConfig = file.readString();
     }
-    server.send(200, "text/plane", jsonConfig); //Send ADC value only to client ajax request
+    server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
 }
 /* Button Actions */
 void web_handle_switchDebug()
@@ -607,6 +610,8 @@ bool web_handle_configUpdate()
   Serial.println((const char*)postedJSON["Version"]);
   setting_MachineName = (const char*)postedJSON["Name"];
   setting_MachineVersion = (const char*)postedJSON["Version"];
+  setting_SSID = (const char*)postedJSON["SSID"];
+  setting_SSIDPassword = (const char*)postedJSON["SSIDPassword"];
   updateConfigFiles();
   return true;
 }
@@ -654,6 +659,12 @@ void web_handle_css()
 {
     String s = W3C_CSS; //Read HTML contents
     server.send(200, "text/css", s); //Send web page
+}
+
+void web_handle_js()
+{
+    String s = W3C_JQUERY; //Read HTML contents
+    server.send(200, "text/javascript", s); //Send web page
 }
 
 

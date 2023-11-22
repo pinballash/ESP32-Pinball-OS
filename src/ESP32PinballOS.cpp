@@ -122,7 +122,7 @@ void setup() {
     //now need some logic here - do we have credentials saved in the config?
     //Yes, try and connect to the wifi, if fail create a soft ap
     //no, create a soft ap
-    WiFi.begin(ssid, password);
+    WiFi.begin(setting_SSID, setting_SSIDPassword);
     Serial.println("");
 
     // Wait for connection

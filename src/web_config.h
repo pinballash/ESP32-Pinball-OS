@@ -59,6 +59,13 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 		   <input type="text" id="machineNameInput" name="machineNameInput"</label><br>
         <label for="text">Machine Version:</label><br>
 		   <input type="text" id="machineVersionInput" name="machineVersionInput"><br>
+
+      <label for="text">Wi-Fi SSID:</label><br>
+		   <input type="text" id="SSID" name="SSID"><br>
+
+      <label for="text">Wi-Fi Password:</label><br>
+		   <input type="text" id="SSIDPassword" name="SSIDPassword"><br>
+
 		   <input type="submit" value="Submit" onclick="updateSettings();"><br><br>
 		</fieldset>
 	</form>
@@ -115,7 +122,8 @@ function getConfig() {
       const obj = JSON.parse(json);
       document.getElementById('machineNameInput').value = obj.Name;
       document.getElementById('machineVersionInput').value = obj.Version;
-
+      document.getElementById('SSID').value = obj.SSID;
+      document.getElementById('SSIDPassword').value = obj.SSIDPassword;
     }
   };
   xhttp.open('GET', 'ajax_getConfig', true);
@@ -126,7 +134,8 @@ function updateSettings()
 {
   let machineName = document.getElementById('machineNameInput');
   let machineVersion = document.getElementById('machineVersionInput');
-    
+  let SSID = document.getElementById('SSID');
+  let SSIDPassword = document.getElementById('SSIDPassword');    
   // Creating a xhttp object
   let xhttp = new XMLHttpRequest();
   let url = "/updateConfig";
@@ -148,7 +157,7 @@ function updateSettings()
   };
 
   // Converting JSON data to string
-  var data = JSON.stringify({ "Name": machineName.value, "Version": machineVersion.value });
+  var data = JSON.stringify({ "Name": machineName.value, "Version": machineVersion.value, "SSID":SSID.value,"SSIDPassword":SSIDPassword.value });
 
   // Sending data with the request
   xhttp.send(data);

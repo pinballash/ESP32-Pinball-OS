@@ -12,6 +12,9 @@ bool writeToFlash = false;
 String setting_MachineName;
 String setting_MachineVersion;
 
+String setting_SSID;
+String setting_SSIDPassword;
+
 void createConfigFiles();
 void openConfigFiles();
 void updateConfigFiles();
@@ -41,6 +44,8 @@ void openConfigFiles()
     //we need to set variables in the software from this json
     setting_MachineName = (const char*)jsonDocument["Name"];
     setting_MachineVersion = (const char*)jsonDocument["Version"];
+    setting_SSID = (const char*)jsonDocument["SSID"];
+    setting_SSIDPassword = (const char*)jsonDocument["SSIDPassword"];
 
 
 }
@@ -53,6 +58,8 @@ void updateConfigFiles()
     JsonObject jobject = myJsonDocument.to<JsonObject>();
     jobject["Name"] = setting_MachineName;
     jobject["Version"] = setting_MachineVersion;
+    jobject["SSID"] = setting_SSID;
+    jobject["SSIDPassword"] = setting_SSIDPassword;
     fileSystem.saveToFile(localConfigFile,jobject);
     Serial.print("JSON Document Updates is: ");
     serializeJson(myJsonDocument, Serial);

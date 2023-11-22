@@ -12,7 +12,7 @@ const char UPLOAD_page[] PROGMEM = R"=====(
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 </style>
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src='./js/jquery.js'></script>
 </head>
 <body class='w3-light-grey'>
 
