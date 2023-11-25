@@ -143,7 +143,7 @@ void setup() {
       WifiConnected = true;
       Serial.println("");
       Serial.print("Connected to ");
-      Serial.println(ssid);
+      Serial.println(setting_SSID);
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
       localIP = WiFi.localIP();
@@ -154,6 +154,9 @@ void setup() {
         while (1) {
           delay(1000);
         }
+        ScoreboardTText = (String)host + ".local";
+        Serial.println("mDNS responder started");
+      }else{
         ScoreboardTText = (String)host + ".local";
         Serial.println("mDNS responder started");
       }

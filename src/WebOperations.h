@@ -8,6 +8,9 @@
 #include "web_upload.h"
 #include "web_css.h"
 #include "web_jquery.h"
+#include "web_header.h"
+#include "web_footer.h"
+
 
 WebServer server(80);
 
@@ -586,8 +589,20 @@ void web_handle_action_restart()
 /* Page Calls*/
 void web_handle_viewState()
 {
-    String s = MAIN_page; //Read HTML contents
-    server.send(200, "text/html", s); //Send web page
+  // calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(MAIN_page) + strlen(html_footer) + strlen(liveview_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, MAIN_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, liveview_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
  
 }
 void web_handle_404()
@@ -625,8 +640,21 @@ void web_handle_config()
 }
 void web_handle_firmwareUpload()
 {
-  String s = UPLOAD_page; //Read HTML contents
-  server.send(200, "text/html", s); //Send web page
+  
+  // calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(UPLOAD_page) + strlen(html_footer) + strlen(upload_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, UPLOAD_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, upload_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
 }
 void web_handle_captive_connecttest()
 {

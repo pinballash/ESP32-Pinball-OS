@@ -64,7 +64,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 		   <input type="text" id="SSID" name="SSID"><br>
 
       <label for="text">Wi-Fi Password:</label><br>
-		   <input type="text" id="SSIDPassword" name="SSIDPassword"><br>
+		   <input type="password" id="SSIDPassword" name="SSIDPassword"><br>
 
 		   <input type="submit" value="Submit" onclick="updateSettings();"><br><br>
 		</fieldset>
@@ -115,8 +115,8 @@ function getConfig() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById('config').innerHTML =
-      this.responseText ;
+      //Debug - schow json contents - uncomment this line
+      //document.getElementById('config').innerHTML = this.responseText ;
       //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
       const json =  this.responseText;
       const obj = JSON.parse(json);
