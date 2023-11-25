@@ -3,12 +3,12 @@ const char html_header[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 <head>
-<title>ESP32 Pinball OS - Firmware Upload</title>
+<title>ESP32 Pinball OS</title>
 <meta charset='UTF-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <link rel='stylesheet' href='./css/w3c.css'>
-<!--<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway'>-->
-<!--<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>-->
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 </style>
@@ -32,7 +32,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
     <a href='./viewState' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-play'></i> Live View</a>
     <a href='./uploadDev' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Update</a>
     <a href='./action/solenoidTest' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Solenoid Test</a>
-    <a href='./config' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config</a>
+    <a href='./config' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Basic Config</a>
   </div>
 </nav>
 
