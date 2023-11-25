@@ -78,6 +78,96 @@ $('form').submit(function(e)
 </html>
 )=====";
 
+const char config_script_footer[] PROGMEM = R"=====(
+<script>
+getConfig(); //on loading this page, lets get the configuration
+// Get the Sidebar
+var mySidebar = document.getElementById('mySidebar');
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById('myOverlay');
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = 'none';
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = 'block';
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = 'none';
+  overlayBg.style.display = 'none';
+}
+
+setInterval(function() {
+  // Call a function repetatively with 2 Second interval
+  //getConfig();
+}, 1000); //1 Second update rate
+
+function getConfig() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //Debug - schow json contents - uncomment this line
+      //document.getElementById('config').innerHTML = this.responseText ;
+      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
+      const json =  this.responseText;
+      const obj = JSON.parse(json);
+      document.getElementById('machineNameInput').value = obj.Name;
+      document.getElementById('machineVersionInput').value = obj.Version;
+      document.getElementById('SSID').value = obj.SSID;
+      document.getElementById('SSIDPassword').value = obj.SSIDPassword;
+    }
+  };
+  xhttp.open('GET', 'ajax_getConfig', true);
+  xhttp.send();
+}
+
+function updateSettings() 
+{
+  let machineName = document.getElementById('machineNameInput');
+  let machineVersion = document.getElementById('machineVersionInput');
+  let SSID = document.getElementById('SSID');
+  let SSIDPassword = document.getElementById('SSIDPassword');    
+  // Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "/updateConfig";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+          // Print received data from server
+          document.getElementById('config').innerHTML = this.responseText;
+
+      }
+  };
+
+  // Converting JSON data to string
+  var data = JSON.stringify({ "Name": machineName.value, "Version": machineVersion.value, "SSID":SSID.value,"SSIDPassword":SSIDPassword.value });
+
+  // Sending data with the request
+  xhttp.send(data);
+}
+
+
+</script>
+
+</body>
+</html>
+)=====";
+
 const char liveview_script_footer[] PROGMEM = R"=====(
     <script>
 // Get the Sidebar

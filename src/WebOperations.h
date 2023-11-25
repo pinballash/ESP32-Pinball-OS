@@ -634,8 +634,20 @@ bool web_handle_configUpdate()
 
 void web_handle_config()
 {
-    String s = CONFIG_page; //Read HTML contents
-    server.send(200, "text/html", s); //Send web page
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_page) + strlen(html_footer) + strlen(config_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, config_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
  
 }
 void web_handle_firmwareUpload()
