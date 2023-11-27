@@ -30,7 +30,7 @@ const char CONFIG_page[] PROGMEM = R"=====(
 		  <legend> ESP32 Pin Definitions:: </legend>
       <table>
         <tr>
-          <td colspan="2"><h2>Define Connections to 74HC595 - Audio Output Shift Register</h2></td>
+          <td colspan="2"><h5>Define Connections to 74HC595 - Audio Output Shift Register</h5></td>
         </tr>
         <tr>
           <td>osr2latchPin</td>
@@ -45,7 +45,7 @@ const char CONFIG_page[] PROGMEM = R"=====(
           <td><input type="text" id="osr2dataPin" name="osr2dataPin" value=""></td>
         </tr>
         <tr>
-          <td colspan="2"><h2>Define Connections to 74HC595 - Coil Output Shift Registers</h2></td>
+          <td colspan="2"><h5>Define Connections to 74HC595 - Coil Output Shift Registers</h5></td>
         </tr>
         <tr>
           <td>osr3latchPin</td>
@@ -60,7 +60,7 @@ const char CONFIG_page[] PROGMEM = R"=====(
           <td><input type="text" id="osr3dataPin" name="osr3dataPin" value=""></td>
         </tr>
         <tr>
-          <td colspan="2"><h2>Comms to 74HC165 - Input Shift Registers</h2></td>
+          <td colspan="2"><h5>Comms to 74HC165 - Input Shift Registers</h5></td>
         </tr>
         <tr>
           <td>isrload</td>
@@ -80,14 +80,14 @@ const char CONFIG_page[] PROGMEM = R"=====(
           <td><input type="text" id="isrclockIn" name="isrclockIn" value=""></td>
         </tr>
         <tr>
-          <td colspan="2"><h2>High Voltage Relay pin</h2></td>
+          <td colspan="2"><h5>High Voltage Relay pin</h5></td>
         </tr>
         <tr>
           <td>hvrPin</td>
           <td><input type="text" id="hvrPin" name="hvrPin" value=""></td>
         </tr>
         <tr>
-          <td colspan="2">Flippers</td>
+          <td colspan="2"><h6>Flippers</h6></td>
         </tr>
         <tr>
           <td>flipper1Pin</td>
