@@ -122,6 +122,19 @@ function getConfig() {
       document.getElementById('machineVersionInput').value = obj.Version;
       document.getElementById('SSID').value = obj.SSID;
       document.getElementById('SSIDPassword').value = obj.SSIDPassword;
+      document.getElementById('osr2latchPin').value = obj.osr2latchPin;
+      document.getElementById('osr2clockPin').value = obj.osr2clockPin;
+      document.getElementById('osr2dataPin').value = obj.osr2dataPin;
+      document.getElementById('osr3latchPin').value = obj.osr3latchPin;
+      document.getElementById('osr3clockPin').value = obj.osr3clockPin;
+      document.getElementById('osr3dataPin').value = obj.osr3dataPin; 
+      document.getElementById('isrload').value = obj.isrload;
+      document.getElementById('isrclockEnablePin').value = obj.isrclockEnablePin;
+      document.getElementById('isrdataIn').value = obj.isrdataIn;
+      document.getElementById('isrclockIn').value = obj.isrclockIn;
+      document.getElementById('hvrPin').value = obj.hvrPin;
+      document.getElementById('flipper1Pin').value = obj.flipper1Pin;
+      document.getElementById('flipper2Pin').value = obj.flipper2Pin;
     }
   };
   xhttp.open('GET', 'ajax_getConfig', true);

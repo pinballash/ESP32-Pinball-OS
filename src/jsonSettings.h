@@ -9,11 +9,39 @@ eSPIFFS fileSystem;
 DynamicJsonDocument configJsonDocument(1024);
 bool writeToFlash = false; 
 
-String setting_MachineName;
-String setting_MachineVersion;
+String setting_MachineName = "Your Game Name";
+String setting_MachineVersion = "0.1";
 
-String setting_SSID;
-String setting_SSIDPassword;
+String setting_SSID = "YourWiFiHere";
+String setting_SSIDPassword = "";
+
+// Define Connections to 74HC595 - Audio Output Shift Register
+int setting_osr2latchPin = 2; //changed from 3
+int setting_osr2clockPin = 21;
+int setting_osr2dataPin = 19;
+
+// Define Connections to 74HC595 - Coil Output Shift Registers
+int setting_osr3latchPin = 23;
+int setting_osr3clockPin = 22;
+int setting_osr3dataPin = 15; //changed from 1
+
+//Comms to 74HC165 - Input Shift Registers
+int setting_isrload = 25;
+int setting_isrclockEnablePin = 32; //latch
+int setting_isrdataIn = 33;
+int setting_isrclockIn = 26;
+
+//High Voltage Relay pin
+int setting_hvrPin = 27;
+
+//Flipper 1 pin
+int setting_flipper1Pin = 34;
+
+//Flipper 2 pin
+int setting_flipper2Pin = 35;
+
+
+
 
 void createConfigFiles();
 void openConfigFiles();
@@ -26,8 +54,23 @@ void createConfigFiles()
 
     DynamicJsonDocument myJsonDocument(1024);
     JsonObject jobject = myJsonDocument.to<JsonObject>();
-    jobject["Name"] = (String)"Pinball Name";
-    jobject["Version"] = (String)"1.0";
+    jobject["Name"] = setting_MachineName;
+    jobject["Version"] = setting_MachineVersion;
+    jobject["SSID"] = setting_SSID;
+    jobject["SSIDPassword"] = setting_SSIDPassword;
+    jobject["osr2latchPin"] = setting_osr2latchPin;
+    jobject["osr2clockPin"] = setting_osr2clockPin;
+    jobject["osr2dataPin"] = setting_osr2dataPin;
+    jobject["osr3latchPin"] = setting_osr3latchPin;
+    jobject["osr3clockPin"] = setting_osr3clockPin;
+    jobject["osr3dataPin"] = setting_osr3dataPin;
+    jobject["isrload"] = setting_isrload;
+    jobject["isrclockEnablePin"] = setting_isrclockEnablePin;
+    jobject["isrdataIn"] = setting_isrdataIn;
+    jobject["isrclockIn"] = setting_isrclockIn;
+    jobject["hvrPin"] = setting_hvrPin;
+    jobject["flipper1Pin"] = setting_flipper1Pin;
+    jobject["flipper2Pin"] = setting_flipper2Pin;
     fileSystem.saveToFile(localConfigFile,jobject);
     Serial.print("JSON Document Created is: ");
     serializeJson(myJsonDocument, Serial);
@@ -46,7 +89,19 @@ void openConfigFiles()
     setting_MachineVersion = (const char*)jsonDocument["Version"];
     setting_SSID = (const char*)jsonDocument["SSID"];
     setting_SSIDPassword = (const char*)jsonDocument["SSIDPassword"];
-
+    setting_osr2latchPin = (int8_t)jsonDocument["osr2latchPin"];
+    setting_osr2clockPin = (int8_t)jsonDocument["osr2clockPin"];
+    setting_osr2dataPin = (int8_t)jsonDocument["osr2dataPin"];
+    setting_osr3latchPin = (int8_t)jsonDocument["osr3latchPin"];
+    setting_osr3clockPin = (int8_t)jsonDocument["osr3clockPin"];
+    setting_osr3dataPin = (int8_t)jsonDocument["osr3dataPin"];
+    setting_isrload = (int8_t)jsonDocument["isrload"];
+    setting_isrclockEnablePin = (int8_t)jsonDocument["isrclockEnablePin"];
+    setting_isrdataIn = (int8_t)jsonDocument["isrdataIn"];
+    setting_isrclockIn = (int8_t)jsonDocument["isrclockIn"];
+    setting_hvrPin = (int8_t)jsonDocument["hvrPin"];
+    setting_flipper1Pin = (int8_t)jsonDocument["flipper1Pin"];
+    setting_flipper2Pin = (int8_t)jsonDocument["flipper2Pin"];
 
 }
 
@@ -60,6 +115,19 @@ void updateConfigFiles()
     jobject["Version"] = setting_MachineVersion;
     jobject["SSID"] = setting_SSID;
     jobject["SSIDPassword"] = setting_SSIDPassword;
+    jobject["osr2latchPin"] = setting_osr2latchPin;
+    jobject["osr2clockPin"] = setting_osr2clockPin;
+    jobject["osr2dataPin"] = setting_osr2dataPin;
+    jobject["osr3latchPin"] = setting_osr3latchPin;
+    jobject["osr3clockPin"] = setting_osr3clockPin;
+    jobject["osr3dataPin"] = setting_osr3dataPin;
+    jobject["isrload"] = setting_isrload;
+    jobject["isrclockEnablePin"] = setting_isrclockEnablePin;
+    jobject["isrdataIn"] = setting_isrdataIn;
+    jobject["isrclockIn"] = setting_isrclockIn;
+    jobject["hvrPin"] = setting_hvrPin;
+    jobject["flipper1Pin"] = setting_flipper1Pin;
+    jobject["flipper2Pin"] = setting_flipper2Pin;
     fileSystem.saveToFile(localConfigFile,jobject);
     Serial.print("JSON Document Updates is: ");
     serializeJson(myJsonDocument, Serial);

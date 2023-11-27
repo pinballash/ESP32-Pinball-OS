@@ -24,8 +24,84 @@ const char CONFIG_page[] PROGMEM = R"=====(
       <label for="text">Wi-Fi Password:</label><br>
 		   <input type="password" id="SSIDPassword" name="SSIDPassword"><br>
 
-		   <input type="submit" value="Submit" onclick="updateSettings();"><br><br>
+		   
 		</fieldset>
+    <fieldset>
+		  <legend> ESP32 Pin Definitions:: </legend>
+      <table>
+        <tr>
+          <td colspan="2"><h2>Define Connections to 74HC595 - Audio Output Shift Register</h2></td>
+        </tr>
+        <tr>
+          <td>osr2latchPin</td>
+          <td><input type="text" id="osr2latchPin" name="osr2latchPin" value=""></td>
+        </tr>
+        <tr>
+          <td>osr2clockPin</td>
+          <td><input type="text" id="osr2clockPin" name="osr2clockPin" value=""></td>
+        </tr>
+        <tr>
+          <td>osr2dataPin</td>
+          <td><input type="text" id="osr2dataPin" name="osr2dataPin" value=""></td>
+        </tr>
+        <tr>
+          <td colspan="2"><h2>Define Connections to 74HC595 - Coil Output Shift Registers</h2></td>
+        </tr>
+        <tr>
+          <td>osr3latchPin</td>
+          <td><input type="text" id="osr3latchPin" name="osr3latchPin" value=""></td>
+        </tr>
+        <tr>
+          <td>osr3clockPin</td>
+          <td><input type="text" id="osr3clockPin" name="osr3clockPin" value=""></td>
+        </tr>
+        <tr>
+          <td>osr3dataPin</td>
+          <td><input type="text" id="osr3dataPin" name="osr3dataPin" value=""></td>
+        </tr>
+        <tr>
+          <td colspan="2"><h2>Comms to 74HC165 - Input Shift Registers</h2></td>
+        </tr>
+        <tr>
+          <td>isrload</td>
+          <td><input type="text" id="isrload" name="isrload" value=""></td>
+        </tr>
+        
+        <tr>
+          <td>isrclockEnablePin</td>
+          <td><input type="text" id="isrclockEnablePin" name="isrclockEnablePin" value=""></td>
+        </tr>
+        <tr>
+          <td>isrdataIn</td>
+          <td><input type="text" id="isrdataIn" name="isrdataIn" value=""></td>
+        </tr>
+        <tr>
+          <td>isrclockIn</td>
+          <td><input type="text" id="isrclockIn" name="isrclockIn" value=""></td>
+        </tr>
+        <tr>
+          <td colspan="2"><h2>High Voltage Relay pin</h2></td>
+        </tr>
+        <tr>
+          <td>hvrPin</td>
+          <td><input type="text" id="hvrPin" name="hvrPin" value=""></td>
+        </tr>
+        <tr>
+          <td colspan="2">Flippers</td>
+        </tr>
+        <tr>
+          <td>flipper1Pin</td>
+          <td><input type="text" id="flipper1Pin" name="flipper1Pin" value=""></td>
+        </tr>
+        <tr>
+          <td>flipper2Pin</td>
+          <td><input type="text" id="flipper2Pin" name="flipper2Pin" value=""></td>
+        </tr>
+		  </table>
+		   
+		</fieldset>
+    
+    <input type="submit" value="Submit" onclick="updateSettings();"><br><br>
 	</form>
 
   </div>
