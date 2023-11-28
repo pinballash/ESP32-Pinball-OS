@@ -15,6 +15,11 @@ String setting_MachineVersion = "0.1";
 String setting_SSID = "YourWiFiHere";
 String setting_SSIDPassword = "";
 
+// Define Connections to 74HC595 - Switch Matrix Output Shift Register
+int setting_osr1latchPin = 18; 
+int setting_osr1clockPin = 5;
+int setting_osr1dataPin = 17;
+
 // Define Connections to 74HC595 - Audio Output Shift Register
 int setting_osr2latchPin = 2; //changed from 3
 int setting_osr2clockPin = 21;
@@ -58,6 +63,9 @@ void createConfigFiles()
     jobject["Version"] = setting_MachineVersion;
     jobject["SSID"] = setting_SSID;
     jobject["SSIDPassword"] = setting_SSIDPassword;
+    jobject["osr1latchPin"] = setting_osr1latchPin;
+    jobject["osr1clockPin"] = setting_osr1clockPin;
+    jobject["osr1dataPin"] = setting_osr1dataPin;
     jobject["osr2latchPin"] = setting_osr2latchPin;
     jobject["osr2clockPin"] = setting_osr2clockPin;
     jobject["osr2dataPin"] = setting_osr2dataPin;
@@ -89,6 +97,9 @@ void openConfigFiles()
     setting_MachineVersion = (const char*)jsonDocument["Version"];
     setting_SSID = (const char*)jsonDocument["SSID"];
     setting_SSIDPassword = (const char*)jsonDocument["SSIDPassword"];
+    setting_osr1latchPin = (int8_t)jsonDocument["osr1latchPin"];
+    setting_osr1clockPin = (int8_t)jsonDocument["osr1clockPin"];
+    setting_osr1dataPin = (int8_t)jsonDocument["osr1dataPin"];
     setting_osr2latchPin = (int8_t)jsonDocument["osr2latchPin"];
     setting_osr2clockPin = (int8_t)jsonDocument["osr2clockPin"];
     setting_osr2dataPin = (int8_t)jsonDocument["osr2dataPin"];
@@ -115,6 +126,9 @@ void updateConfigFiles()
     jobject["Version"] = setting_MachineVersion;
     jobject["SSID"] = setting_SSID;
     jobject["SSIDPassword"] = setting_SSIDPassword;
+    jobject["osr1latchPin"] = setting_osr1latchPin;
+    jobject["osr1clockPin"] = setting_osr1clockPin;
+    jobject["osr1dataPin"] = setting_osr1dataPin;
     jobject["osr2latchPin"] = setting_osr2latchPin;
     jobject["osr2clockPin"] = setting_osr2clockPin;
     jobject["osr2dataPin"] = setting_osr2dataPin;

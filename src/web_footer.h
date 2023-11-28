@@ -122,6 +122,9 @@ function getConfig() {
       document.getElementById('machineVersionInput').value = obj.Version;
       document.getElementById('SSID').value = obj.SSID;
       document.getElementById('SSIDPassword').value = obj.SSIDPassword;
+      document.getElementById('osr1latchPin').value = obj.osr1latchPin;
+      document.getElementById('osr1clockPin').value = obj.osr1clockPin;
+      document.getElementById('osr1dataPin').value = obj.osr1dataPin;
       document.getElementById('osr2latchPin').value = obj.osr2latchPin;
       document.getElementById('osr2clockPin').value = obj.osr2clockPin;
       document.getElementById('osr2dataPin').value = obj.osr2dataPin;
@@ -146,7 +149,28 @@ function updateSettings()
   let machineName = document.getElementById('machineNameInput');
   let machineVersion = document.getElementById('machineVersionInput');
   let SSID = document.getElementById('SSID');
-  let SSIDPassword = document.getElementById('SSIDPassword');    
+  let SSIDPassword = document.getElementById('SSIDPassword');
+  let osr1latchPin = document.getElementById("osr1latchPin");
+  let osr1clockPin = document.getElementById("osr1clockPin");
+  let osr1dataPin = document.getElementById("osr1dataPin");    
+  let osr2latchPin = document.getElementById("osr2latchPin");
+  let osr2clockPin = document.getElementById("osr2clockPin");
+  let osr2dataPin = document.getElementById("osr2dataPin");
+  let osr3latchPin = document.getElementById("osr3latchPin");
+  let osr3clockPin = document.getElementById("osr3clockPin");
+  let osr3dataPin = document.getElementById("osr3dataPin");
+  let isrload = document.getElementById("isrload");
+  let isrclockEnablePin = document.getElementById("isrclockEnablePin");
+  let isrdataIn = document.getElementById("isrdataIn");
+  let isrclockIn = document.getElementById("isrclockIn");
+  let hvrPin = document.getElementById("hvrPin");
+  let flipper1Pin = document.getElementById("flipper1Pin");
+  let flipper2Pin = document.getElementById("flipper2Pin");
+
+  
+  
+  
+  
   // Creating a xhttp object
   let xhttp = new XMLHttpRequest();
   let url = "/updateConfig";
@@ -168,7 +192,28 @@ function updateSettings()
   };
 
   // Converting JSON data to string
-  var data = JSON.stringify({ "Name": machineName.value, "Version": machineVersion.value, "SSID":SSID.value,"SSIDPassword":SSIDPassword.value });
+  var data = JSON.stringify({
+    "Name": machineName.value, 
+    "Version": machineVersion.value, 
+    "SSID":SSID.value,
+    "SSIDPassword":SSIDPassword.value,
+    "osr1latchPin" : osr1latchPin.value,
+    "osr1clockPin" : osr1clockPin.value,
+    "osr1dataPin" : osr1dataPin.value,
+    "osr2latchPin" : osr2latchPin.value,
+    "osr2clockPin" : osr2clockPin.value,
+    "osr2dataPin" : osr2dataPin.value,
+    "osr3latchPin" : osr3latchPin.value,
+    "osr3clockPin" : osr3clockPin.value,
+    "osr3dataPin" : osr3dataPin.value,
+    "isrload" : isrload.value,
+    "isrclockEnablePin" : isrclockEnablePin.value,
+    "isrdataIn" : isrdataIn.value,
+    "isrclockIn" : isrclockIn.value,
+    "hvrPin" : hvrPin.value,
+    "flipper1Pin" : flipper1Pin.value,
+    "flipper2Pin" : flipper2Pin.value
+    });
 
   // Sending data with the request
   xhttp.send(data);

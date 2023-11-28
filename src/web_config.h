@@ -29,79 +29,95 @@ const char CONFIG_page[] PROGMEM = R"=====(
     <fieldset>
 		  <legend> ESP32 Pin Definitions:: </legend>
       <table>
+
+      <tr>
+          <td colspan="2"><h5>Connections to 74HC595 - Switch Matrix Output Shift Register</h5></td>
+        </tr>
         <tr>
-          <td colspan="2"><h5>Define Connections to 74HC595 - Audio Output Shift Register</h5></td>
+          <td>osr1latchPin</td>
+          <td><input type="text" id="osr1latchPin" name="osr1latchPin" value="" maxlength="2" size="2"></td>
+        </tr>
+        <tr>
+          <td>osr1clockPin</td>
+          <td><input type="text" id="osr1clockPin" name="osr1clockPin" value="" maxlength="2" size="2"></td>
+        </tr>
+        <tr>
+          <td>osr1dataPin</td>
+          <td><input type="text" id="osr1dataPin" name="osr1dataPin" value="" maxlength="2" size="2"></td>
+        </tr>
+        <tr>
+          <td colspan="2"><h5>Connections to 74HC595 - Audio Output Shift Register</h5></td>
         </tr>
         <tr>
           <td>osr2latchPin</td>
-          <td><input type="text" id="osr2latchPin" name="osr2latchPin" value=""></td>
+          <td><input type="text" id="osr2latchPin" name="osr2latchPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td>osr2clockPin</td>
-          <td><input type="text" id="osr2clockPin" name="osr2clockPin" value=""></td>
+          <td><input type="text" id="osr2clockPin" name="osr2clockPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td>osr2dataPin</td>
-          <td><input type="text" id="osr2dataPin" name="osr2dataPin" value=""></td>
+          <td><input type="text" id="osr2dataPin" name="osr2dataPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
-          <td colspan="2"><h5>Define Connections to 74HC595 - Coil Output Shift Registers</h5></td>
+          <td colspan="2"><h5>Connections to 74HC595 - Coil Output Shift Registers</h5></td>
         </tr>
         <tr>
           <td>osr3latchPin</td>
-          <td><input type="text" id="osr3latchPin" name="osr3latchPin" value=""></td>
+          <td><input type="text" id="osr3latchPin" name="osr3latchPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td>osr3clockPin</td>
-          <td><input type="text" id="osr3clockPin" name="osr3clockPin" value=""></td>
+          <td><input type="text" id="osr3clockPin" name="osr3clockPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td>osr3dataPin</td>
-          <td><input type="text" id="osr3dataPin" name="osr3dataPin" value=""></td>
+          <td><input type="text" id="osr3dataPin" name="osr3dataPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
-          <td colspan="2"><h5>Comms to 74HC165 - Input Shift Registers</h5></td>
+          <td colspan="2"><h5>Connections to 74HC165 - Input Shift Registers (Audio and Switch Matrix)</h5></td>
         </tr>
         <tr>
           <td>isrload</td>
-          <td><input type="text" id="isrload" name="isrload" value=""></td>
+          <td><input type="text" id="isrload" name="isrload" value="" maxlength="2" size="2"></td>
         </tr>
         
         <tr>
           <td>isrclockEnablePin</td>
-          <td><input type="text" id="isrclockEnablePin" name="isrclockEnablePin" value=""></td>
+          <td><input type="text" id="isrclockEnablePin" name="isrclockEnablePin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td>isrdataIn</td>
-          <td><input type="text" id="isrdataIn" name="isrdataIn" value=""></td>
+          <td><input type="text" id="isrdataIn" name="isrdataIn" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td>isrclockIn</td>
-          <td><input type="text" id="isrclockIn" name="isrclockIn" value=""></td>
+          <td><input type="text" id="isrclockIn" name="isrclockIn" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td colspan="2"><h5>High Voltage Relay pin</h5></td>
         </tr>
         <tr>
           <td>hvrPin</td>
-          <td><input type="text" id="hvrPin" name="hvrPin" value=""></td>
+          <td><input type="text" id="hvrPin" name="hvrPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td colspan="2"><h6>Flippers</h6></td>
         </tr>
         <tr>
           <td>flipper1Pin</td>
-          <td><input type="text" id="flipper1Pin" name="flipper1Pin" value=""></td>
+          <td><input type="text" id="flipper1Pin" name="flipper1Pin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
           <td>flipper2Pin</td>
-          <td><input type="text" id="flipper2Pin" name="flipper2Pin" value=""></td>
+          <td><input type="text" id="flipper2Pin" name="flipper2Pin" value="" maxlength="2" size="2"></td>
         </tr>
 		  </table>
 		   
 		</fieldset>
     
-    <input type="submit" value="Submit" onclick="updateSettings();"><br><br>
+    <input type="submit" value="Submit" onclick="updateSettings();"> Updating Settings will restart the machine.<br><br>
 	</form>
 
   </div>

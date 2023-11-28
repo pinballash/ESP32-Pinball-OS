@@ -627,7 +627,25 @@ bool web_handle_configUpdate()
   setting_MachineVersion = (const char*)postedJSON["Version"];
   setting_SSID = (const char*)postedJSON["SSID"];
   setting_SSIDPassword = (const char*)postedJSON["SSIDPassword"];
+  setting_osr1latchPin = postedJSON["osr1latchPin"];
+  setting_osr1clockPin = postedJSON["osr1clockPin"];
+  setting_osr1dataPin = postedJSON["osr1dataPin"];
+  setting_osr2latchPin = postedJSON["osr2latchPin"];
+  setting_osr2clockPin = postedJSON["osr2clockPin"];
+  setting_osr2dataPin = postedJSON["osr2dataPin"];
+  setting_osr3latchPin = postedJSON["osr3latchPin"];
+  setting_osr3clockPin = postedJSON["osr3clockPin"];
+  setting_osr3dataPin = postedJSON["osr3dataPin"];
+  setting_isrload = postedJSON["isrload"];
+  setting_isrclockEnablePin = postedJSON["isrclockEnablePin"];
+  setting_isrdataIn = postedJSON["isrdataIn"];
+  setting_isrclockIn = postedJSON["isrclockIn"];
+  setting_hvrPin = postedJSON["hvrPin"];
+  setting_flipper1Pin = postedJSON["flipper1Pin"];
+  setting_flipper2Pin = postedJSON["flipper2Pin"];
+
   updateConfigFiles();
+  web_handle_action_restart();
   return true;
 }
 
