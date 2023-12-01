@@ -116,7 +116,48 @@ const char CONFIG_page[] PROGMEM = R"=====(
 		  </table>
 		   
 		</fieldset>
-    
+    <fieldset>
+		  <legend> Switch Matrix Definitions:: </legend>
+      <table>
+
+        <tr>
+          <td colspan="2"><h5>Define the number of Rows and Columns in the Matrix</h5></td>
+        </tr>
+        <tr>
+          <td>Rows</td>
+          <td>
+            <select id="switchMatrixRows" name="switchMatrixRows">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            <select>
+          </td>
+        </tr>
+        <tr>
+          <td>Columns</td>
+          <td>
+            <select id="switchMatrixColumns" name="switchMatrixColumns">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            <select>
+          </td>
+        </tr>
+		  </table>
+		   
+		</fieldset>
     <input type="submit" value="Submit" onclick="updateSettings();"> Updating Settings will restart the machine.<br><br>
 	</form>
 

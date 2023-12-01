@@ -11,6 +11,10 @@ const char html_footer[] PROGMEM = R"=====(
 )=====";
 
 const char upload_script_footer[] PROGMEM = R"=====(<script>
+function loadPage()
+{
+	//nothing
+}
 // Get the Sidebar
 var mySidebar = document.getElementById('mySidebar');
 
@@ -80,7 +84,11 @@ $('form').submit(function(e)
 
 const char config_script_footer[] PROGMEM = R"=====(
 <script>
-getConfig(); //on loading this page, lets get the configuration
+    function loadPage()
+{
+	getConfig(); //on loading this page, lets get the configuration
+}
+
 // Get the Sidebar
 var mySidebar = document.getElementById('mySidebar');
 
@@ -138,6 +146,9 @@ function getConfig() {
       document.getElementById('hvrPin').value = obj.hvrPin;
       document.getElementById('flipper1Pin').value = obj.flipper1Pin;
       document.getElementById('flipper2Pin').value = obj.flipper2Pin;
+      document.getElementById('switchMatrixRows').value = obj.switchMatrixRows;
+      document.getElementById('switchMatrixColumns').value = obj.switchMatrixColumns;
+
     }
   };
   xhttp.open('GET', 'ajax_getConfig', true);
@@ -166,11 +177,9 @@ function updateSettings()
   let hvrPin = document.getElementById("hvrPin");
   let flipper1Pin = document.getElementById("flipper1Pin");
   let flipper2Pin = document.getElementById("flipper2Pin");
+  let switchMatrixRows = document.getElementById("switchMatrixRows");
+  let switchMatrixColumns = document.getElementById("switchMatrixColumns");
 
-  
-  
-  
-  
   // Creating a xhttp object
   let xhttp = new XMLHttpRequest();
   let url = "/updateConfig";
@@ -212,7 +221,9 @@ function updateSettings()
     "isrclockIn" : isrclockIn.value,
     "hvrPin" : hvrPin.value,
     "flipper1Pin" : flipper1Pin.value,
-    "flipper2Pin" : flipper2Pin.value
+    "flipper2Pin" : flipper2Pin.value,
+    "switchMatrixRows" : switchMatrixRows.options[switchMatrixRows.selectedIndex].value,
+    "switchMatrixColumns" : switchMatrixColumns.options[switchMatrixColumns.selectedIndex].value
     });
 
   // Sending data with the request
@@ -228,6 +239,10 @@ function updateSettings()
 
 const char liveview_script_footer[] PROGMEM = R"=====(
     <script>
+    function loadPage()
+{
+	//nothing
+}
 // Get the Sidebar
 var mySidebar = document.getElementById('mySidebar');
 
@@ -643,6 +658,208 @@ function event_debugOps_click() {
     var xhttp = new XMLHttpRequest();
     xhttp.open('GET', './debug/ops', true);
     xhttp.send();
+}
+
+</script>
+
+</body>
+</html>
+)=====";
+
+const char switchConfig_script_footer[] PROGMEM = R"=====(<script>
+function loadPage()
+{
+	prepareMatrix();
+}
+
+function loadSwitchSettings(row,col)
+{
+	var switchId = (col * 8) + row;
+	// Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "/api/switch/config/get";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+          //we have the switch data lets use it
+		  const json =  this.responseText;
+      console.log(json);
+		  const obj = JSON.parse(json);
+		  var switchIdInput = document.getElementById('switchId');
+			var switchNameInput = document.getElementById('switchName');
+			var switchDebounceInput = document.getElementById('switchDebounce');
+			var switchIsFlipper = document.getElementById('switchIsFlipper');
+			var switchDebug = document.getElementById('switchDebug');
+		  document.getElementById('switchName').value = obj.switchName;
+		  document.getElementById('switchDebounce').value = obj.switchDebounce;
+		  if(obj.switchIsFlipper == 'true')
+		  {
+			document.getElementById('switchIsFlipper').checked = true;
+		  }
+		  if(obj.switchDebug == 'true')
+		  {
+			document.getElementById('switchDebug').checked = true;
+		  }
+		  
+      }
+  };
+
+  // Converting JSON data to string
+  var data = JSON.stringify({
+    "switchId":switchId
+	});
+
+  // Sending data with the request
+  xhttp.send(data);
+	
+}
+
+const submitBtn = document.getElementById('submitButton');
+
+submitButton.addEventListener('click', (e) => {
+	e.preventDefault();
+	updateSwitch();
+});
+
+var cols = 5;
+var rows = 8;
+
+
+function prepareMatrix()
+{
+	for(let i = 0; i < 8; i++)
+	{
+		for(let j = 0; j < 8; j++)
+		{
+			//lets work on this cell
+			var cellRef = j+"_"+i;
+			//alert("Updating Cell Ref: "+cellRef);
+			var matrix_cell = document.getElementById(cellRef);
+			if(i <= cols)
+			{
+				if(j <= rows)
+				{
+					var switchId = (i * 8) + j;
+					matrix_cell.innerHTML = "ACTIVE_"+switchId;
+					
+				}else{
+					matrix_cell.innerHTML = "-";
+				}
+			}else
+			{
+				matrix_cell.innerHTML = "-";
+			}
+		
+		}
+	
+	}
+
+}
+
+function selectSwitch(row,col)
+{
+	var switchIdInput = document.getElementById('switchId');
+	var switchNameInput = document.getElementById('switchName');
+	var switchDebounceInput = document.getElementById('switchDebounce');
+	var switchIsFlipper = document.getElementById('SwitchIsFlipper');
+	var switchDebug = document.getElementById('switchDebug');
+	
+	//we get the switch id from the matrix (col * 8)+row
+	var switchId = (col * 8) + row;
+	switchIdInput.value = switchId;
+	
+	//other values we can load from JSON
+	//to do - program AJAX call to get JSON
+  loadSwitchSettings(row,col);
+
+}
+
+function updateSwitch()
+{
+	var switchIdInput = document.getElementById('switchId').value;
+	var switchNameInput = document.getElementById('switchName').value;
+	var switchDebounceInput = document.getElementById('switchDebounce').value;
+	var switchIsFlipper = document.getElementById('switchIsFlipper').checked;
+	var switchDebug = document.getElementById('switchDebug').checked;
+	
+	//to do - program AJAX call to send JSON
+	if(switchIsFlipper != 'true')
+	{
+		switchIsFlipper = 'false';
+	}
+	if(switchDebug != 'true')
+	{
+		switchDebug = 'false';
+	}
+	var switchVar = {
+		switchId : switchIdInput,
+		switchName : switchNameInput,
+		switchDebounce : switchDebounceInput,
+		switchIsFlipper : switchIsFlipper,
+		switchDebug : switchDebug
+    }
+	console.log(switchVar);
+	//var object = Object.create(switchVar);
+	//console.log(object);
+
+	var json = JSON.stringify(switchVar);
+	console.log(json);
+	
+	///
+	// Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "api/switch/config/get";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+          // Print received data from server
+          alert("Config Saved");
+
+      }
+  };
+
+  // Sending data with the request
+  xhttp.send(json);
+
+}
+
+
+var mySidebar = document.getElementById('mySidebar');
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById('myOverlay');
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = 'none';
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = 'block';
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = 'none';
+  overlayBg.style.display = 'none';
 }
 
 </script>

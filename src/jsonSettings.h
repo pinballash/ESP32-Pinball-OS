@@ -45,7 +45,9 @@ int setting_flipper1Pin = 34;
 //Flipper 2 pin
 int setting_flipper2Pin = 35;
 
-
+//Switch Matrix
+int setting_switchMatrixRows = 8;
+int setting_switchMatrixColumns = 8;
 
 
 void createConfigFiles();
@@ -53,7 +55,6 @@ void openConfigFiles();
 void updateConfigFiles();
 
 const char * localConfigFile = "/ESPPinballOSConfig.json";
-
 void createConfigFiles()
 {
 
@@ -79,6 +80,8 @@ void createConfigFiles()
     jobject["hvrPin"] = setting_hvrPin;
     jobject["flipper1Pin"] = setting_flipper1Pin;
     jobject["flipper2Pin"] = setting_flipper2Pin;
+    jobject["switchMatrixRows"] = setting_switchMatrixRows;
+    jobject["switchMatrixColumns"] = setting_switchMatrixColumns;
     fileSystem.saveToFile(localConfigFile,jobject);
     Serial.print("JSON Document Created is: ");
     serializeJson(myJsonDocument, Serial);
@@ -113,7 +116,8 @@ void openConfigFiles()
     setting_hvrPin = (int8_t)jsonDocument["hvrPin"];
     setting_flipper1Pin = (int8_t)jsonDocument["flipper1Pin"];
     setting_flipper2Pin = (int8_t)jsonDocument["flipper2Pin"];
-
+    setting_switchMatrixRows = (int8_t)jsonDocument["switchMatrixRows"];
+    setting_switchMatrixColumns = (int8_t)jsonDocument["switchMatrixColumns"];
 }
 
 void updateConfigFiles()
@@ -142,6 +146,8 @@ void updateConfigFiles()
     jobject["hvrPin"] = setting_hvrPin;
     jobject["flipper1Pin"] = setting_flipper1Pin;
     jobject["flipper2Pin"] = setting_flipper2Pin;
+    jobject["switchMatrixRows"] = setting_switchMatrixRows;
+    jobject["switchMatrixColumns"] = setting_switchMatrixColumns;
     fileSystem.saveToFile(localConfigFile,jobject);
     Serial.print("JSON Document Updates is: ");
     serializeJson(myJsonDocument, Serial);

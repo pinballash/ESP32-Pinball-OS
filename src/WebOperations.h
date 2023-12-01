@@ -5,9 +5,9 @@
 
 #include "web_dashboard.h"
 #include "web_config.h"
+#include "web_config_switches.h"
 #include "web_upload.h"
 #include "web_css.h"
-#include "web_jquery.h"
 #include "web_header.h"
 #include "web_footer.h"
 
@@ -45,9 +45,11 @@ void web_handle_captive_ffx2();//[](AsyncWebServerRequest *request) { request->s
 void web_handle_viewState();
 void web_handle_404();
 void web_handle_config();
+void web_handle_config_switches();
+void web_handle_getSwitchConfig();
+void web_handle_setSwitchConfig();
 void web_handle_firmwareUpload();
 void web_handle_css();
-void web_handle_js();
 
 bool web_handle_configUpdate();
 
@@ -114,13 +116,11 @@ void WebOperationsFunction( void * pvParameters)
     //Actual Web Pages
     server.on("/viewState", web_handle_viewState);
     server.on("/config", web_handle_config);
+    server.on("/config_switches", web_handle_config_switches);
     server.on("/uploadDev", web_handle_firmwareUpload);
 
     //CSS
      server.on("/css/w3c.css", web_handle_css);
-
-    //JS
-     server.on("/js/jquery.js", web_handle_js);
 
     //AJAX calls
     server.on("/ajax_getState",  web_handle_AJAXState);
@@ -181,6 +181,10 @@ void WebOperationsFunction( void * pvParameters)
 
     server.on("/", web_handle_viewState);
     server.on("/updateConfig", HTTP_POST, web_handle_configUpdate);
+
+    server.on("/api/switch/config/get", HTTP_POST, web_handle_getSwitchConfig);
+    server.on("/api/switch/config/set", HTTP_POST, web_handle_setSwitchConfig);
+
     server.onNotFound(web_handle_404);
         /*handling uploading firmware file */
     server.on("/update", HTTP_POST, []() {
@@ -210,21 +214,7 @@ void WebOperationsFunction( void * pvParameters)
     });
     int WifiWaitCounter = 0;
     int MaxWait = 10;
-    /*while ((WifiConnected != true) && (WifiWaitCounter < MaxWait)) {
-      Serial.println("Webserver Waiting for Wifi");
-      vTaskDelay(1000);
-      WifiWaitCounter +=1;
-    }
-    if(WifiConnected ==  WL_CONNECTED)
-    {
-      server.begin();
-      Serial.println("Webserver Started");
-    }else
-    {
-      Serial.println("Webserver NOT Started");
-      //Lets forget about wifi and webserver
-      vTaskDelete(NULL);
-    }*/
+
     while ((WifiConnected != true) && (wifiSoftAPInUse != true)) {
       Serial.println("Webserver Waiting for Wifi");
       vTaskDelay(1000);
@@ -612,6 +602,58 @@ void web_handle_404()
  
 }
 
+void web_handle_getSwitchConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    Serial.println("plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    String jsonConfig;
+    String dataFile = "/switchConfig." + switchId + ".json";
+    Serial.println("Opening " + dataFile);
+    File file = SPIFFS.open(dataFile);
+    while (file.available()) {
+        // Extract each characters by one by one
+        jsonConfig = file.readString();
+    }
+    Serial.println(jsonConfig);
+    server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
+  }
+
+
+
+}
+void web_handle_setSwitchConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    Serial.println("plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    DynamicJsonDocument myJsonDocument(1024);
+    JsonObject jobject = myJsonDocument.to<JsonObject>();
+    jobject["switchId"] = postedJSON["switchId"];
+    jobject["switchName"] = postedJSON["switchName"];
+    jobject["switchDebounce"] = postedJSON["switchDebounce"];
+    jobject["switchIsFlipper"] = postedJSON["switchIsFlipper"];
+    jobject["switchDebug"] = postedJSON["witchDebug"];
+    String dataFile = "/switchConfig." + switchId + ".json";
+    const char * dataChar = dataFile.c_str();
+    fileSystem.saveToFile(dataChar,jobject);
+    server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+  }
+
+
+
+}
+
 bool web_handle_configUpdate()
 {
   if(server.args() == 0)
@@ -643,6 +685,8 @@ bool web_handle_configUpdate()
   setting_hvrPin = postedJSON["hvrPin"];
   setting_flipper1Pin = postedJSON["flipper1Pin"];
   setting_flipper2Pin = postedJSON["flipper2Pin"];
+  setting_switchMatrixRows = postedJSON["switchMatrixRows"];
+  setting_switchMatrixColumns = postedJSON["switchMatrixColumns"];
 
   updateConfigFiles();
   web_handle_action_restart();
@@ -663,6 +707,24 @@ void web_handle_config()
   strcat( concatString, CONFIG_page );
   strcat( concatString, html_footer );
   strcat( concatString, config_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+void web_handle_config_switches()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_SWITCHES_page) + strlen(html_footer) + strlen(switchConfig_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_SWITCHES_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, switchConfig_script_footer );
 
   server.send(200, "text/html", concatString); //Send web page
   delete[] concatString;
@@ -719,11 +781,7 @@ void web_handle_css()
     server.send(200, "text/css", s); //Send web page
 }
 
-void web_handle_js()
-{
-    String s = W3C_JQUERY; //Read HTML contents
-    server.send(200, "text/javascript", s); //Send web page
-}
+
 
 
 /* END web page functions */

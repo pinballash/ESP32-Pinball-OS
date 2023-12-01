@@ -14,7 +14,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
 </style>
 <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
 </head>
-<body class='w3-light-grey'>
+<body class='w3-light-grey' onload="loadPage();">
 
 <!-- Top container -->
 <div class='w3-bar w3-top w3-black w3-large' style='z-index:4'>
@@ -33,6 +33,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
     <a href='./uploadDev' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Update</a>
     <a href='./action/solenoidTest' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Solenoid Test</a>
     <a href='./config' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Basic Config</a>
+    <a href='./config_switches' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config Switches</a>
   </div>
 </nav>
 

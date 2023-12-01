@@ -99,25 +99,39 @@ bool coilActive[coilCount];
 
 
 // Define Connections to 74HC595 - Matrix Output Shift Register
-const int osr1latchPin = 18;
-const int osr1clockPin = 5;
-const int osr1dataPin = 17;
+//const int osr1latchPin = 18;
+//const int osr1clockPin = 5;
+//const int osr1dataPin = 17;
+const int osr1latchPin = setting_osr1latchPin;
+const int osr1clockPin = setting_osr1clockPin;
+const int osr1dataPin = setting_osr1dataPin;
 
 // Define Connections to 74HC595 - Audio Output Shift Register
-const int osr2latchPin = 2; //changed from 3
-const int osr2clockPin = 21;
-const int osr2dataPin = 19;
+//const int osr2latchPin = 2; //changed from 3
+//const int osr2clockPin = 21;
+//const int osr2dataPin = 19;
+const int osr2latchPin = setting_osr2latchPin;
+const int osr2clockPin = setting_osr2clockPin;
+const int osr2dataPin = setting_osr2dataPin;
 
 // Define Connections to 74HC595 - Coil Output Shift Registers
-const int osr3latchPin = 23;
-const int osr3clockPin = 22;
-const int osr3dataPin = 15; //changed from 1
+//const int osr3latchPin = 23;
+//const int osr3clockPin = 22;
+//const int osr3dataPin = 15; //changed from 1
+const int osr3latchPin = setting_osr3latchPin;
+const int osr3clockPin = setting_osr3clockPin;
+const int osr3dataPin = setting_osr3dataPin; 
 
 //Comms to 74HC165 - Input Shift Registers
-int isrload = 25;
-int isrclockEnablePin = 32; //latch
-int isrdataIn = 33;
-int isrclockIn = 26;
+//int isrload = 25;
+//int isrclockEnablePin = 32; //latch
+//int isrdataIn = 33;
+//int isrclockIn = 26;
+int isrload = setting_isrload;
+int isrclockEnablePin = setting_isrclockEnablePin; //latch
+int isrdataIn = setting_isrdataIn;
+int isrclockIn = setting_isrclockIn;
+
 
 // input and output bytes for the shift registers
 byte incoming;
@@ -130,13 +144,16 @@ byte outgoing4=0;//used for solenoids
 bool needsRegisterUpdate = false;
 
 //High Voltage Relay pin
-const int hvrPin = 27;
+//const int hvrPin = 27;
+const int hvrPin = setting_hvrPin;
 
 //Flipper 1 pin
-const int flipper1Pin = 34;
+//const int flipper1Pin = 34;
+const int flipper1Pin = setting_flipper1Pin;
 
 //Flipper 2 pin
-const int flipper2Pin = 35;
+//const int flipper2Pin = 35;
+const int flipper2Pin = setting_flipper2Pin;
 
 int counter;
 unsigned long lastMillis;
