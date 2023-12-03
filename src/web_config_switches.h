@@ -2,7 +2,7 @@
 const char CONFIG_SWITCHES_page[] PROGMEM = R"=====(
     <!-- Header -->
   <header class='w3-container' style='padding-top:22px'>
-    <h5><b><i class='fa fa-chalkboard-user'></i>Configuration</b></h5>
+    <h5><b><i class='fa fa-chalkboard-user'></i>Switch Configuration</b></h5>
   </header>
   <div>
 	<code>
@@ -14,12 +14,16 @@ const char CONFIG_SWITCHES_page[] PROGMEM = R"=====(
 		<fieldset id="coilsFieldset">
 		  <legend id="formLegend"> Switch Matrix:: </legend>
 
-			<table id="coilTable" style="width:100%;">
+			<table id="switchTable" style="width:100%;">
+				
 				<thead>
 					<tr>
 						<th>Rows</th>
 						<th colspan="9">Columns</th>
 					</tr>
+
+				</thead>
+				<tbody>
 					<tr>
 						<th></th>
 						<th>0</th>
@@ -31,8 +35,6 @@ const char CONFIG_SWITCHES_page[] PROGMEM = R"=====(
 						<th>6</th>
 						<th>7</th>
 					</tr>
-				</thead>
-				<tbody>
 					<tr>
 						<th>0</th>
 						<td><span id="0_0" onclick="selectSwitch(0,0);"></span></td>
@@ -142,7 +144,7 @@ const char CONFIG_SWITCHES_page[] PROGMEM = R"=====(
 
 
 	
-	<div id="SwitchEdit">
+	<div id="SwitchEdit" style="display:none;">
 		<form id="configForm" name="configForm" class="configForm"  method="POST" action="#" enctype="multipart/form-data" target="_self">
 		<fieldset id="coilsFieldset">
 		  <legend id="formLegend"> Switch Edit:: </legend>

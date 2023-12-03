@@ -667,14 +667,20 @@ function event_debugOps_click() {
 )=====";
 
 const char switchConfig_script_footer[] PROGMEM = R"=====(<script>
+
+var SelectedRow = 0;
+var SelectedColumn = 0;
+
 function loadPage()
 {
-	prepareMatrix();
+	getConfig();
+
 }
 
 function loadSwitchSettings(row,col)
 {
-	var switchId = (col * 8) + row;
+
+  var switchId = (col * 8) + row;
 	// Creating a xhttp object
   let xhttp = new XMLHttpRequest();
   let url = "/api/switch/config/get";
@@ -689,25 +695,35 @@ function loadSwitchSettings(row,col)
   xhttp.onreadystatechange = function () {
       if (xhttp.readyState === 4 && xhttp.status === 200) {
 
-          //we have the switch data lets use it
-		  const json =  this.responseText;
-      console.log(json);
-		  const obj = JSON.parse(json);
-		  var switchIdInput = document.getElementById('switchId');
-			var switchNameInput = document.getElementById('switchName');
-			var switchDebounceInput = document.getElementById('switchDebounce');
-			var switchIsFlipper = document.getElementById('switchIsFlipper');
-			var switchDebug = document.getElementById('switchDebug');
-		  document.getElementById('switchName').value = obj.switchName;
-		  document.getElementById('switchDebounce').value = obj.switchDebounce;
-		  if(obj.switchIsFlipper == 'true')
-		  {
-			document.getElementById('switchIsFlipper').checked = true;
-		  }
-		  if(obj.switchDebug == 'true')
-		  {
-			document.getElementById('switchDebug').checked = true;
-		  }
+        //we have the switch data lets use it
+        const json =  this.responseText;
+        //console.log(json);
+        const obj = JSON.parse(json);
+        var switchIdInput = document.getElementById('switchId');
+        var switchNameInput = document.getElementById('switchName');
+        var switchDebounceInput = document.getElementById('switchDebounce');
+        var switchIsFlipper = document.getElementById('switchIsFlipper');
+        var switchDebug = document.getElementById('switchDebug');
+        
+        switchNameInput.value = obj.switchName;
+        var cellRef = row+"_"+col;
+        var matrix_cell = document.getElementById(cellRef);
+        matrix_cell.innerHTML = obj.switchName;
+        
+        switchDebounceInput.value = obj.switchDebounce;
+        
+        if(obj.switchIsFlipper == "true")
+        {
+          switchIsFlipper.checked = true;
+        }else{
+          switchIsFlipper.checked = false;
+        }
+        if(obj.switchDebug == "true")
+        {
+          switchDebug.checked = true;
+        }else{
+          switchDebug.checked = false;
+        }
 		  
       }
   };
@@ -729,9 +745,28 @@ submitButton.addEventListener('click', (e) => {
 	updateSwitch();
 });
 
-var cols = 5;
-var rows = 8;
+var cols = 0;
+var rows = 0;
+//we need to get this from the main config
+function getConfig() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //Debug - schow json contents - uncomment this line
+      //document.getElementById('config').innerHTML = this.responseText ;
+      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
+      const json =  this.responseText;
+      const obj = JSON.parse(json);
 
+      rows = obj.switchMatrixRows;
+      cols = obj.switchMatrixColumns;
+      prepareMatrix();
+
+    }
+  };
+  xhttp.open('GET', 'ajax_getConfig', true);
+  xhttp.send();
+}
 
 function prepareMatrix()
 {
@@ -743,19 +778,28 @@ function prepareMatrix()
 			var cellRef = j+"_"+i;
 			//alert("Updating Cell Ref: "+cellRef);
 			var matrix_cell = document.getElementById(cellRef);
-			if(i <= cols)
+			if(i < cols)
 			{
-				if(j <= rows)
+				if(j < rows)
 				{
 					var switchId = (i * 8) + j;
-					matrix_cell.innerHTML = "ACTIVE_"+switchId;
+					loadSwitchSettings(j,i);
+         
 					
 				}else{
-					matrix_cell.innerHTML = "-";
+					matrix_cell.innerHTML = "";
+          matrix_cell.style.display = 'none';
+          matrix_cell.parentElement.style.display = 'none';
 				}
 			}else
 			{
-				matrix_cell.innerHTML = "-";
+				matrix_cell.innerHTML = "";
+        //hide the column
+        //console.log("Hiding Column "+(i+2));
+        var querySelection = "#switchTable tbody tr th:nth-child("+(i+2)+")";
+        //console.log(querySelection);
+        document.querySelectorAll(querySelection).forEach(el=>el.style.display = 'none');
+        
 			}
 		
 		}
@@ -779,6 +823,9 @@ function selectSwitch(row,col)
 	//other values we can load from JSON
 	//to do - program AJAX call to get JSON
   loadSwitchSettings(row,col);
+  switchEdit_open();
+  SelectedRow = row;
+  SelectedColumn = col;
 
 }
 
@@ -790,15 +837,20 @@ function updateSwitch()
 	var switchIsFlipper = document.getElementById('switchIsFlipper').checked;
 	var switchDebug = document.getElementById('switchDebug').checked;
 	
+  //console.log(switchIsFlipper);
 	//to do - program AJAX call to send JSON
-	if(switchIsFlipper != 'true')
+	if(switchIsFlipper != true)
 	{
-		switchIsFlipper = 'false';
-	}
-	if(switchDebug != 'true')
+		switchIsFlipper = "false";
+	}else{
+    switchIsFlipper = "true";
+  }
+	if(switchDebug != true)
 	{
-		switchDebug = 'false';
-	}
+		switchDebug = "false";
+	}else{
+    switchDebug = "true";
+  }
 	var switchVar = {
 		switchId : switchIdInput,
 		switchName : switchNameInput,
@@ -806,17 +858,17 @@ function updateSwitch()
 		switchIsFlipper : switchIsFlipper,
 		switchDebug : switchDebug
     }
-	console.log(switchVar);
+	//console.log(switchVar);
 	//var object = Object.create(switchVar);
 	//console.log(object);
 
 	var json = JSON.stringify(switchVar);
-	console.log(json);
+	//console.log(json);
 	
 	///
 	// Creating a xhttp object
   let xhttp = new XMLHttpRequest();
-  let url = "api/switch/config/get";
+  let url = "api/switch/config/set";
 
   // open a connection
   xhttp.open("POST", url, true);
@@ -829,7 +881,7 @@ function updateSwitch()
       if (xhttp.readyState === 4 && xhttp.status === 200) {
 
           // Print received data from server
-          alert("Config Saved");
+          loadSwitchSettings(SelectedRow,SelectedColumn);
 
       }
   };
@@ -838,6 +890,17 @@ function updateSwitch()
   xhttp.send(json);
 
 }
+
+function switchEdit_open() {
+  var SwitchEdit = document.getElementById('SwitchEdit');
+  if (SwitchEdit.style.display === 'block') {
+    //SwitchEdit.style.display = 'none';
+    SwitchEdit.style.display = 'block';
+  } else {
+    SwitchEdit.style.display = 'block';
+  }
+}
+
 
 
 var mySidebar = document.getElementById('mySidebar');

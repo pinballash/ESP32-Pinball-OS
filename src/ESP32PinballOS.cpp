@@ -148,14 +148,13 @@ void setup() {
       Serial.println(WiFi.localIP());
       localIP = WiFi.localIP();
       ScoreboardBText = "CONNECTED";
+      Serial.println("Setting up MDNS as " + (String)host + ".local");
       /*use mdns for host name resolution*/
       if (!MDNS.begin(host)) { //http://<host>.local
         Serial.println("Error setting up MDNS responder!");
         while (1) {
           delay(1000);
         }
-        ScoreboardTText = (String)host + ".local";
-        Serial.println("mDNS responder started");
       }else{
         ScoreboardTText = (String)host + ".local";
         Serial.println("mDNS responder started");
@@ -164,16 +163,8 @@ void setup() {
     {
       
       startSoftAccessPoint(softAPssid, softAPpassword, softAPlocalIP, softAPgatewayIP);
-
       setUpDNSServer(dnsServer, softAPlocalIP);
-
       server.begin();
-      //launch a soft AP
-      //WiFi.mode(WIFI_AP);
-      //WiFi.softAP(soft_ssid,soft_password,1,0,2,false); //open access point
-      //WiFi.softAPsetHostname(host);
-      //Serial.println("Starting DNS Server");
-      //dnsServer.start(53, "*", WiFi.softAPIP());
       Serial.print("AP IP address: ");
       Serial.println(WiFi.softAPIP());
       localIP = WiFi.softAPIP();

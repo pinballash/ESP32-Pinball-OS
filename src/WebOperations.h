@@ -620,8 +620,18 @@ void web_handle_getSwitchConfig()
         // Extract each characters by one by one
         jsonConfig = file.readString();
     }
+    Serial.print("JSON Document is: ");
     Serial.println(jsonConfig);
-    server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
+    if(jsonConfig == "")
+    {
+      //we need to send a dummy set of values
+      String jsonString = "{\"switchId\" : " + switchId + ",\"switchName\":\"undefined\",\"switchDebounce\":\"1000\",\"switchIsFlipper\":\"false\",\"switchDebug\":\"false\"}";
+      server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
+
+    }else{
+      server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
+    }
+    
   }
 
 
@@ -633,7 +643,7 @@ void web_handle_setSwitchConfig()
   {
     Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
   }else{
-    Serial.println("plain: " + server.arg("plain"));
+    Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
     DynamicJsonDocument postedJSON(2048);
     deserializeJson(postedJSON,server.arg("plain"));
     String switchId = postedJSON["switchId"];
@@ -646,7 +656,7 @@ void web_handle_setSwitchConfig()
     jobject["switchDebug"] = postedJSON["witchDebug"];
     String dataFile = "/switchConfig." + switchId + ".json";
     const char * dataChar = dataFile.c_str();
-    fileSystem.saveToFile(dataChar,jobject);
+    fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
   }
 

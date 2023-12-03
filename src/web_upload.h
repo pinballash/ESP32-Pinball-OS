@@ -6,7 +6,7 @@ const char UPLOAD_page[] PROGMEM = R"=====(
   </header>
   <div class="w3-container">
     <div class="w3-padding w3-white w3-display-container">
-      <p>Please use the <b>Choose File</b> button tp select a <em>firmware.bin</em> file and click <b>Upload</b>.</p>
+      <p>Please use the <b>Choose File</b> button to select a <em>firmware.bin</em> file and click <b>Upload</b>.</p>
       <p><i class="fa-solid fa-circle-exclamation"></i><em>Only use a firmware.bin file from a source you can trust.</em></p> 
 
     </div>
