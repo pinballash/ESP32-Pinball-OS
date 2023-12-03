@@ -15,7 +15,8 @@ unsigned long ScanSwitchMatrixEveryMicroSeconds = 800; //this seems to be the va
 PinballGame g_myPinballGame(setting_MachineName);
 
 
-#include "switchArray_def.h"
+//#include "switchArray_def.h" -> removing static definition in favour of dynamic from JSON files stored in SPIFFS and edited via Web page
+#include "switchArray_fromJSON.h"
 #include "coilArray_def.h"
 #include "flipperBindings_def.h"
 #include "coilBindings_def.h"
@@ -79,12 +80,12 @@ void changeState(int newState);
 TaskHandle_t MonitorSwitchesAndRegister;
 
 //setup array for storing switch active
-const int tableRows = 8; // 0 to 7
-const int tableCols = 5; // 0 to 4
+const int tableRows = 8;//(int8_t)setting_switchMatrixRows; // 0 to 7
+const int tableCols = 8;//(int8_t)setting_switchMatrixColumns; // 0 to 4
 const int switchCount = tableRows * tableCols;
 const int flipperButtons = 2;
-bool switchActive[tableCols][tableRows];//cols, rows, only 5 cols used on 8 Ball champ - change arrays if need more cols.
-bool switchScored[tableCols][tableRows];//cols, rows, only 5 cols used on 8 Ball champ - change arrays if need more cols.
+bool switchActive[tableCols][tableRows];
+bool switchScored[tableCols][tableRows];
 char colflipper[flipperButtons]; // flipper button cols
 char rowflipper[flipperButtons]; // flipper button rows
 unsigned long player1score = 0;
@@ -287,7 +288,7 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
 */
 void scanSwitchMatrix()
 {
- for ( byte col = 0; col < tableCols ; col++) 
+ for ( byte col = 0; col < setting_switchMatrixColumns ; col++) 
  {
   outgoing = 0;
   bitSet(outgoing,(7-col));  
@@ -295,7 +296,7 @@ void scanSwitchMatrix()
   bitClear(outgoing,col); //no longer needs to be set, we sent it
   delayMicroseconds(2); // give the register time to update
   read_sr();
-  for (byte row = 0; row < tableRows; row++) 
+  for (byte row = 0; row < setting_switchMatrixRows; row++) 
   {    
     if (bitRead(incoming,row)) 
     {
@@ -315,9 +316,9 @@ void identifyFlippers()
 {
   //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
   char i = 0;
-  for ( byte col = 0; col < tableCols ; col++) 
+  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) 
   {
-    for (byte row = 0; row < tableRows; row++) 
+    for (byte row = 0; row < setting_switchMatrixRows; row++) 
     {    
       int flipperSwitchID = (col*8)+row;
       if(switches[flipperSwitchID].switchObject->isFlipper()==true) //we are desling with flippers
@@ -478,8 +479,8 @@ void IRAM_ATTR releaseFlipper2()
 void triggerSwitches()
 {
   //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
-  for ( byte col = 0; col < tableCols ; col++) {
-    for (byte row = 0; row < tableRows; row++) 
+  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) {
+    for (byte row = 0; row < setting_switchMatrixRows; row++) 
     {    
       int triggeredSwitchID = (col*8)+row;
       if((switchActive[col][row]==true) && (switches[triggeredSwitchID].switchObject->isFlipper()==false))//flipper processing done in triggerFlippers() function
@@ -535,9 +536,9 @@ void processAllSwitches()
   //Serial.println("[Function] processAllSwitches()");
   //look for switch scored
   //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
-  for ( byte col = 0; col < tableCols ; col++) 
+  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) 
   {
-    for (byte row = 0; row < tableRows; row++) 
+    for (byte row = 0; row < setting_switchMatrixRows; row++) 
     {
       if(switchScored[col][row]==true)
       {

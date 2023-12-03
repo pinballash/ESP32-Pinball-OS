@@ -76,6 +76,9 @@ void setup() {
   Serial.print("Setup running on core ");
   Serial.println(xPortGetCoreID());
 
+  Serial.println("Starting Switch Object Creation");
+  createSwitchObjects();
+
   xTaskCreatePinnedToCore(
     MonitorSwitchesAndRegisterFunction,
     "MonitorSwitchesAndRegister",
