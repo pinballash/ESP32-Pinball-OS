@@ -78,6 +78,7 @@ void setup() {
 
   Serial.println("Starting Switch Object Creation");
   createSwitchObjects();
+  createCoilObjects();
 
   xTaskCreatePinnedToCore(
     MonitorSwitchesAndRegisterFunction,

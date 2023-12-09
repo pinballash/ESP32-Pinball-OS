@@ -1,8 +1,21 @@
 #include "PinballCoil.h"
 
 
+PinballCoil::PinballCoil(int ID)
+{
+  this->_ID = ID;
 
-PinballCoil::PinballCoil(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff)
+}
+/*PinballCoil::PinballCoil(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff)
+{
+  this->_coilName = coilName;
+  this->_shiftRegister = shiftRegister;
+  this->_shiftRegisterBit = shiftRegisterBit;
+  this->_pulseTime = pulseTime;
+  this->_pulseBackOff = pulseBackOff;
+}*/
+
+void PinballCoil::setValues(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff)
 {
   this->_coilName = coilName;
   this->_shiftRegister = shiftRegister;

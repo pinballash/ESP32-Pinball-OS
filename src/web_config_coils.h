@@ -2,7 +2,7 @@
 const char CONFIG_COILS_page[] PROGMEM = R"=====(
     <!-- Header -->
   <header class='w3-container' style='padding-top:22px'>
-    <h5><b><i class='fa fa-chalkboard-user'></i>Switch Configuration</b></h5>
+    <h5><b><i class='fa fa-chalkboard-user'></i>Coil Configuration</b></h5>
   </header>
   <div>
 	<code>
@@ -19,7 +19,7 @@ const char CONFIG_COILS_page[] PROGMEM = R"=====(
 				<thead>
 					<tr>
 						<th>Rows</th>
-						<th colspan="3">OSR</th>
+						<th colspan="3">Output Shift Registers</th>
 					</tr>
 
 				</thead>
@@ -79,7 +79,7 @@ const char CONFIG_COILS_page[] PROGMEM = R"=====(
 
 
 	
-	<div id="CoilEdit" style="display:none;">
+	<div id="coilEdit" style="display:none;">
 		<form id="configForm" name="configForm" class="configForm"  method="POST" action="#" enctype="multipart/form-data" target="_self">
 		<fieldset id="coilsFieldset">
 		  <legend id="formLegend"> Coil Edit:: </legend>

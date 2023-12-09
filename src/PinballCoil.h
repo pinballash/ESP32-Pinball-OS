@@ -6,6 +6,7 @@
 class PinballCoil
 {
   private:
+    int _ID;
     bool _enable = false; //can we turn the solenoid on perminantly - flippers and locks
     bool _isOn = false;
     int _pulseTime = 200; //default pulse time 200ms
@@ -23,10 +24,12 @@ class PinballCoil
 
    
   //constructor
-  PinballCoil(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff); //String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff
+  PinballCoil(int ID);
+  //PinballCoil(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff); //String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff
   
   //Public Functions
   void init();
+  void setValues(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff);
   String getName();
   void setPulseTime(int pulseTime);
   bool fireCoil();

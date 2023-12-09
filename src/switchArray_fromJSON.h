@@ -189,7 +189,7 @@ void createSwitchObjects()
       deserializeJson(switchJSON,jsonConfig);
       PinballSwitch* thisSwitch = switches[SwitchByte].switchObject;
       thisSwitch->setValues(switchJSON["switchName"],switchJSON["switchDebounce"],switchJSON["switchIsFlipper"],switchJSON["switchDebug"]);
-      Serial.println("JSON Loaded, this switch object is now called " + thisSwitch->getName());
+      //Serial.println("JSON Loaded, this switch object is now called " + thisSwitch->getName());
     }//end row processing
   }//end col processing
 }

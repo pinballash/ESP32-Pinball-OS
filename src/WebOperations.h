@@ -564,7 +564,7 @@ void web_handle_action_solenoidTest()
 {
   //for each coil, fire it
   String webText = "";
-  for(char coilNumber = 1; coilNumber < coilCount; coilNumber++)
+  for(char coilNumber = 0; coilNumber < 16; coilNumber++)
   {
     delay(1000);
     PinballCoil* thisCoil = coils[coilNumber].coilObject; //get the PinballCoil instance associated
@@ -619,20 +619,20 @@ void web_handle_getSwitchConfig()
   {
     Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
   }else{
-    Serial.println("plain: " + server.arg("plain"));
+    //Serial.println("plain: " + server.arg("plain"));
     DynamicJsonDocument postedJSON(2048);
     deserializeJson(postedJSON,server.arg("plain"));
     String switchId = postedJSON["switchId"];
     String jsonConfig;
     String dataFile = "/switchConfig." + switchId + ".json";
-    Serial.println("Opening " + dataFile);
+    //Serial.println("Opening " + dataFile);
     File file = SPIFFS.open(dataFile);
     while (file.available()) {
         // Extract each characters by one by one
         jsonConfig = file.readString();
     }
-    Serial.print("JSON Document is: ");
-    Serial.println(jsonConfig);
+    //Serial.print("JSON Document is: ");
+    //Serial.println(jsonConfig);
     if(jsonConfig == "")
     {
       //we need to send a dummy set of values
@@ -654,7 +654,7 @@ void web_handle_setSwitchConfig()
   {
     Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
   }else{
-    Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
+    //Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
     DynamicJsonDocument postedJSON(2048);
     deserializeJson(postedJSON,server.arg("plain"));
     String switchId = postedJSON["switchId"];
@@ -684,7 +684,7 @@ void web_handle_config_switches()
 
   // copy strings one and two over to the new buffer:
   strcpy( concatString, html_header );
-  strcat( concatString, CONFIG_COILS_page );
+  strcat( concatString, CONFIG_SWITCHES_page );
   strcat( concatString, html_footer );
   strcat( concatString, switchConfig_script_footer );
 
@@ -700,24 +700,24 @@ void web_handle_getCoilConfig()
   {
     Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
   }else{
-    Serial.println("plain: " + server.arg("plain"));
+    //Serial.println("plain: " + server.arg("plain"));
     DynamicJsonDocument postedJSON(2048);
     deserializeJson(postedJSON,server.arg("plain"));
-    String switchId = postedJSON["switchId"];
+    String coilId = postedJSON["coilId"];
     String jsonConfig;
-    String dataFile = "/switchConfig." + switchId + ".json";
-    Serial.println("Opening " + dataFile);
+    String dataFile = "/coilConfig." + coilId + ".json";
+    //Serial.println("Opening " + dataFile);
     File file = SPIFFS.open(dataFile);
     while (file.available()) {
         // Extract each characters by one by one
         jsonConfig = file.readString();
     }
-    Serial.print("JSON Document is: ");
-    Serial.println(jsonConfig);
+    //Serial.print("JSON Document is: ");
+    //Serial.println(jsonConfig);
     if(jsonConfig == "")
     {
       //we need to send a dummy set of values
-      String jsonString = "{\"switchId\" : " + switchId + ",\"switchName\":\"undefined\",\"switchDebounce\":\"1000\",\"switchIsFlipper\":\"false\",\"switchDebug\":\"false\"}";
+      String jsonString = "{\"coilId\" : " + coilId + ",\"coilName\":\"undefined\",\"shiftRegister\":\"\",\"shiftRegisterBit\":\"\",\"pulseTime\":\"50\",\"pulseBackOff\":\"500\"}";
       server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
 
     }else{
@@ -735,18 +735,19 @@ void web_handle_setCoilConfig()
   {
     Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
   }else{
-    Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
+    //Serial.println("SetCoilConfig: plain: " + server.arg("plain"));
     DynamicJsonDocument postedJSON(2048);
     deserializeJson(postedJSON,server.arg("plain"));
-    String switchId = postedJSON["switchId"];
+    String coilId = postedJSON["coilId"];
     DynamicJsonDocument myJsonDocument(1024);
     JsonObject jobject = myJsonDocument.to<JsonObject>();
-    jobject["switchId"] = postedJSON["switchId"];
-    jobject["switchName"] = postedJSON["switchName"];
-    jobject["switchDebounce"] = postedJSON["switchDebounce"];
-    jobject["switchIsFlipper"] = postedJSON["switchIsFlipper"];
-    jobject["switchDebug"] = postedJSON["witchDebug"];
-    String dataFile = "/switchConfig." + switchId + ".json";
+    jobject["coilId"] = postedJSON["coilId"];
+    jobject["coilName"] = postedJSON["coilName"];
+    jobject["shiftRegister"] = postedJSON["shiftRegister"];
+    jobject["shiftRegisterBit"] = postedJSON["shiftRegisterBit"];
+    jobject["pulseTime"] = postedJSON["pulseTime"];
+    jobject["pulseBackOff"] = postedJSON["pulseBackOff"];
+    String dataFile = "/coilConfig." + coilId + ".json";
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request

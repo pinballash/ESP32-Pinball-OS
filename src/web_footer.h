@@ -758,8 +758,8 @@ function getConfig() {
       const json =  this.responseText;
       const obj = JSON.parse(json);
 
-      //rows = obj.switchMatrixRows;
-      //cols = obj.switchMatrixColumns;
+      rows = obj.switchMatrixRows;
+      cols = obj.switchMatrixColumns;
       prepareMatrix();
 
     }
@@ -966,29 +966,21 @@ function loadcoilSettings(row,col)
         const obj = JSON.parse(json);
         var coilIdInput = document.getElementById('coilId');
         var coilNameInput = document.getElementById('coilName');
-        var coilDebounceInput = document.getElementById('coilDebounce');
-        var coilIsFlipper = document.getElementById('coilIsFlipper');
-        var coilDebug = document.getElementById('coilDebug');
-        
+        var shiftRegister = document.getElementById('shiftRegister');
+        var shiftRegisterBit = document.getElementById('shiftRegisterBit');
+        var pulseTime = document.getElementById('pulseTime');
+        var pulseBackOff = document.getElementById('pulseBackOff');
+
         coilNameInput.value = obj.coilName;
         var cellRef = row+"_"+col;
         var matrix_cell = document.getElementById(cellRef);
         matrix_cell.innerHTML = obj.coilName;
         
-        coilDebounceInput.value = obj.coilDebounce;
+       
+        pulseTime.value = obj.pulseTime;
+        pulseBackOff.value = obj.pulseBackOff;
         
-        if(obj.coilIsFlipper == "true")
-        {
-          coilIsFlipper.checked = true;
-        }else{
-          coilIsFlipper.checked = false;
-        }
-        if(obj.coilDebug == "true")
-        {
-          coilDebug.checked = true;
-        }else{
-          coilDebug.checked = false;
-        }
+
 		  
       }
   };
@@ -1023,8 +1015,8 @@ function getConfig() {
       const json =  this.responseText;
       const obj = JSON.parse(json);
 
-      rows = obj.coilMatrixRows;
-      cols = obj.coilMatrixColumns;
+      //rows = obj.coilMatrixRows;
+      //cols = obj.coilMatrixColumns;
       prepareMatrix();
 
     }
@@ -1073,18 +1065,21 @@ function prepareMatrix()
 
 }
 
-function selectcoil(row,col)
+function selectCoil(row,col)
 {
-	var coilIdInput = document.getElementById('coilId');
-	var coilNameInput = document.getElementById('coilName');
-	var coilDebounceInput = document.getElementById('coilDebounce');
-	var coilIsFlipper = document.getElementById('coilIsFlipper');
-	var coilDebug = document.getElementById('coilDebug');
+  var coilIdInput = document.getElementById('coilId');
+  var coilNameInput = document.getElementById('coilName');
+  var shiftRegister = document.getElementById('shiftRegister');
+  var shiftRegisterBit = document.getElementById('shiftRegisterBit');
+  var pulseTime = document.getElementById('pulseTime');
+  var pulseBackOff = document.getElementById('pulseBackOff');
+
 	
 	//we get the coil id from the matrix (col * 8)+row
 	var coilId = (col * 8) + row;
 	coilIdInput.value = coilId;
-	
+	shiftRegister.value = col;
+  shiftRegisterBit.value = row;
 	//other values we can load from JSON
 	//to do - program AJAX call to get JSON
   loadcoilSettings(row,col);
@@ -1096,40 +1091,27 @@ function selectcoil(row,col)
 
 function updatecoil()
 {
-	var coilIdInput = document.getElementById('coilId').value;
-	var coilNameInput = document.getElementById('coilName').value;
-	var coilDebounceInput = document.getElementById('coilDebounce').value;
-	var coilIsFlipper = document.getElementById('coilIsFlipper').checked;
-	var coilDebug = document.getElementById('coilDebug').checked;
-	
+  var coilIdInput = document.getElementById('coilId').value;
+  var coilNameInput = document.getElementById('coilName').value;
+  var shiftRegisterInput = document.getElementById('shiftRegister').value;
+  var shiftRegisterBitInput = document.getElementById('shiftRegisterBit').value;
+  var pulseTimeInput = document.getElementById('pulseTime').value;
+  var pulseBackOffInput = document.getElementById('pulseBackOff').value;
+
   //console.log(coilIsFlipper);
 	//to do - program AJAX call to send JSON
-	if(coilIsFlipper != true)
-	{
-		coilIsFlipper = "false";
-	}else{
-    coilIsFlipper = "true";
-  }
-	if(coilDebug != true)
-	{
-		coilDebug = "false";
-	}else{
-    coilDebug = "true";
-  }
+
 	var coilVar = {
 		coilId : coilIdInput,
 		coilName : coilNameInput,
-		coilDebounce : coilDebounceInput,
-		coilIsFlipper : coilIsFlipper,
-		coilDebug : coilDebug
+    shiftRegister : shiftRegisterInput,
+    shiftRegisterBit : shiftRegisterBitInput,
+    pulseTime : pulseTimeInput,
+    pulseBackOff : pulseBackOffInput
     }
-	//console.log(coilVar);
-	//var object = Object.create(coilVar);
-	//console.log(object);
 
 	var json = JSON.stringify(coilVar);
-	//console.log(json);
-	
+
 	///
 	// Creating a xhttp object
   let xhttp = new XMLHttpRequest();

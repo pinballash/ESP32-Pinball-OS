@@ -17,7 +17,7 @@ PinballGame g_myPinballGame(setting_MachineName);
 
 //#include "switchArray_def.h" -> removing static definition in favour of dynamic from JSON files stored in SPIFFS and edited via Web page
 #include "switchArray_fromJSON.h"
-#include "coilArray_def.h"
+#include "coilArray_fromJSON.h"
 #include "flipperBindings_def.h"
 #include "coilBindings_def.h"
 
