@@ -5,7 +5,8 @@
 class PinballSwitch
 {
 	private:
-		int _debounce = 1000; //default to 1000 ms
+		int _ID; 
+    int _debounce = 1000; //default to 1000 ms
 		bool _isOn = false;
 		unsigned long _lastMillis;
     String _switchName = "Name not set";
@@ -17,9 +18,11 @@ class PinballSwitch
 
 
   //constructor
-  PinballSwitch(String switchName, int debounce, bool isFlipper, bool debug);
+ 
+  PinballSwitch(int ID);
   
-  //Public Functions
+  //Public Functions 
+  void setValues(String switchName, int debounce, bool isFlipper, bool debug);
   String getName();
   bool triggerSwitch();
   bool isFlipper();

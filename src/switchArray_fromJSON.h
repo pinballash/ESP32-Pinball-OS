@@ -6,83 +6,77 @@
 #include <Effortless_SPIFFS.h>
 #include "PinballSwitch.h"
 
-void createSwitchObjects()
-{
-  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) {
-    for (byte row = 0; row < setting_switchMatrixRows; row++) 
-    {    
-      int SwitchIDInteger = (col * 8)+row;
-      String SwitchID = (String)SwitchIDInteger;
+//st up global switchObjects so they can be accessed later
+PinballSwitch sw_0(0);
+PinballSwitch sw_1(1);
+PinballSwitch sw_2(2);
+PinballSwitch sw_3(3);
+PinballSwitch sw_4(4);
+PinballSwitch sw_5(5);
+PinballSwitch sw_6(6);
+PinballSwitch sw_7(7);
+PinballSwitch sw_8(8);
+PinballSwitch sw_9(9);
 
-      //get the json file for this switchID
-      String jsonConfig;
-      String dataFile = "/switchConfig." + SwitchID + ".json";
-      Serial.println("Opening " + dataFile);
-      File file = SPIFFS.open(dataFile);
-      while (file.available()) {
-          // Extract each characters by one by one
-          jsonConfig = file.readString();
-      }
-      Serial.print("JSON Document is: ");
-      Serial.println(jsonConfig);
-      if(jsonConfig == "")
-      {
-        //we need to send a dummy set of values
-        String jsonString = "{\"switchId\" : " + SwitchID + ",\"switchName\":\"undefined\",\"switchDebounce\":\"1000\",\"switchIsFlipper\":\"false\",\"switchDebug\":\"false\"}";
+PinballSwitch sw_10(10);
+PinballSwitch sw_11(11);
+PinballSwitch sw_12(12);
+PinballSwitch sw_13(13);
+PinballSwitch sw_14(14);
+PinballSwitch sw_15(15);
+PinballSwitch sw_16(16);
+PinballSwitch sw_17(17);
+PinballSwitch sw_18(18);
+PinballSwitch sw_19(19);
 
-      }
+PinballSwitch sw_20(20);
+PinballSwitch sw_21(21);
+PinballSwitch sw_22(22);
+PinballSwitch sw_23(23);
+PinballSwitch sw_24(24);
+PinballSwitch sw_25(25);
+PinballSwitch sw_26(26);
+PinballSwitch sw_27(27);
+PinballSwitch sw_28(28);
+PinballSwitch sw_29(29);
 
-      //use the values in the json
+PinballSwitch sw_30(30);
+PinballSwitch sw_31(31);
+PinballSwitch sw_32(32);
+PinballSwitch sw_33(33);
+PinballSwitch sw_34(34);
+PinballSwitch sw_35(35);
+PinballSwitch sw_36(36);
+PinballSwitch sw_37(37);
+PinballSwitch sw_38(38);
+PinballSwitch sw_39(39);
 
-      //we need to go through each switch and set up.  For this we probably need global objects already created and tehn update them with the JSON values.
+PinballSwitch sw_40(40);
+PinballSwitch sw_41(41);
+PinballSwitch sw_42(42);
+PinballSwitch sw_43(43);
+PinballSwitch sw_44(44);
+PinballSwitch sw_45(45);
+PinballSwitch sw_46(46);
+PinballSwitch sw_47(47);
+PinballSwitch sw_48(48);
+PinballSwitch sw_49(49);
 
+PinballSwitch sw_50(50);
+PinballSwitch sw_51(51);
+PinballSwitch sw_52(52);
+PinballSwitch sw_53(53);
+PinballSwitch sw_54(54);
+PinballSwitch sw_55(55);
+PinballSwitch sw_56(56);
+PinballSwitch sw_57(57);
+PinballSwitch sw_58(58);
+PinballSwitch sw_59(59);
 
-
-
-
-
-    }//end row processing
-  }//end col processing
-}
-
-
-PinballSwitch sw_outhole("sw_outhole",2000,false,switchDebug);
-PinballSwitch sw_rebounds("sw_rebounds",200,false,switchDebug);
-PinballSwitch sw_credit("sw_credit",200,false,switchDebug);
-PinballSwitch sw_saucer("sw_saucer",2000,false,switchDebug);
-PinballSwitch sw_sling_left("sw_sling_left",200,false,switchDebug);
-PinballSwitch sw_sling_right("sw_sling_right",200,false,switchDebug);
-PinballSwitch sw_pop_left("sw_pop_left",200,false,switchDebug);
-PinballSwitch sw_pop_right("sw_pop_right",200,false,switchDebug);
-PinballSwitch sw_notused("sw_notused",200,false,switchDebug);
-PinballSwitch sw_tilt_bob("sw_tilt_bob",200,false,switchDebug);
-PinballSwitch sw_tilt_slam("sw_tilt_slam",200,false,switchDebug);
-PinballSwitch sw_rollover_right("sw_rollover_right",1000,false,switchDebug);
-PinballSwitch sw_rollover_left("sw_rollover_left",1000,false,switchDebug);
-PinballSwitch sw_start("sw_start",2000,false,switchDebug);
-//PinballSwitch sw_flipper_right("sw_flipper_right",20,true,switchDebug);
-//PinballSwitch sw_flipper_left("sw_flipper_left",20,true,switchDebug);
-PinballSwitch sw_outlane_right("sw_outlane_right",1000,false,switchDebug);
-PinballSwitch sw_outlane_left("sw_outlane_left",1000,false,switchDebug);
-PinballSwitch sw_lane_p("sw_lane_p",1000,false,switchDebug);
-PinballSwitch sw_lane_m("sw_lane_m",1000,false,switchDebug);
-PinballSwitch sw_lane_a("sw_lane_a",1000,false,switchDebug);
-PinballSwitch sw_lane_h("sw_lane_h",1000,false,switchDebug);
-PinballSwitch sw_lane_c("sw_lane_c",1000,false,switchDebug);
-PinballSwitch sw_spinner("sw_spinner",100,false,switchDebug);
-PinballSwitch sw_drop_7("sw_drop_7",1000,false,switchDebug);
-PinballSwitch sw_drop_6("sw_drop_6",1000,false,switchDebug);
-PinballSwitch sw_rollover_center("sw_rollover_center",1000,false,switchDebug);
-PinballSwitch sw_drop_4_5("sw_drop_4_5",1000,false,switchDebug);
-PinballSwitch sw_drop_3("sw_drop_3",1000,false,switchDebug);
-PinballSwitch sw_lane_change("sw_lane_change",200,false,switchDebug);
-PinballSwitch sw_drop_1_2("sw_drop_1_2",1000,false,switchDebug);
-PinballSwitch sw_standup_t("sw_standup_t",1000,false,switchDebug);
-PinballSwitch sw_standup_h("sw_standup_h",1000,false,switchDebug);
-PinballSwitch sw_standup_g("sw_standup_g",1000,false,switchDebug);
-PinballSwitch sw_standup_i("sw_standup_i",1000,false,switchDebug);
-PinballSwitch sw_standup_e("sw_standup_e",1000,false,switchDebug);
-
+PinballSwitch sw_60(60);
+PinballSwitch sw_61(61);
+PinballSwitch sw_62(62);
+PinballSwitch sw_63(63);
 
 typedef struct {
   byte swNum; // col * 8 + row
@@ -90,48 +84,112 @@ typedef struct {
   int baseScore;
 } SwitchAttributes;
 typedef SwitchAttributes SwitchList[];
-// List of Swithches and their object
 
+// List of Swithches and their object
 SwitchList switches = {
   //no, PinballSwitch
-  {0,&sw_outhole,0},
-  {1,&sw_rebounds,100},
-  {2,&sw_credit,0},
-  {3,&sw_saucer,100000},
-  {4,&sw_sling_left,15},
-  {5,&sw_sling_right,15},
-  {6,&sw_pop_left,333},
-  {7,&sw_pop_right,333},
-  {8,&sw_notused,0},
-  {9,&sw_tilt_bob,3},
-  {10,&sw_tilt_slam,3},
-  {11,&sw_rollover_right,10000},
-  {12,&sw_rollover_left,10000},
-  {13,&sw_start,0},
-  {14,&sw_notused,0},
-  {15,&sw_notused,0},
-  {16,&sw_outlane_right,1000},
-  {17,&sw_outlane_left,1000},
-  {18,&sw_notused,0},
-  {19,&sw_lane_p,3000},
-  {20,&sw_lane_m,3000},
-  {21,&sw_lane_a,3000},
-  {22,&sw_lane_h,3000},
-  {23,&sw_lane_c,3000},
-  {24,&sw_spinner,5},
-  {25,&sw_drop_7,500},
-  {26,&sw_drop_6,500},
-  {27,&sw_rollover_center,500},
-  {28,&sw_drop_4_5,500},
-  {29,&sw_drop_3,500},
-  {30,&sw_lane_change,0},
-  {31,&sw_drop_1_2,500},
-  {32,&sw_notused,0},
-  {33,&sw_notused,0},
-  {34,&sw_notused,0},
-  {35,&sw_standup_t,1000},
-  {36,&sw_standup_h,1000},
-  {37,&sw_standup_g,1000},
-  {38,&sw_standup_i,1000},
-  {39,&sw_standup_e,1000},
+  {0,&sw_0,0},
+  {1,&sw_1,0},
+  {2,&sw_2,0},
+  {3,&sw_3,0},
+  {4,&sw_4,0},
+  {5,&sw_5,0},
+  {6,&sw_6,0},
+  {7,&sw_7,0},
+  {8,&sw_8,0},
+  {9,&sw_9,0},
+  {10,&sw_10,0},
+  {11,&sw_11,0},
+  {12,&sw_12,0},
+  {13,&sw_13,0},
+  {14,&sw_14,0},
+  {15,&sw_15,0},
+  {16,&sw_16,0},
+  {17,&sw_17,0},
+  {18,&sw_18,0},
+  {19,&sw_19,0},
+  {20,&sw_20,0},
+  {21,&sw_21,0},
+  {22,&sw_22,0},
+  {23,&sw_23,0},
+  {24,&sw_24,0},
+  {25,&sw_25,0},
+  {26,&sw_26,0},
+  {27,&sw_27,0},
+  {28,&sw_28,0},
+  {29,&sw_29,0},
+  {30,&sw_30,0},
+  {31,&sw_31,0},
+  {32,&sw_32,0},
+  {33,&sw_33,0},
+  {34,&sw_34,0},
+  {35,&sw_35,0},
+  {36,&sw_36,0},
+  {37,&sw_37,0},
+  {38,&sw_38,0},
+  {39,&sw_39,0},
+  {40,&sw_40,0},
+  {41,&sw_41,0},
+  {42,&sw_42,0},
+  {43,&sw_43,0},
+  {44,&sw_44,0},
+  {45,&sw_45,0},
+  {46,&sw_46,0},
+  {47,&sw_47,0},
+  {48,&sw_48,0},
+  {49,&sw_49,0},
+  {50,&sw_50,0},
+  {51,&sw_51,0},
+  {52,&sw_52,0},
+  {53,&sw_53,0},
+  {54,&sw_54,0},
+  {55,&sw_55,0},
+  {56,&sw_56,0},
+  {57,&sw_57,0},
+  {58,&sw_58,0},
+  {59,&sw_59,0},
+  {60,&sw_60,0},
+  {61,&sw_61,0},
+  {62,&sw_62,0},
+  {63,&sw_63,0}
 };
+
+
+
+
+void createSwitchObjects()
+{
+  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) {
+    for (byte row = 0; row < setting_switchMatrixRows; row++) 
+    {    
+      int SwitchIDInteger = (col * 8)+row;
+      String SwitchID = (String)SwitchIDInteger;
+      byte SwitchByte = SwitchIDInteger;
+
+      //get the json file for this switchID
+      String jsonConfig;
+      String dataFile = "/switchConfig." + SwitchID + ".json";
+      //Serial.println("Opening " + dataFile);
+      File file = SPIFFS.open(dataFile);
+      while (file.available()) {
+          // Extract each characters by one by one
+          jsonConfig = file.readString();
+      }
+      //Serial.print("JSON Document is: ");
+      //Serial.println(jsonConfig);
+      if(jsonConfig == "")
+      {
+        //we need to send a dummy set of values
+        jsonConfig = "{\"switchId\" : " + SwitchID + ",\"switchName\":\"Unconfigured\",\"switchDebounce\":\"1000\",\"switchIsFlipper\":\"false\",\"switchDebug\":\"false\"}";
+
+      }
+
+      //use the values in the json
+      DynamicJsonDocument switchJSON(2048);
+      deserializeJson(switchJSON,jsonConfig);
+      PinballSwitch* thisSwitch = switches[SwitchByte].switchObject;
+      thisSwitch->setValues(switchJSON["switchName"],switchJSON["switchDebounce"],switchJSON["switchIsFlipper"],switchJSON["switchDebug"]);
+      Serial.println("JSON Loaded, this switch object is now called " + thisSwitch->getName());
+    }//end row processing
+  }//end col processing
+}

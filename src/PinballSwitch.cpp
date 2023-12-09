@@ -1,18 +1,29 @@
 #include "PinballSwitch.h"
 #include <Arduino.h>
 
-PinballSwitch::PinballSwitch(String switchName, int debounce, bool isFlipper, bool debug)
+
+
+PinballSwitch::PinballSwitch(int ID)
 {
-  this->_switchName = switchName;
-  this->_debounce = debounce;
-  this->_isFlipper = isFlipper;
-  this->_debug = debug;
+  this->_ID = ID;
+  this->_switchName = "Unconfigured";
+  this->_debounce = 1000;
+  this->_isFlipper = false;
+  this->_debug = false;
   
 }
 
 String PinballSwitch::getName()
 {
   return _switchName;
+}
+void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, bool debug)
+{
+  this->_switchName = switchName;
+  this->_debounce = debounce;
+  this->_isFlipper = isFlipper;
+  this->_debug = debug;
+  
 }
 
 //to fire the switch run mySwitchName.triggerSwitch(), this will return true or false depending on whether it was ok or not
