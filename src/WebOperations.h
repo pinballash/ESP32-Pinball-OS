@@ -6,6 +6,7 @@
 #include "web_dashboard.h"
 #include "web_config.h"
 #include "web_config_switches.h"
+#include "web_config_coils.h"
 #include "web_upload.h"
 #include "web_css.h"
 #include "web_header.h"
@@ -48,6 +49,12 @@ void web_handle_config();
 void web_handle_config_switches();
 void web_handle_getSwitchConfig();
 void web_handle_setSwitchConfig();
+
+void web_handle_config_coils();
+void web_handle_getCoilConfig();
+void web_handle_setCoilConfig();
+
+
 void web_handle_firmwareUpload();
 void web_handle_css();
 
@@ -117,6 +124,7 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/viewState", web_handle_viewState);
     server.on("/config", web_handle_config);
     server.on("/config_switches", web_handle_config_switches);
+    server.on("/config_coils", web_handle_config_coils);
     server.on("/uploadDev", web_handle_firmwareUpload);
 
     //CSS
@@ -184,6 +192,9 @@ void WebOperationsFunction( void * pvParameters)
 
     server.on("/api/switch/config/get", HTTP_POST, web_handle_getSwitchConfig);
     server.on("/api/switch/config/set", HTTP_POST, web_handle_setSwitchConfig);
+
+    server.on("/api/coil/config/get", HTTP_POST, web_handle_getCoilConfig);
+    server.on("/api/coil/config/set", HTTP_POST, web_handle_setCoilConfig);
 
     server.onNotFound(web_handle_404);
         /*handling uploading firmware file */
@@ -663,6 +674,106 @@ void web_handle_setSwitchConfig()
 
 
 }
+void web_handle_config_switches()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_SWITCHES_page) + strlen(html_footer) + strlen(switchConfig_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_COILS_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, switchConfig_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
+
+void web_handle_getCoilConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    Serial.println("plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    String jsonConfig;
+    String dataFile = "/switchConfig." + switchId + ".json";
+    Serial.println("Opening " + dataFile);
+    File file = SPIFFS.open(dataFile);
+    while (file.available()) {
+        // Extract each characters by one by one
+        jsonConfig = file.readString();
+    }
+    Serial.print("JSON Document is: ");
+    Serial.println(jsonConfig);
+    if(jsonConfig == "")
+    {
+      //we need to send a dummy set of values
+      String jsonString = "{\"switchId\" : " + switchId + ",\"switchName\":\"undefined\",\"switchDebounce\":\"1000\",\"switchIsFlipper\":\"false\",\"switchDebug\":\"false\"}";
+      server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
+
+    }else{
+      server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
+    }
+    
+  }
+
+
+
+}
+void web_handle_setCoilConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    DynamicJsonDocument myJsonDocument(1024);
+    JsonObject jobject = myJsonDocument.to<JsonObject>();
+    jobject["switchId"] = postedJSON["switchId"];
+    jobject["switchName"] = postedJSON["switchName"];
+    jobject["switchDebounce"] = postedJSON["switchDebounce"];
+    jobject["switchIsFlipper"] = postedJSON["switchIsFlipper"];
+    jobject["switchDebug"] = postedJSON["witchDebug"];
+    String dataFile = "/switchConfig." + switchId + ".json";
+    const char * dataChar = dataFile.c_str();
+    fileSystem.saveToFile(dataChar,postedJSON);
+    server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+  }
+
+
+
+}
+void web_handle_config_coils()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_COILS_page) + strlen(html_footer) + strlen(coilConfig_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_COILS_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, coilConfig_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
 
 bool web_handle_configUpdate()
 {
@@ -722,24 +833,7 @@ void web_handle_config()
   delete[] concatString;
  
 }
-void web_handle_config_switches()
-{
-// calculate the required buffer size (also accounting for the null terminator):
-  int bufferSize = strlen(html_header) + strlen(CONFIG_SWITCHES_page) + strlen(html_footer) + strlen(switchConfig_script_footer) + 1;
 
-  // allocate enough memory for the concatenated string:
-  char* concatString = new char[ bufferSize ];
-
-  // copy strings one and two over to the new buffer:
-  strcpy( concatString, html_header );
-  strcat( concatString, CONFIG_SWITCHES_page );
-  strcat( concatString, html_footer );
-  strcat( concatString, switchConfig_script_footer );
-
-  server.send(200, "text/html", concatString); //Send web page
-  delete[] concatString;
- 
-}
 void web_handle_firmwareUpload()
 {
   

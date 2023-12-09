@@ -758,8 +758,8 @@ function getConfig() {
       const json =  this.responseText;
       const obj = JSON.parse(json);
 
-      rows = obj.switchMatrixRows;
-      cols = obj.switchMatrixColumns;
+      //rows = obj.switchMatrixRows;
+      //cols = obj.switchMatrixColumns;
       prepareMatrix();
 
     }
@@ -898,6 +898,271 @@ function switchEdit_open() {
     SwitchEdit.style.display = 'block';
   } else {
     SwitchEdit.style.display = 'block';
+  }
+}
+
+
+
+var mySidebar = document.getElementById('mySidebar');
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById('myOverlay');
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = 'none';
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = 'block';
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = 'none';
+  overlayBg.style.display = 'none';
+}
+
+</script>
+
+</body>
+</html>
+)=====";
+
+const char coilConfig_script_footer[] PROGMEM = R"=====(<script>
+
+var SelectedRow = 0;
+var SelectedColumn = 0;
+
+function loadPage()
+{
+	getConfig();
+
+}
+
+function loadcoilSettings(row,col)
+{
+
+  var coilId = (col * 8) + row;
+	// Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "/api/coil/config/get";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+        //we have the coil data lets use it
+        const json =  this.responseText;
+        //console.log(json);
+        const obj = JSON.parse(json);
+        var coilIdInput = document.getElementById('coilId');
+        var coilNameInput = document.getElementById('coilName');
+        var coilDebounceInput = document.getElementById('coilDebounce');
+        var coilIsFlipper = document.getElementById('coilIsFlipper');
+        var coilDebug = document.getElementById('coilDebug');
+        
+        coilNameInput.value = obj.coilName;
+        var cellRef = row+"_"+col;
+        var matrix_cell = document.getElementById(cellRef);
+        matrix_cell.innerHTML = obj.coilName;
+        
+        coilDebounceInput.value = obj.coilDebounce;
+        
+        if(obj.coilIsFlipper == "true")
+        {
+          coilIsFlipper.checked = true;
+        }else{
+          coilIsFlipper.checked = false;
+        }
+        if(obj.coilDebug == "true")
+        {
+          coilDebug.checked = true;
+        }else{
+          coilDebug.checked = false;
+        }
+		  
+      }
+  };
+
+  // Converting JSON data to string
+  var data = JSON.stringify({
+    "coilId":coilId
+	});
+
+  // Sending data with the request
+  xhttp.send(data);
+	
+}
+
+const submitBtn = document.getElementById('submitButton');
+
+submitButton.addEventListener('click', (e) => {
+	e.preventDefault();
+	updatecoil();
+});
+
+var cols = 2;
+var rows = 8;
+//we need to get this from the main config
+function getConfig() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //Debug - schow json contents - uncomment this line
+      //document.getElementById('config').innerHTML = this.responseText ;
+      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
+      const json =  this.responseText;
+      const obj = JSON.parse(json);
+
+      rows = obj.coilMatrixRows;
+      cols = obj.coilMatrixColumns;
+      prepareMatrix();
+
+    }
+  };
+  xhttp.open('GET', 'ajax_getConfig', true);
+  xhttp.send();
+}
+
+function prepareMatrix()
+{
+	for(let i = 0; i < 2; i++)
+	{
+		for(let j = 0; j < 8; j++)
+		{
+			//lets work on this cell
+			var cellRef = j+"_"+i;
+			//alert("Updating Cell Ref: "+cellRef);
+			var matrix_cell = document.getElementById(cellRef);
+			if(i < cols)
+			{
+				if(j < rows)
+				{
+					var coilId = (i * 8) + j;
+					loadcoilSettings(j,i);
+         
+					
+				}else{
+					matrix_cell.innerHTML = "";
+          matrix_cell.style.display = 'none';
+          matrix_cell.parentElement.style.display = 'none';
+				}
+			}else
+			{
+				matrix_cell.innerHTML = "";
+        //hide the column
+        //console.log("Hiding Column "+(i+2));
+        var querySelection = "#coilTable tbody tr th:nth-child("+(i+2)+")";
+        //console.log(querySelection);
+        document.querySelectorAll(querySelection).forEach(el=>el.style.display = 'none');
+        
+			}
+		
+		}
+	
+	}
+
+}
+
+function selectcoil(row,col)
+{
+	var coilIdInput = document.getElementById('coilId');
+	var coilNameInput = document.getElementById('coilName');
+	var coilDebounceInput = document.getElementById('coilDebounce');
+	var coilIsFlipper = document.getElementById('coilIsFlipper');
+	var coilDebug = document.getElementById('coilDebug');
+	
+	//we get the coil id from the matrix (col * 8)+row
+	var coilId = (col * 8) + row;
+	coilIdInput.value = coilId;
+	
+	//other values we can load from JSON
+	//to do - program AJAX call to get JSON
+  loadcoilSettings(row,col);
+  coilEdit_open();
+  SelectedRow = row;
+  SelectedColumn = col;
+
+}
+
+function updatecoil()
+{
+	var coilIdInput = document.getElementById('coilId').value;
+	var coilNameInput = document.getElementById('coilName').value;
+	var coilDebounceInput = document.getElementById('coilDebounce').value;
+	var coilIsFlipper = document.getElementById('coilIsFlipper').checked;
+	var coilDebug = document.getElementById('coilDebug').checked;
+	
+  //console.log(coilIsFlipper);
+	//to do - program AJAX call to send JSON
+	if(coilIsFlipper != true)
+	{
+		coilIsFlipper = "false";
+	}else{
+    coilIsFlipper = "true";
+  }
+	if(coilDebug != true)
+	{
+		coilDebug = "false";
+	}else{
+    coilDebug = "true";
+  }
+	var coilVar = {
+		coilId : coilIdInput,
+		coilName : coilNameInput,
+		coilDebounce : coilDebounceInput,
+		coilIsFlipper : coilIsFlipper,
+		coilDebug : coilDebug
+    }
+	//console.log(coilVar);
+	//var object = Object.create(coilVar);
+	//console.log(object);
+
+	var json = JSON.stringify(coilVar);
+	//console.log(json);
+	
+	///
+	// Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "api/coil/config/set";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+          // Print received data from server
+          loadcoilSettings(SelectedRow,SelectedColumn);
+
+      }
+  };
+
+  // Sending data with the request
+  xhttp.send(json);
+
+}
+
+function coilEdit_open() {
+  var coilEdit = document.getElementById('coilEdit');
+  if (coilEdit.style.display === 'block') {
+    //coilEdit.style.display = 'none';
+    coilEdit.style.display = 'block';
+  } else {
+    coilEdit.style.display = 'block';
   }
 }
 
