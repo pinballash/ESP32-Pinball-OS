@@ -464,7 +464,7 @@ void triggerSwitches()
           
           if(switches[triggeredSwitchID].switchObject->isStart()==true)
           {
-            switch_event_startbutton();
+            switch_event_startbutton(triggeredSwitchID);
             switchActive[col][row] = false;
           }
           
