@@ -17,11 +17,14 @@ String PinballSwitch::getName()
 {
   return _switchName;
 }
-void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, bool debug)
+void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, bool isStart, bool isCredit, bool isOuthole, bool debug)
 {
   this->_switchName = switchName;
   this->_debounce = debounce;
   this->_isFlipper = isFlipper;
+  this->_isStart = isStart;
+  this->_isCredit = isCredit;
+  this->_isOuthole = isOuthole;
   this->_debug = debug;
   
 }
@@ -56,6 +59,22 @@ bool PinballSwitch::isFlipper()
 {
   return this->_isFlipper;
 }
+
+bool PinballSwitch::isStart()
+{
+  return this->_isStart;
+}
+
+bool PinballSwitch::isCredit()
+{
+  return this->_isCredit;
+}
+
+bool PinballSwitch::isOuthole()
+{
+  return this->_isOuthole;
+}
+
 
 void PinballSwitch::toggleDebug()
 {

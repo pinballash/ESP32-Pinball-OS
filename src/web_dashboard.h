@@ -4,70 +4,124 @@ const char MAIN_page[] PROGMEM = R"=====(
   <header class='w3-container' style='padding-top:22px'>
     <h5><b><i class='fa fa-chalkboard-user'></i>Virtual Buttons</b></h5>
   </header>
-  <!-- button row 1 -->
-  <div class='w3-row-padding w3-margin-bottom'>
-      <!-- button start-->
-      <div class='w3-quarter'>
-        <div class='w3-container w3-green w3-padding-16'>
-          <div class='w3-left'><i class='fa fa-play w3-xxlarge'></i></div>
-              <button onclick='event_start_click();' class='w3-button w3-green'>Press Start</button>
-        </div>
-      </div>
-    
- 
-    <!-- button start-->
-      <div class='w3-quarter'>
-          <div class='w3-container w3-red w3-padding-16'>
-              <div class='w3-left'><i class='fa fa-power-off w3-xxlarge'></i></div>
-                  <button onclick='event_restart_click();' class='w3-button w3-red'>Restart</button>
-          </div>
-      </div>
-    </div>
-    <!-- button row 2 -->
-    <div class='w3-row-padding w3-margin-bottom'>
-                <button onclick='event_leftrolloverswitch_click();' class='w3-button w3-border'>Left Rollover</button>
-                <button onclick='event_leftrolloverswitch_click();' class='w3-button w3-border'> Center Rollover</button>
-                <button onclick='event_rightrolloverswitch_click();' class='w3-button w3-border'>Right Rollover</button>
-                <button onclick='event_saucerswitch_click();' class='w3-button w3-border'>Saucer</button>
-    </div>
-    <!-- button row 3 -->
-    <div class='w3-row-padding w3-margin-bottom'>
-                <button onclick='event_lefttoplaneswitch_click();' class='w3-button w3-border'>Left Toplane</button>
-                <button onclick='event_centertoplaneswitch_click();' class='w3-button w3-border'>Center Toplane</button> 
-                <button onclick='event_righttoplaneswitch_click();' class='w3-button w3-border'>Right Toplane</button>
-    </div>
-    <!-- button row 4 -->
-    <div class='w3-row-padding w3-margin-bottom'>
-                <button onclick='event_spinnerswitch_click();' class='w3-button w3-border'>Spinner</button>
-                <button onclick='event_trigger_switch(0,6);' class='w3-button w3-border'>Left Pop</button>
-                <button onclick='event_trigger_switch(0,7)' class='w3-button w3-border'>Right Pop</button>
+
+  <div class='w3-panel'>
+    <fieldset id="coilsFieldset">
+		  <legend id="formLegend"> Switch Matrix:: </legend>
+			<table id="switchTable" style="width:100%;">
+				<thead>
+
+				</thead>
+				<tbody>
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="0_0" onclick="event_trigger_switch(0,0);"></span></td>
+						<td><span id="0_1" onclick="event_trigger_switch(0,1);"></span></td>
+						<td><span id="0_2" onclick="event_trigger_switch(0,2);"></span></td>
+						<td><span id="0_3" onclick="event_trigger_switch(0,3);"></span></td>
+						<td><span id="0_4" onclick="event_trigger_switch(0,4);"></span></td>
+						<td><span id="0_5" onclick="event_trigger_switch(0,5);"></span></td>
+						<td><span id="0_6" onclick="event_trigger_switch(0,6);"></span></td>
+						<td><span id="0_7" onclick="event_trigger_switch(0,7);"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="1_0" onclick="event_trigger_switch(1,0);"></span></td>
+						<td><span id="1_1" onclick="event_trigger_switch(1,1);"></span></td>
+						<td><span id="1_2" onclick="event_trigger_switch(1,2);"></span></td>
+						<td><span id="1_3" onclick="event_trigger_switch(1,3);"></span></td>
+						<td><span id="1_4" onclick="event_trigger_switch(1,4);"></span></td>
+						<td><span id="1_5" onclick="event_trigger_switch(1,5);"></span></td>
+						<td><span id="1_6" onclick="event_trigger_switch(1,6);"></span></td>
+						<td><span id="1_7" onclick="event_trigger_switch(1,7);"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="2_0" onclick="event_trigger_switch(2,0);"></span></td>
+						<td><span id="2_1" onclick="event_trigger_switch(2,1);"></span></td>
+						<td><span id="2_2" onclick="event_trigger_switch(2,2);"></span></td>
+						<td><span id="2_3" onclick="event_trigger_switch(2,3);"></span></td>
+						<td><span id="2_4" onclick="event_trigger_switch(2,4);"></span></td>
+						<td><span id="2_5" onclick="event_trigger_switch(2,5);"></span></td>
+						<td><span id="2_6" onclick="event_trigger_switch(2,6);"></span></td>
+						<td><span id="2_7" onclick="event_trigger_switch(2,7);"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="3_0" onclick="event_trigger_switch(3,0);"></span></td>
+						<td><span id="3_1" onclick="event_trigger_switch(3,1);"></span></td>
+						<td><span id="3_2" onclick="event_trigger_switch(3,2);"></span></td>
+						<td><span id="3_3" onclick="event_trigger_switch(3,3);"></span></td>
+						<td><span id="3_4" onclick="event_trigger_switch(3,4);"></span></td>
+						<td><span id="3_5" onclick="event_trigger_switch(3,5);"></span></td>
+						<td><span id="3_6" onclick="event_trigger_switch(3,6);"></span></td>
+						<td><span id="3_7" onclick="event_trigger_switch(3,7);"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="4_0" onclick="event_trigger_switch(4,0);"></span></td>
+						<td><span id="4_1" onclick="event_trigger_switch(4,1);"></span></td>
+						<td><span id="4_2" onclick="event_trigger_switch(4,2);"></span></td>
+						<td><span id="4_3" onclick="event_trigger_switch(4,3);"></span></td>
+						<td><span id="4_4" onclick="event_trigger_switch(4,4);"></span></td>
+						<td><span id="4_5" onclick="event_trigger_switch(4,5);"></span></td>
+						<td><span id="4_6" onclick="event_trigger_switch(4,6);"></span></td>
+						<td><span id="4_7" onclick="event_trigger_switch(4,7);"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="5_0" onclick="event_trigger_switch(5,0);"></span></td>
+						<td><span id="5_1" onclick="event_trigger_switch(5,1);"></span></td>
+						<td><span id="5_2" onclick="event_trigger_switch(5,2);"></span></td>
+						<td><span id="5_3" onclick="event_trigger_switch(5,3);"></span></td>
+						<td><span id="5_4" onclick="event_trigger_switch(5,4);"></span></td>
+						<td><span id="5_5" onclick="event_trigger_switch(5,5);"></span></td>
+						<td><span id="5_6" onclick="event_trigger_switch(5,6);"></span></td>
+						<td><span id="5_7" onclick="event_trigger_switch(5,7);"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="6_0" onclick="event_trigger_switch(6,0);"></span></td>
+						<td><span id="6_1" onclick="event_trigger_switch(6,1);"></span></td>
+						<td><span id="6_2" onclick="event_trigger_switch(6,2);"></span></td>
+						<td><span id="6_3" onclick="event_trigger_switch(6,3);"></span></td>
+						<td><span id="6_4" onclick="event_trigger_switch(6,4);"></span></td>
+						<td><span id="6_5" onclick="event_trigger_switch(6,5);"></span></td>
+						<td><span id="6_6" onclick="event_trigger_switch(6,6);"></span></td>
+						<td><span id="6_7" onclick="event_trigger_switch(6,7);"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><span id="7_0" onclick="event_trigger_switch(7,0);"></span></td>
+						<td><span id="7_1" onclick="event_trigger_switch(7,1);"></span></td>
+						<td><span id="7_2" onclick="event_trigger_switch(7,2);"></span></td>
+						<td><span id="7_3" onclick="event_trigger_switch(7,3);"></span></td>
+						<td><span id="7_4" onclick="event_trigger_switch(7,4);"></span></td>
+						<td><span id="7_5" onclick="event_trigger_switch(7,5);"></span></td>
+						<td><span id="7_6" onclick="event_trigger_switch(7,6);"></span></td>
+						<td><span id="7_7" onclick="event_trigger_switch(7,7);"></span></td>
+					</tr>
+				</tbody>
+				<tfoot>
+					
+				</tfoot>
+			</table>
+		</fieldset>
   </div>
-  <!-- button row 5 -->
-  <div class='w3-row-padding w3-margin-bottom'>
-               <button onclick='event_drop1switch_click();' class='w3-button w3-border'>Drop 1</button>
-                <button onclick='event_drop2switch_click();' class='w3-button w3-border'>Drop 2</button>
-                <button onclick='event_drop3switch_click();' class='w3-button w3-border'>Drop 3</button>   
-                <button onclick='event_drop4switch_click();' class='w3-button w3-border'>Drop 4</button>
-                <button onclick='event_drop5switch_click();' class='w3-button w3-border'>Drop 5</button>
-              
-  </div>
-  <!-- button row 6 -->
-  <div class='w3-row-padding w3-margin-bottom'>
-              <button onclick='event_standup1switch_click();' class='w3-button w3-border'>Standup 1</button>
-              <button onclick='event_standup2switch_click();' class='w3-button w3-border'>Standup 2</button>
-              <button onclick='event_standup3switch_click();' class='w3-button w3-border'>Standup 3</button>
-              <button onclick='event_standup4switch_click();' class='w3-button w3-border'>Standup 4</button>
-              <button onclick='event_standup5switch_click();' class='w3-button w3-border'>Standup 5</button>
-                
-  </div>
-  <!-- button row 7 -->
-  <div class='w3-row-padding w3-margin-bottom'>
-                 <button onclick='event_leftoutlaneswitch_click();' class='w3-button w3-border'>Left Outlane</button>
-                <button onclick='event_leftinlaneswitch_click();' class='w3-button w3-border'>Left Inlane</button>
-                <button onclick='event_outhole_click();' class='w3-button w3-red'>Outhole</button>
-                <button onclick='event_rightinlaneswitch_click();' class='w3-button w3-border'>Right Inlane</button>
-                <button onclick='event_rightoutlaneswitch_click();' class='w3-button w3-border'>Right Outlane</button>
-  </div>
+
+
+
 
   <div class='w3-panel'>
     <div class='w3-row-padding' style='margin:0 -16px'>
@@ -156,7 +210,7 @@ const char MAIN_page[] PROGMEM = R"=====(
         <td><span id='p4ball'>0</span></td>
       </tr>
     </table>
-
+  </div>
   <div class='w3-container'>
     <h5>Top Scores</h5>
     <table class='w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white'>
@@ -202,6 +256,7 @@ const char MAIN_page[] PROGMEM = R"=====(
       </tr>
       
     </table>
+  </div>
  <hr>
      <header class='w3-container w3-blue-grey w3-center'>
     <h2>Console Debug Switches</h2>

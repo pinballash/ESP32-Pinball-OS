@@ -12,7 +12,10 @@ class PinballSwitch
     String _switchName = "Name not set";
     bool _debug = true;
     bool _isFlipper = false;
-  
+    bool _isStart = false;
+    bool _isCredit = false;
+    bool _isOuthole = false;  
+
   public:
    
 
@@ -22,10 +25,13 @@ class PinballSwitch
   PinballSwitch(int ID);
   
   //Public Functions 
-  void setValues(String switchName, int debounce, bool isFlipper, bool debug);
+  void setValues(String switchName, int debounce, bool isFlipper, bool isStart, bool isCredit, bool isOuthole, bool debug);
   String getName();
   bool triggerSwitch();
   bool isFlipper();
+  bool isStart();
+  bool isCredit();
+  bool isOuthole();
   void toggleDebug();
 };
 #endif

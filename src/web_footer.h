@@ -238,10 +238,12 @@ function updateSettings()
 )=====";
 
 const char liveview_script_footer[] PROGMEM = R"=====(
-    <script>
-    function loadPage()
+<script>
+var cols = 0;
+var rows = 0;
+function loadPage()
 {
-	//nothing
+	 getConfig();
 }
 // Get the Sidebar
 var mySidebar = document.getElementById('mySidebar');
@@ -269,22 +271,22 @@ function w3_close() {
 setInterval(function() {
   // Call a function repetatively with 2 Second interval
   getStatus();
-  //getCPU0();
-  //getCPU1();
+  getCPU0();
+  getCPU1();
   getPlayerNumber();
   getBallNumber();
   getPlayerScore();
-  //getBallSave();
-  //getTopDisplay();
-  //getBottomDisplay();
-  //getP1Score();
-  //getP1Ball();
-  //getP2Score();
-  //getP2Ball();
-  //getP3Score();
-  //getP3Ball();
-  //getP4Score();
-  //getP4Ball();
+  getBallSave();
+  getTopDisplay();
+  getBottomDisplay();
+  getP1Score();
+  getP1Ball();
+  getP2Score();
+  getP2Ball();
+  getP3Score();
+  getP3Ball();
+  getP4Score();
+  getP4Ball();
 }, 1000); //1000mSeconds update rate
 
 function getStatus() {
@@ -485,7 +487,7 @@ function getP4Ball() {
   xhttp.send();
 }
 
-function event_trigger_switch(col,row) {
+function event_trigger_switch(row,col) {
   var switchId = (col * 8) + row;
 	// Creating a xhttp object
   let xhttp = new XMLHttpRequest();
@@ -503,12 +505,7 @@ function event_trigger_switch(col,row) {
 
         //we have the switch data lets use it
         const json =  this.responseText;
-        //console.log(json);
-        const obj = JSON.parse(json);
-
-        console.log(obj);    
-
-		  
+        console.log(json);    
       }
   };
 
@@ -522,166 +519,6 @@ function event_trigger_switch(col,row) {
   // Sending data with the request
   xhttp.send(data);
 }
-
-function event_start_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/startbutton', true);
-    xhttp.send();
-}
-function event_restart_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/restart', true);
-    xhttp.send();
-}
-
-function event_outhole_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/outholeswitch', true);
-    xhttp.send();
-}
-
-function event_rollover_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/rolloverswitch', true);
-    xhttp.send();
-}
-function event_leftrolloverswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/leftrolloverswitch', true);
-    xhttp.send();
-}
-function event_rightrolloverswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/rightrolloverswitch', true);
-    xhttp.send();
-}
-function event_leftflipperswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/leftflipperswitch', true);
-    xhttp.send();
-}
-function event_rightflipperswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/rightflipperswitch', true);
-    xhttp.send();
-}
-function event_leftslingswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/leftslingswitch', true);
-    xhttp.send();
-}
-function event_rightslingswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/rightslingswitch', true);
-    xhttp.send();
-}
-function event_leftpopswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/leftpopswitch', true);
-    xhttp.send();
-}
-function event_rightpopswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/rightpopswitch', true);
-    xhttp.send();
-}
-function event_spinnerswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/spinnerswitch', true);
-    xhttp.send();
-}
-function event_leftoutlaneswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/leftoutlaneswitch', true);
-    xhttp.send();
-}
-function event_rightoutlaneswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/rightoutlaneswitch', true);
-    xhttp.send();
-}
-function event_leftinlaneswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/leftinlaneswitch', true);
-    xhttp.send();
-}
-function event_rightinlaneswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/rightinlaneswitch', true);
-    xhttp.send();
-}
-function event_lefttoplaneswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/lefttoplaneswitch', true);
-    xhttp.send();
-}
-function event_righttoplaneswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/righttoplaneswitch', true);
-    xhttp.send();
-}
-function event_centertoplaneswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/centertoplaneswitch', true);
-    xhttp.send();
-}
-function event_saucerswitch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/saucerswitch', true);
-    xhttp.send();
-}
-function event_standup1switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/standup1switch', true);
-    xhttp.send();
-}
-function event_standup2switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/standup2switch', true);
-    xhttp.send();
-}
-function event_standup3switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/standup3switch', true);
-    xhttp.send();
-}
-function event_standup4switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/standup4switch', true);
-    xhttp.send();
-}
-function event_standup5switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/standup5switch', true);
-    xhttp.send();
-}
-function event_drop1switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/drop1switch', true);
-    xhttp.send();
-}
-function event_drop2switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/drop2switch', true);
-    xhttp.send();
-}
-function event_drop3switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/drop3switch', true);
-    xhttp.send();
-}
-function event_drop4switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/drop4switch', true);
-    xhttp.send();
-}
-function event_drop5switch_click() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', './action/drop5switch', true);
-    xhttp.send();
-}
-
-
 function event_debugSwitch_click() {
     var xhttp = new XMLHttpRequest();
     xhttp.open('GET', './debug/switch', true);
@@ -697,6 +534,112 @@ function event_debugOps_click() {
     xhttp.open('GET', './debug/ops', true);
     xhttp.send();
 }
+
+
+//we need to get this from the main config
+function getConfig() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //Debug - schow json contents - uncomment this line
+      //document.getElementById('config').innerHTML = this.responseText ;
+      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
+      const json =  this.responseText;
+      const obj = JSON.parse(json);
+
+      rows = obj.switchMatrixRows;
+      cols = obj.switchMatrixColumns;
+      prepareMatrix();
+
+    }
+  };
+  xhttp.open('GET', 'ajax_getConfig', true);
+  xhttp.send();
+}
+function loadSwitches(row,col)
+{
+
+  var switchId = (col * 8) + row;
+	// Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "/api/switch/config/get";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+        //we have the switch data lets use it
+        const json =  this.responseText;
+        //console.log(json);
+        const obj = JSON.parse(json);
+
+        var cellRef = row+"_"+col;
+        var matrix_cell = document.getElementById(cellRef);
+        matrix_cell.innerHTML = obj.switchName;
+        
+
+		  
+      }
+  };
+
+  // Converting JSON data to string
+  var data = JSON.stringify({
+    "switchId":switchId
+	});
+
+  // Sending data with the request
+  xhttp.send(data);
+	
+}
+
+function prepareMatrix()
+{
+
+  for(let i = 0; i < 8; i++)
+	{
+		for(let j = 0; j < 8; j++)
+		{
+			//lets work on this cell
+			var cellRef = j+"_"+i;
+			//alert("Updating Cell Ref: "+cellRef);
+			var matrix_cell = document.getElementById(cellRef);
+			if(i < cols)
+			{
+				if(j < rows)
+				{
+					var switchId = (i * 8) + j;
+					loadSwitches(j,i);
+         
+					
+				}else{
+					matrix_cell.innerHTML = "";
+          matrix_cell.style.display = 'none';
+          matrix_cell.parentElement.style.display = 'none';
+				}
+			}else
+			{
+				matrix_cell.innerHTML = "";
+        //hide the column
+        //console.log("Hiding Column "+(i+2));
+        var querySelection = "#switchTable tbody tr th:nth-child("+(i+2)+")";
+        //console.log(querySelection);
+        document.querySelectorAll(querySelection).forEach(el=>el.style.display = 'none');
+        
+			}
+		
+		}
+    
+	
+	}
+
+}
+
 
 </script>
 
@@ -742,6 +685,9 @@ function loadSwitchSettings(row,col)
         var switchNameInput = document.getElementById('switchName');
         var switchDebounceInput = document.getElementById('switchDebounce');
         var switchIsFlipper = document.getElementById('switchIsFlipper');
+        var switchIsStart = document.getElementById('switchIsStart');
+        var switchIsCredit = document.getElementById('switchIsCredit');
+        var switchIsOuthole = document.getElementById('switchIsOuthole');                      
         var switchDebug = document.getElementById('switchDebug');
         
         switchNameInput.value = obj.switchName;
@@ -757,6 +703,28 @@ function loadSwitchSettings(row,col)
         }else{
           switchIsFlipper.checked = false;
         }
+
+        if(obj.switchIsStart == "true")
+        {
+          switchIsStart.checked = true;
+        }else{
+          switchIsStart.checked = false;
+        }
+
+        if(obj.switchIsCredit == "true")
+        {
+          switchIsCredit.checked = true;
+        }else{
+          switchIsCredit.checked = false;
+        }
+
+        if(obj.switchIsOuthole == "true")
+        {
+          switchIsOuthole.checked = true;
+        }else{
+          switchIsOuthole.checked = false;
+        }
+
         if(obj.switchDebug == "true")
         {
           switchDebug.checked = true;
@@ -855,7 +823,8 @@ function selectSwitch(row,col)
 	var switchNameInput = document.getElementById('switchName');
 	var switchDebounceInput = document.getElementById('switchDebounce');
 	var switchIsFlipper = document.getElementById('SwitchIsFlipper');
-	var switchDebug = document.getElementById('switchDebug');
+	var switchIsStart = document.getElementById('SwitchIsFlipper');
+
 	
 	//we get the switch id from the matrix (col * 8)+row
 	var switchId = (col * 8) + row;
@@ -876,6 +845,9 @@ function updateSwitch()
 	var switchNameInput = document.getElementById('switchName').value;
 	var switchDebounceInput = document.getElementById('switchDebounce').value;
 	var switchIsFlipper = document.getElementById('switchIsFlipper').checked;
+  var switchIsStart = document.getElementById('switchIsStart').checked;
+  var switchIsCredit = document.getElementById('switchIsCredit').checked;
+  var switchIsOuthole = document.getElementById('switchIsOuthole').checked;
 	var switchDebug = document.getElementById('switchDebug').checked;
 	
   //console.log(switchIsFlipper);
@@ -886,6 +858,29 @@ function updateSwitch()
 	}else{
     switchIsFlipper = "true";
   }
+
+	if(switchIsStart != true)
+	{
+		switchIsStart = "false";
+	}else{
+    switchIsStart = "true";
+  }
+
+	if(switchIsCredit != true)
+	{
+		switchIsCredit = "false";
+	}else{
+    switchIsCredit = "true";
+  }
+
+	if(switchIsOuthole != true)
+	{
+		switchIsOuthole = "false";
+	}else{
+    switchIsOuthole = "true";
+  }  
+
+
 	if(switchDebug != true)
 	{
 		switchDebug = "false";
@@ -897,6 +892,9 @@ function updateSwitch()
 		switchName : switchNameInput,
 		switchDebounce : switchDebounceInput,
 		switchIsFlipper : switchIsFlipper,
+    switchIsStart : switchIsStart,
+    switchIsCredit : switchIsCredit,
+    switchIsOuthole : switchIsOuthole,
 		switchDebug : switchDebug
     }
 	//console.log(switchVar);

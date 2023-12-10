@@ -188,7 +188,7 @@ void createSwitchObjects()
       DynamicJsonDocument switchJSON(2048);
       deserializeJson(switchJSON,jsonConfig);
       PinballSwitch* thisSwitch = switches[SwitchByte].switchObject;
-      thisSwitch->setValues(switchJSON["switchName"],switchJSON["switchDebounce"],switchJSON["switchIsFlipper"],switchJSON["switchDebug"]);
+      thisSwitch->setValues(switchJSON["switchName"],switchJSON["switchDebounce"],switchJSON["switchIsFlipper"],switchJSON["switchIsStart"],switchJSON["switchIsCredit"],switchJSON["switchIsOuthole"],switchJSON["switchDebug"]);
       //Serial.println("JSON Loaded, this switch object is now called " + thisSwitch->getName());
     }//end row processing
   }//end col processing

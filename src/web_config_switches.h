@@ -175,6 +175,18 @@ const char CONFIG_SWITCHES_page[] PROGMEM = R"=====(
 						<td><input type="checkbox" id="switchIsFlipper" name="switchIsFlipper" value="true"></td>
 					</tr>
 					<tr>
+						<td><label for="switchIsStart">Is Start?</label></td>
+						<td><input type="checkbox" id="switchIsStart" name="switchIsStart" value="true"></td>
+					</tr>
+					<tr>
+						<td><label for="switchIsCredit">Is Credit?</label></td>
+						<td><input type="checkbox" id="switchIsCredit" name="switchIsCredit" value="true"></td>
+					</tr>
+					<tr>
+						<td><label for="switchIsOuthole">Is Outhole?</label></td>
+						<td><input type="checkbox" id="switchIsOuthole" name="switchIsOuthole" value="true"></td>
+					</tr>
+					<tr>
 						<td><label for="switchDebug">Debug?</label></td>
 						<td><input type="checkbox" id="switchDebug" name="switchDebug" value="true"></td>
 					</tr>

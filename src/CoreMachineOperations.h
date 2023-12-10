@@ -41,37 +41,8 @@ void read_sr();
 void write_sr_matrix();
 void write_sr_audio();
 void write_sr_coils();
-void switch_event_outhole();
-void switch_event_saucer(int switchID);
-void switch_event_drop1(int switchID);
-void switch_event_drop2(int switchID);
-void switch_event_drop3(int switchID);
-void switch_event_drop4(int switchID);
-void switch_event_drop5(int switchID);
-void switch_event_startbutton();
-void switch_event_pop(int switchID);
-
-void switch_event_outane_left(int switchID);
-void switch_event_outane_right(int switchID);
-
-void switch_event_lane_c(int switchID);
-void switch_event_lane_h(int switchID);
-void switch_event_lane_a(int switchID);
-void switch_event_lane_m(int switchID);
-void switch_event_lane_p(int switchID);
-
-void switch_event_rollover_center(int switchID);
-void switch_event_rollover_left(int switchID);
-void switch_event_rollover_right(int switchID);
-
-void switch_event_spinner(int switchID);
-
-void switch_event_standup_e(int switchID);
-void switch_event_standup_i(int switchID);
-void switch_event_standup_g(int switchID);
-void switch_event_standup_h(int switchID);
-void switch_event_standup_t(int switchID);
-
+void switch_event_startbutton(int switchId);
+void switch_event_outhole(int switchId);
 
 void addScore(int switchID);
 void changeState(int newState);
@@ -302,7 +273,7 @@ void scanSwitchMatrix()
     {
       switchActive[col][row] = true; 
     } else {
-      switchActive[col][row] = false; //default to not active (off)
+      //switchActive[col][row] = false; //default to not active (off)
     }
   }
  }
@@ -483,16 +454,25 @@ void triggerSwitches()
     for (byte row = 0; row < setting_switchMatrixRows; row++) 
     {    
       int triggeredSwitchID = (col*8)+row;
-      if(switchActive[col][row]==true)
-      {
-        Serial.println("function->triggerSwitches - switch name: " + switches[triggeredSwitchID].switchObject->getName());
-      }
+
       if((switchActive[col][row]==true) && (switches[triggeredSwitchID].switchObject->isFlipper()==false))//flipper processing done in triggerFlippers() function
       {//switch triggered physically and not flipper
         Serial.println("function->triggerSwitches - switch name: " + switches[triggeredSwitchID].switchObject->getName());
         if(switches[triggeredSwitchID].switchObject->triggerSwitch()==true)//this will return false if debounce period still active
         {
           switchScored[col][row]=true; //get credit for hitting the switch - this is picked up in processAllSwitches()
+          
+          if(switches[triggeredSwitchID].switchObject->isStart()==true)
+          {
+            switch_event_startbutton();
+            switchActive[col][row] = false;
+          }
+          
+          if(switches[triggeredSwitchID].switchObject->isOuthole()==true)
+          {
+            switch_event_outhole(triggeredSwitchID);
+            switchActive[col][row] = false;
+          }
           if(generalMODebug)
           {
             Serial.print("TriggerSwitches(): ");
@@ -529,6 +509,7 @@ void triggerSwitches()
           }
         }//end triggered switch processing  
       }//end switch processing
+      switchActive[col][row] = false;
     }//end row processing
   }//end col processing
 }
@@ -553,140 +534,15 @@ void processAllSwitches()
         int scoredSwitch = (col * 8)+row;
         Serial.println(scoredSwitch);
 
-        switch(scoredSwitch)
+        /*switch(scoredSwitch)
         {
           case 0: //outhole switch fire coil 14 - outhole
           {
             switch_event_outhole();
             break;
           }
-          case 13: //Start Button
-          {
-            switch_event_startbutton();
-            break;
-          }
-          case 3: //Saucer
-          {
-            switch_event_saucer(3);
-            break;
-          }
-          case 6: //Pop left
-          {
 
-            switch_event_pop(6);
-            break;
-          }
-          case 7: //Pop right
-          {
-            switch_event_pop(7);
-            break;
-          }
-          case 31: //Drop 1
-          {
-            switch_event_drop1(31);
-            break;
-          }
-          case 29: //Drop 2
-          {
-            switch_event_drop2(29);
-            break;
-          }
-          case 28: //Drop 3
-          {
-            switch_event_drop3(28);
-            break;
-          }
-          case 27: //Center Rollover
-          {
-            switch_event_rollover_center(27);
-            break;
-          }
-          case 26: //Drop 4
-          {
-            switch_event_drop4(26);
-            break;
-          }
-          case 16: //Oulane Left
-          {
-            switch_event_outane_left(16);
-            break;
-          }
-          case 17: //Outlane Right
-          {
-            switch_event_outane_right(17);
-            break;
-          }
-          /*case 18: // not used
-          {
-            switch_event_(18);
-            break;
-          }*/
-          case 19: //P Lane
-          {
-            switch_event_lane_p(19);
-            break;
-          }
-          case 20: //M Lane
-          {
-            switch_event_lane_m(20);
-            break;
-          }
-          case 21: //A Lane
-          {
-            switch_event_lane_a(21);
-            break;
-          }
-          case 22: //H Lane
-          {
-            switch_event_lane_h(22);
-            break;
-          }
-          case 23: //C Lane
-          {
-            switch_event_lane_c(23);
-            break;
-          }
-          case 24: //Spinner
-          {
-            switch_event_spinner(24);
-            break;
-          }
-          case 11: //Right Rollover
-          {
-            switch_event_rollover_right(11);
-            break;
-          }
-          case 12: //Left Rollover
-          {
-            switch_event_rollover_left(12);
-            break;
-          }
-          case 35: //T Standup
-          {
-            switch_event_standup_t(35);
-            break;
-          }
-          case 36: //H Standup
-          {
-            switch_event_standup_h(36);
-            break;
-          }
-          case 37: //G Standup
-          {
-            switch_event_standup_g(37);
-            break;
-          }
-          case 38: //I Standup
-          {
-            switch_event_standup_i(38);
-            break;
-          }
-          case 39: //E Standup
-          {
-            switch_event_standup_e(39);
-            break;
-          }
-        }
+        }*/
         switchScored[col][row]=false;
       }
     }
@@ -824,7 +680,7 @@ void write_sr_coils()
     Serial.println("]");
   }   
 }   
-void switch_event_outhole()
+void switch_event_outhole(int switchId)
 {
   
   bool isGameActive = g_myPinballGame.isGameActive();
@@ -839,7 +695,7 @@ void switch_event_outhole()
       ScoreboardTText = "Next....";
       //do other end of ball stuff - call additional functions here
     }
-    byte coilNumber = 14;
+    byte coilNumber = 14; // fix this - must fin
     //only fire if in a game
     if(g_myPinballGame.isGameActive()==true)
     {
@@ -865,7 +721,7 @@ void switch_event_outhole()
   
 
 }
-void switch_event_saucer(int switchID)
+/*void switch_event_saucer(int switchID)
 {
   //saucer code here
   Serial.println("Fire Saucer");
@@ -879,85 +735,8 @@ void switch_event_saucer(int switchID)
     write_sr_coils(); //update shift register
   }
   addScore(switchID);
-}
-void switch_event_pop(int switchID)
-{
-  //saucer code here
-  Serial.println("Fire Pop");
-  //ScoreboardTText = "Pop!";
-  addScore(switchID);
-  
-}
-void switch_event_drop1(int switchID)
-{
-  //drop 1 code here
-  Serial.println("Fire Drop 1");
-  //ScoreboardTText = "Drop 1";
-  byte coilNumber = 8;
-  PinballCoil* switchCoil = coils[coilNumber].coilObject;
-  if(switchCoil->fireCoil()){
-    coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(switchCoil); //action the turning on
-    write_sr_coils(); //update shift register
-  }
-  addScore(switchID);
-}
-void switch_event_drop2(int switchID)
-{
-  //drop 2 code here
-  Serial.println("Fire Drop 2");
-  //ScoreboardTText = "Drop 2";
-  byte coilNumber = 9;
-  PinballCoil* switchCoil = coils[coilNumber].coilObject;
-  if(switchCoil->fireCoil()){
-    coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(switchCoil); //action the turning on
-    write_sr_coils(); //update shift register
-  }
-  addScore(switchID);
-}
-void switch_event_drop3(int switchID)
-{
-  //drop 3 code here
-  Serial.println("Fire Drop 3");
-  //ScoreboardTText = "Drop 3";
-  byte coilNumber = 10;
-  PinballCoil* switchCoil = coils[coilNumber].coilObject;
-  if(switchCoil->fireCoil()){
-    coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(switchCoil); //action the turning on
-    write_sr_coils(); //update shift register
-  }
-  addScore(switchID);
-}
-void switch_event_drop4(int switchID)
-{
-  //drop 4 code here
-  Serial.println("Fire Drop 4");
-  //ScoreboardTText = "Drop 4";
-  byte coilNumber = 11;
-  PinballCoil* switchCoil = coils[coilNumber].coilObject;
-  if(switchCoil->fireCoil()){
-    coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(switchCoil); //action the turning on
-    write_sr_coils(); //update shift register
-  }
-  addScore(switchID);
-}
-void switch_event_drop5(int switchID)
-{
-  //drop 5 code here
-  Serial.println("Fire Drop 5");
-  //ScoreboardTText = "Drop 5";
-  byte coilNumber = 12;
-  PinballCoil* switchCoil = coils[coilNumber].coilObject;
-  if(switchCoil->fireCoil()){
-    coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(switchCoil); //action the turning on
-    write_sr_coils(); //update shift register
-  }
-  addScore(switchID);
-}
+}*/
+
 void switch_event_startbutton()
 {
   Serial.println("switch_event_startbutton");
@@ -975,118 +754,9 @@ void switch_event_startbutton()
     changeState(2);
   }
 }
-void switch_event_outane_left(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_outane_right(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_lane_c(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_lane_h(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_lane_a(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_lane_m(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_lane_p(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_rollover_center(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_rollover_left(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_rollover_right(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_spinner(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_standup_t(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_standup_h(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_standup_i(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_standup_g(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
-void switch_event_standup_e(int switchID)
-{
-  if(MachineState == 2)
-  {//if game active
-    addScore(switchID);
-  }
-}
+
+
+
 void addScore(int switchID)
 {
   int score = (switches[switchID].baseScore) * g_myPinballGame.getPlayfieldMultiplier();
