@@ -12,8 +12,8 @@ const char UPLOAD_page[] PROGMEM = R"=====(
     </div>
     <form class="w3-container w3-card-4" method='POST' action='#' enctype='multipart/form-data' id='upload_form'>
       <div class="w3-section">
-          <input class="w3-input" type='file' name='update'>
-          <input class="w3-input" type='submit' value='Upload'>
+          <input class="w3-input" type='file' name='update' accept=".bin" />
+          <input class="w3-input" type='submit' value='Upload' />
       </div>
       <hr/>
     </form>

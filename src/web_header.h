@@ -37,11 +37,13 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
     <a href='./config' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Basic Config</a>
     <a href='./config_switches' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config Switches</a>
     <a href='./config_coils' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config Coils</a>
+    <a href='./config_switch_coil_binding' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config Switch Coil Bindings</a>
   </div>
 </nav>
 
 
 <!-- Overlay effect when opening sidebar on small screens -->
+<div class='w3-overlay w3-hide-large w3-animate-opacity' style='cursor:pointer; display:none;' title='loading' id='myLoadingOverlay'></div>
 <div class='w3-overlay w3-hide-large w3-animate-opacity' onclick='w3_close()' style='cursor:pointer' title='close side menu' id='myOverlay'></div>
 
 <!-- !PAGE CONTENT! -->

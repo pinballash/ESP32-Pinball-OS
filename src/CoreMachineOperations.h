@@ -19,7 +19,7 @@ PinballGame g_myPinballGame(setting_MachineName);
 #include "switchArray_fromJSON.h"
 #include "coilArray_fromJSON.h"
 #include "flipperBindings_def.h"
-#include "coilBindings_def.h"
+#include "coilBindings_fromJSON.h"
 
 void fireFlipper(int firedSwitchID);
 void releaseFlipper(int firedSwitchID);
@@ -499,15 +499,16 @@ void triggerSwitches()
             {
               Serial.print("Switch triggered with coil binding....");
               Serial.println(triggeredSwitchID);
-              Serial.print("need to locate coil associated ");
-              Serial.println(switchCoilBindings[triggeredSwitchID].coilNumber);              
+              Serial.println("need to locate coil associated ");
+              //Serial.println(switchCoilBindings[(byte)triggeredSwitchID].coilNumber);              
             } 
-            byte coilNumber = switchCoilBindings[triggeredSwitchID].coilNumber; //get the coil number bound to the switch
-            PinballCoil* switchCoil = coils[coilNumber].coilObject; //get the PinballCoil instance associated
+            byte* coilNumber = switchCoilBindings[(byte)triggeredSwitchID].coilNumber; //get the coil number bound to the switch
+            byte coilNumberByte = *coilNumber;
+            PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
             if(MachineState == 2) //only if game is active
             {
               if(switchCoil->fireCoil()){ //try and fire the coil
-                coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+                coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
                 ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
                 write_sr_coils(); //update shift register
               }

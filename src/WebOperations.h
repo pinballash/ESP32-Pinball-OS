@@ -7,6 +7,7 @@
 #include "web_config.h"
 #include "web_config_switches.h"
 #include "web_config_coils.h"
+#include "web_config_switch_coil_binding.h"
 #include "web_upload.h"
 #include "web_css.h"
 #include "web_header.h"
@@ -53,6 +54,10 @@ void web_handle_setSwitchConfig();
 void web_handle_config_coils();
 void web_handle_getCoilConfig();
 void web_handle_setCoilConfig();
+
+void web_handle_config_switchcoilbinding();
+void web_handle_getswitchcoilbindingConfig();
+void web_handle_setswitchcoilbindingConfig();
 
 
 void web_handle_firmwareUpload();
@@ -125,6 +130,7 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/config", web_handle_config);
     server.on("/config_switches", web_handle_config_switches);
     server.on("/config_coils", web_handle_config_coils);
+    server.on("/config_switch_coil_binding", web_handle_config_switchcoilbinding);
     server.on("/uploadDev", web_handle_firmwareUpload);
 
     //CSS
@@ -192,6 +198,9 @@ void WebOperationsFunction( void * pvParameters)
 
     server.on("/api/switch/config/get", HTTP_POST, web_handle_getSwitchConfig);
     server.on("/api/switch/config/set", HTTP_POST, web_handle_setSwitchConfig);
+
+    server.on("/api/switch/coil/config/get", HTTP_POST, web_handle_getswitchcoilbindingConfig);
+    server.on("/api/switch/coil/config/set", HTTP_POST, web_handle_setswitchcoilbindingConfig);
 
     server.on("/api/coil/config/get", HTTP_POST, web_handle_getCoilConfig);
     server.on("/api/coil/config/set", HTTP_POST, web_handle_setCoilConfig);
@@ -774,6 +783,85 @@ void web_handle_config_coils()
   delete[] concatString;
  
 }
+
+void web_handle_getswitchcoilbindingConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    //Serial.println("plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    String jsonConfig;
+    String dataFile = "/switchCoilBindingConfig." + switchId + ".json";
+    //Serial.println("Opening " + dataFile);
+    File file = SPIFFS.open(dataFile);
+    while (file.available()) {
+        // Extract each characters by one by one
+        jsonConfig = file.readString();
+    }
+    Serial.print("JSON Document is: ");
+    Serial.println(jsonConfig);
+    if(jsonConfig == "")
+    {
+      //we need to send a dummy set of values
+      String jsonString = "{\"switchId\" : " + switchId + ",\"coilBinding\":\"-1\"}";
+      server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
+
+    }else{
+      server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
+    }
+    
+  }
+
+
+
+}
+void web_handle_setswitchcoilbindingConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    //Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    DynamicJsonDocument myJsonDocument(1024);
+    JsonObject jobject = myJsonDocument.to<JsonObject>();
+    jobject["switchId"] = postedJSON["switchId"];
+    jobject["coilBinding"] = postedJSON["coilBinding"];
+   
+    String dataFile = "/switchCoilBindingConfig." + switchId + ".json";
+    const char * dataChar = dataFile.c_str();
+    fileSystem.saveToFile(dataChar,postedJSON);
+    server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+  }
+
+
+
+}
+void web_handle_config_switchcoilbinding()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_SWITCHCOILBINDING_page) + strlen(html_footer) + strlen(switchCoilBindingConfig_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_SWITCHCOILBINDING_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, switchCoilBindingConfig_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
 
 
 bool web_handle_configUpdate()

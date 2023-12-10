@@ -78,7 +78,10 @@ void setup() {
 
   Serial.println("Starting Switch Object Creation");
   createSwitchObjects();
+  Serial.println("Starting Coil Object Creation");
   createCoilObjects();
+  Serial.println("Starting Switch Coil bonding");
+  createSwitchCoilBindings();
 
   xTaskCreatePinnedToCore(
     MonitorSwitchesAndRegisterFunction,
