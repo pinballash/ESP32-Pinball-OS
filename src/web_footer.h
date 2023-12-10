@@ -269,22 +269,22 @@ function w3_close() {
 setInterval(function() {
   // Call a function repetatively with 2 Second interval
   getStatus();
-  getCPU0();
-  getCPU1();
+  //getCPU0();
+  //getCPU1();
   getPlayerNumber();
   getBallNumber();
   getPlayerScore();
-  getBallSave();
-  getTopDisplay();
-  getBottomDisplay();
-  getP1Score();
-  getP1Ball();
-  getP2Score();
-  getP2Ball();
-  getP3Score();
-  getP3Ball();
-  getP4Score();
-  getP4Ball();
+  //getBallSave();
+  //getTopDisplay();
+  //getBottomDisplay();
+  //getP1Score();
+  //getP1Ball();
+  //getP2Score();
+  //getP2Ball();
+  //getP3Score();
+  //getP3Ball();
+  //getP4Score();
+  //getP4Ball();
 }, 1000); //1000mSeconds update rate
 
 function getStatus() {
@@ -483,6 +483,44 @@ function getP4Ball() {
   };
   xhttp.open('GET', 'ajax_getP4Ball', true);
   xhttp.send();
+}
+
+function event_trigger_switch(col,row) {
+  var switchId = (col * 8) + row;
+	// Creating a xhttp object
+  let xhttp = new XMLHttpRequest();
+  let url = "/action/triggerswitch";
+
+  // open a connection
+  xhttp.open("POST", url, true);
+
+  // Set the request header i.e. which type of content you are sending
+  xhttp.setRequestHeader("Content-Type", "application/json");
+
+  // Create a state change callback
+  xhttp.onreadystatechange = function () {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+        //we have the switch data lets use it
+        const json =  this.responseText;
+        //console.log(json);
+        const obj = JSON.parse(json);
+
+        console.log(obj);    
+
+		  
+      }
+  };
+
+  // Converting JSON data to string
+  var data = JSON.stringify({
+    "switchId":switchId,
+    "col":col,
+    "row":row
+	});
+
+  // Sending data with the request
+  xhttp.send(data);
 }
 
 function event_start_click() {

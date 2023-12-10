@@ -3,8 +3,8 @@
 #include "PinballCoil.h"
 #include "PinballGame.h"
 
-bool switchDebug = false;
-bool coilDebug = false;
+bool switchDebug = true;
+bool coilDebug = true;
 bool loopDebug = false;
 bool threadDebug = false;
 bool srDebug = false;
@@ -95,7 +95,7 @@ unsigned long player4score = 0;
 int playfieldMultiplier = 1;
 
 //setup array fo maintaining the state of coils
-const int coilCount = 17;
+const int coilCount = 16;
 bool coilActive[coilCount];
 
 
@@ -483,8 +483,13 @@ void triggerSwitches()
     for (byte row = 0; row < setting_switchMatrixRows; row++) 
     {    
       int triggeredSwitchID = (col*8)+row;
+      if(switchActive[col][row]==true)
+      {
+        Serial.println("function->triggerSwitches - switch name: " + switches[triggeredSwitchID].switchObject->getName());
+      }
       if((switchActive[col][row]==true) && (switches[triggeredSwitchID].switchObject->isFlipper()==false))//flipper processing done in triggerFlippers() function
       {//switch triggered physically and not flipper
+        Serial.println("function->triggerSwitches - switch name: " + switches[triggeredSwitchID].switchObject->getName());
         if(switches[triggeredSwitchID].switchObject->triggerSwitch()==true)//this will return false if debounce period still active
         {
           switchScored[col][row]=true; //get credit for hitting the switch - this is picked up in processAllSwitches()
@@ -743,7 +748,7 @@ void ProcessShifts(PinballCoil* CoilObject)
 }
 void manageCoils()
 {
-  for ( byte coilNumber = 1; coilNumber < coilCount+1 ; coilNumber++) {
+  for ( byte coilNumber = 0; coilNumber < coilCount ; coilNumber++) {
     if(coilActive[coilNumber]==true)
     {
       //if(generalMODebug) Serial.print("Attempting to manage coil....");

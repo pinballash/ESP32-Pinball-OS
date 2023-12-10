@@ -69,6 +69,7 @@ void web_handle_switchDebug();
 void web_handle_coilDebug();
 void web_handle_opsDebug();
 
+void web_handle_action_triggerswitch();
 
 void web_handle_action_startbutton();
 void web_handle_action_restart();
@@ -162,6 +163,9 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/debug/ops", web_handle_opsDebug);
   
     //some virtual buttons to do work 
+    server.on("/action/triggerswitch", web_handle_action_triggerswitch);
+
+
     server.on("/action/startbutton", web_handle_action_startbutton);
     server.on("/action/outholeswitch", web_handle_action_outholeswitch);
     server.on("/action/rolloverswitch", web_handle_action_rolloverswitch);
@@ -432,6 +436,29 @@ void web_handle_opsDebug()
     server.send(200, "text/html", "OK - Set to " + (String)generalMODebug); //Send web page
  
 }
+
+
+void web_handle_action_triggerswitch()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+    server.send(200, "text/plain", "{'Status' : 'FAIL'}"); //Send ADC value only to client ajax request
+  }else{
+    //Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    int jsoncol = postedJSON["col"];
+    int jsonrow = postedJSON["row"];
+    char col = jsoncol;
+    char row = jsonrow;
+    Serial.println("Triggering Switch "+ server.arg("plain")); //no JSON no webpage my friend ;)
+    switchActive[col][row]=true;
+    server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+  }
+}
+
+
 void web_handle_action_startbutton()
 {
   Serial.println("[web_handle] start button switch");
@@ -465,12 +492,12 @@ void web_handle_action_rightrolloverswitch()
 
 void web_handle_action_leftpopswitch()
 {
-  switch_event_pop(6);
+  switchActive[0][6]=true;
   server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
 }
 void web_handle_action_rightpopswitch()
 {
-  switch_event_pop(7);
+  switchActive[0][7]=true;
   server.send(200, "text/html", "OK - Switch Virtually Pressed"); //Send web page
 }
 void web_handle_action_spinnerswitch()

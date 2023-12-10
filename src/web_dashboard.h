@@ -39,8 +39,8 @@ const char MAIN_page[] PROGMEM = R"=====(
     <!-- button row 4 -->
     <div class='w3-row-padding w3-margin-bottom'>
                 <button onclick='event_spinnerswitch_click();' class='w3-button w3-border'>Spinner</button>
-                <button onclick='event_leftpopswitch_click();' class='w3-button w3-border'>Left Pop</button>
-                <button onclick='event_rightpopswitch_click();' class='w3-button w3-border'>Right Pop</button>
+                <button onclick='event_trigger_switch(0,6);' class='w3-button w3-border'>Left Pop</button>
+                <button onclick='event_trigger_switch(0,7)' class='w3-button w3-border'>Right Pop</button>
   </div>
   <!-- button row 5 -->
   <div class='w3-row-padding w3-margin-bottom'>
