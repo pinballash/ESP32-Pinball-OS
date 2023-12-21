@@ -67,20 +67,20 @@ void setup() {
 
   setupShifts();
  
-  Serial.println("Now read settings files...");
-  Serial.println("Starting SPIFFS");
+  //Serial.println("Now read settings files...");
+  //Serial.println("Starting SPIFFS");
 
   setupFileSystem();
   
 
-  Serial.print("Setup running on core ");
-  Serial.println(xPortGetCoreID());
+  //Serial.print("Setup running on core ");
+  //Serial.println(xPortGetCoreID());
 
-  Serial.println("Starting Switch Object Creation");
+  //Serial.println("Starting Switch Object Creation");
   createSwitchObjects();
-  Serial.println("Starting Coil Object Creation");
+  //Serial.println("Starting Coil Object Creation");
   createCoilObjects();
-  Serial.println("Starting Switch Coil bonding");
+  //Serial.println("Starting Switch Coil bonding");
   createSwitchCoilBindings();
 
   xTaskCreatePinnedToCore(
@@ -130,7 +130,7 @@ void setup() {
     //Yes, try and connect to the wifi, if fail create a soft ap
     //no, create a soft ap
     WiFi.begin(setting_SSID, setting_SSIDPassword);
-    Serial.println("");
+    //Serial.println("");
 
     // Wait for connection
 
@@ -141,7 +141,7 @@ void setup() {
     while ((WiFi.status() != WL_CONNECTED) && (WifiWaitCounter < MaxWait)) 
     {
       delay(1000);
-      Serial.print(".");
+      //Serial.print(".");
       WifiWaitCounter++;
     }
        
@@ -155,16 +155,16 @@ void setup() {
       Serial.println(WiFi.localIP());
       localIP = WiFi.localIP();
       ScoreboardBText = "CONNECTED";
-      Serial.println("Setting up MDNS as " + (String)host + ".local");
+      //Serial.println("Setting up MDNS as " + (String)host + ".local");
       /*use mdns for host name resolution*/
       if (!MDNS.begin(host)) { //http://<host>.local
-        Serial.println("Error setting up MDNS responder!");
+        //Serial.println("Error setting up MDNS responder!");
         while (1) {
           delay(1000);
         }
       }else{
         ScoreboardTText = (String)host + ".local";
-        Serial.println("mDNS responder started");
+        //Serial.println("mDNS responder started");
       }
     }else
     {
@@ -176,17 +176,17 @@ void setup() {
       Serial.println(WiFi.softAPIP());
       localIP = WiFi.softAPIP();
       if (!MDNS.begin(host)) { //http://<host>.local
-        Serial.println("Error setting up MDNS responder!");
+        //Serial.println("Error setting up MDNS responder!");
         while (1) {
           delay(1000);
         }
         
       }
       ScoreboardTText = (String)host + ".local";
-      Serial.println("mDNS responder started");
-      Serial.print("http://");
-      Serial.print(host);
-      Serial.println(".local");
+      //Serial.println("mDNS responder started");
+      //Serial.print("http://");
+      //Serial.print(host);
+      //Serial.println(".local");
       delay(1000);
       wifiSoftAPInUse = true;
       ScoreboardBText = "NOT CONNECTED";

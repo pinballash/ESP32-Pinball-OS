@@ -264,6 +264,11 @@ const char MAIN_page[] PROGMEM = R"=====(
  <div class='w3-row-padding w3-margin-bottom'>
     <!-- button start-->
     <div class='w3-quarter'>
+      <div class='w3-container w3-red w3-padding-16'>
+          <button onclick='event_restart_click();' class='w3-button w3-red'>Restart</button>
+      </div>
+    </div>
+    <div class='w3-quarter'>
       <div class='w3-container w3-green w3-padding-16'>
           <button onclick='event_debugSwitch_click();' class='w3-button w3-green'>Debug Switches</button>
       </div>

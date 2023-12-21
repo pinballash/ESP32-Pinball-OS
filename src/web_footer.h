@@ -534,6 +534,18 @@ function event_debugOps_click() {
     xhttp.open('GET', './debug/ops', true);
     xhttp.send();
 }
+function event_restart_click() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      window.location.href = './viewState';
+
+    }
+  };
+    xhttp.open('GET', './action/restart', true);
+    xhttp.send();
+    
+}
 
 
 //we need to get this from the main config

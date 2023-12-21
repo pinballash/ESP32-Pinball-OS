@@ -182,8 +182,8 @@ void createSwitchCoilBindings()
           switchCoilBindings[SwitchByte].instantFire  = false;
         }
         
-        Serial.print("[SWITCH TO COIL BINDING] - JSON Loaded");
-        Serial.println(jsonConfig);
+        //Serial.print("[SWITCH TO COIL BINDING] - JSON Loaded :: ");
+        //Serial.println(jsonConfig);
       }
 
       

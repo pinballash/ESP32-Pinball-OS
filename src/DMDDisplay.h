@@ -85,59 +85,59 @@ void DisplayControllerFunction(void * pvParameters)
     {
       //Serial.println("Deleting DisplayGameMode Task");
       //vTaskDelete(DisplayGameMode);
-      Serial.println("Deleting DisplayBootMode Task");
+      //Serial.println("Deleting DisplayBootMode Task");
       vTaskDelete(DisplayBootMode);
       resetDisplay();
       xTaskCreatePinnedToCore(DisplayAttractModeFunction, "DisplayAttractMode",10000,NULL,99,&DisplayAttractMode,1);
       forceDisplayUpdate = false;
-      Serial.println("Display Changing to Attract Mode");
+      Serial.println("[DisplayControllerFunction] Display Changing to Attract Mode");
 
     }else if((MachineState == 2) && (forceDisplayUpdate == true) && (lastMachineState == 1)) //change from Atract to Game
     {
       //Serial.println("Deleting DisplayGameMode Task");
       //vTaskDelete(DisplayGameMode);
-      Serial.println("Deleting AtractMode Task");
+      //Serial.println("Deleting AtractMode Task");
       vTaskSuspend(DisplayAttractMode);
       vTaskDelete(DisplayAttractMode);
       resetDisplay();
       xTaskCreatePinnedToCore(DisplayGameModeFunction, "DisplayGameMode", 10000, NULL, 99, &DisplayGameMode,1);
       forceDisplayUpdate = false;
-      Serial.println("Display Changing to Attract Mode");
+      Serial.println("[DisplayControllerFunction] Display Changing to Game Mode");
 
     }else if((MachineState == 1) && (forceDisplayUpdate == true) && (lastMachineState == 3)) //change grom End Game to Attract
     {
-      Serial.println("Deleting DisplayGameMode Task");
+      //Serial.println("Deleting DisplayGameMode Task");
       vTaskDelete(DisplayEndOfGameMode);
       resetDisplay();
       xTaskCreatePinnedToCore(DisplayAttractModeFunction, "DisplayAttractMode",10000,NULL,99,&DisplayAttractMode,1);
       forceDisplayUpdate = false;
-      Serial.println("Display Changing to Attract Mode");
+      Serial.println("[DisplayControllerFunction] Display Changing to Attract Mode");
 
     }else if((MachineState == 2) && (forceDisplayUpdate == true) && (lastMachineState == 3)) //Change from End Game to Game
     {
-      Serial.println("Deleting DisplayEOGMode Task");
+      //Serial.println("Deleting DisplayEOGMode Task");
       vTaskDelete(DisplayEndOfGameMode);
       resetDisplay();
-      Serial.println("Creating DisplayGameMode Task");
+      //Serial.println("Creating DisplayGameMode Task");
       xTaskCreatePinnedToCore(DisplayGameModeFunction, "DisplayGameMode", 10000, NULL, 99, &DisplayGameMode,1);
       forceDisplayUpdate = false;
-      Serial.println("Display Changing to Game Mode");
+      Serial.println("[DisplayControllerFunction] Display Changing to Game Mode");
     }else if((MachineState == 3) && (forceDisplayUpdate == true) && (lastMachineState == 2)) //Change from Game to End Game
     {
-      Serial.println("Deleting DisplayGameMode Task");
+      //Serial.println("Deleting DisplayGameMode Task");
       vTaskDelete(DisplayGameMode);
       resetDisplay();
-      Serial.println("Creating DisplayEndOfGameMode Task");
+      //Serial.println("Creating DisplayEndOfGameMode Task");
       xTaskCreatePinnedToCore(DisplayEndOfGameModeFunction, "DisplayEndOfGameMode", 10000, NULL, 99, &DisplayEndOfGameMode,1);
       forceDisplayUpdate = false;
-      Serial.println("Display Changing to End of Game Mode");
+      Serial.println("[DisplayControllerFunction] Display Changing to End of Game Mode");
     }
     vTaskDelay(10);
   }
 }
 void DisplayBootModeFunction(void * pvParameters)
 {
-  Serial.println("DisplayBootModeFunction.....");
+  //Serial.println("DisplayBootModeFunction.....");
   resetDisplay();  
   for(;;){
     oneTopOneBottomDisplay();
@@ -146,7 +146,7 @@ void DisplayBootModeFunction(void * pvParameters)
 }
 void DisplayAttractModeFunction(void * pvParameters)
 {
-  Serial.println("DisplayAttractModeFunction.....");
+  //Serial.println("DisplayAttractModeFunction.....");
   int arrayLen = 12;
   static unsigned long atractModeMillis = 0;
   String topTextArray[arrayLen];
@@ -211,7 +211,7 @@ void DisplayAttractModeFunction(void * pvParameters)
 }
 void DisplayGameModeFunction(void * pvParameters) //more regular updates to cope with changes
 {
-  Serial.println("DisplayGameModeFunction.....");
+  //Serial.println("DisplayGameModeFunction.....");
   static unsigned long gameModeMillis = 0;
   for(;;){
     if (millis() - gameModeMillis > 500 ){
@@ -234,7 +234,7 @@ void DisplayEndOfBallModeFunction(void * pvParameters)  //this is where we shoul
 }
 void DisplayEndOfGameModeFunction(void * pvParameters)
 {
-  Serial.println("DisplayEndOfGameModeFunction.....");
+  //Serial.println("DisplayEndOfGameModeFunction.....");
   static unsigned long gameModeMillis = 0;
   int arrayLen = 3;
   static unsigned long atractModeMillis = 0;

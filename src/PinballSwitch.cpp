@@ -8,7 +8,6 @@ PinballSwitch::PinballSwitch(int ID)
   this->_ID = ID;
   this->_switchName = "Unconfigured";
   this->_debounce = 1000;
-  this->_isFlipper = false;
   this->_debug = false;
   
 }
@@ -38,7 +37,7 @@ bool PinballSwitch::triggerSwitch()
   	this->_lastMillis = millis();
     if(this->_debug == true)
     {
-      Serial.print("[CLASS]PinballSwitch: [FUNCTION]triggerSwitch() - Name:");
+      Serial.print("[CLASS] PinballSwitch: [triggerSwitch] - ");
       Serial.print(this->getName());
       Serial.println(" - Success");
     }
@@ -47,7 +46,7 @@ bool PinballSwitch::triggerSwitch()
   {
 	  if(this->_debug  == true)
     {
-      Serial.print("[CLASS]PinballSwitch: [FUNCTION]triggerSwitch() - Name:");
+      Serial.print("[CLASS] PinballSwitch: [triggerSwitch] - ");
       Serial.print(this->getName());
       Serial.println(" - Suppressed");
     }

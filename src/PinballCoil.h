@@ -16,7 +16,7 @@ class PinballCoil
     unsigned long _lastMillis; //when last energised
     String _coilName = "No name set";
     bool _needsAction = false;
-    bool _debug = true;
+    bool _debug = false;
     //in future we may wish to add pulse modulation after initial pulse time, lets leave for now.
   
   public:

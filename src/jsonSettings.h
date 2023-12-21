@@ -81,18 +81,18 @@ void createConfigFiles()
     jobject["switchMatrixRows"] = setting_switchMatrixRows;
     jobject["switchMatrixColumns"] = setting_switchMatrixColumns;
     fileSystem.saveToFile(localConfigFile,jobject);
-    Serial.print("JSON Document Created is: ");
-    serializeJson(myJsonDocument, Serial);
-    Serial.println();
+    //Serial.print("JSON Document Created is: ");
+    //serializeJson(myJsonDocument, Serial);
+    //Serial.println();
 }
 
 void openConfigFiles()
 {
     DynamicJsonDocument jsonDocument(1024);
     fileSystem.openFromFile(localConfigFile, jsonDocument);
-    Serial.print("JSON Document Opened is: ");
-    serializeJson(jsonDocument, Serial);
-    Serial.println();
+    //Serial.print("JSON Document Opened is: ");
+    //serializeJson(jsonDocument, Serial);
+    //Serial.println();
     //we need to set variables in the software from this json
     setting_MachineName = (const char*)jsonDocument["Name"];
     setting_MachineVersion = (const char*)jsonDocument["Version"];
@@ -147,8 +147,8 @@ void updateConfigFiles()
     jobject["switchMatrixRows"] = setting_switchMatrixRows;
     jobject["switchMatrixColumns"] = setting_switchMatrixColumns;
     fileSystem.saveToFile(localConfigFile,jobject);
-    Serial.print("JSON Document Updates is: ");
-    serializeJson(myJsonDocument, Serial);
-    Serial.println();
+    //Serial.print("JSON Document Updates is: ");
+    //serializeJson(myJsonDocument, Serial);
+    //Serial.println();
 }
 

@@ -35,7 +35,7 @@ bool PinballCoil::fireCoil()
   {
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [FUNCTION] fireCoil ");
+      Serial.print("[CLASS] PinballCoil: [fireCoil] ");
       Serial.println(this->_coilName);
     }
     this->_isOn = true;
@@ -53,7 +53,7 @@ void PinballCoil::releaseCoil()
   //code to turn coil off
   if(this->_debug  == true)
   {
-    Serial.print("[CLASS] PinballCoil: [FUNCTION] releaseCoil ");
+    Serial.print("[CLASS] PinballCoil: [releaseCoil] ");
     Serial.println(this->_coilName);
   }
   this->_needsAction = true;
@@ -88,14 +88,14 @@ void PinballCoil::enable()
     this->fireCoil();
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [FUNCTION] enable ");
+      Serial.print("[CLASS] PinballCoil: [enable] ");
       Serial.println(this->_coilName);
     }
     //turn on coil indefinitely
   }else{
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [FUNCTION] enable ");
+      Serial.print("[CLASS] PinballCoil: [enable] ");
       Serial.print(this->_coilName);
       Serial.println(" failed, already marked as on");
     }
@@ -108,7 +108,7 @@ void PinballCoil::disable()
     this->manage();
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [FUNCTION] disable ");
+      Serial.print("[CLASS] PinballCoil: [disable] ");
       Serial.println(this->_coilName);
     }
 }
@@ -127,7 +127,7 @@ void PinballCoil::manage()
       {
         if(this->_debug  == true)
         {
-          Serial.print("[CLASS] PinballCoil: [FUNCTION] manage : I'm on and outside pulse time - turn off - ");  
+          Serial.print("[CLASS] PinballCoil: [manage] :turn off - ");  
           Serial.println(this->_coilName);
         }
         this->releaseCoil();

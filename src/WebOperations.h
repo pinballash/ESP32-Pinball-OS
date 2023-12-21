@@ -184,7 +184,7 @@ void WebOperationsFunction( void * pvParameters)
     int MaxWait = 10;
 
     while ((WifiConnected != true) && (wifiSoftAPInUse != true)) {
-      Serial.println("Webserver Waiting for Wifi");
+      //Serial.println("Webserver Waiting for Wifi");
       vTaskDelay(1000);
       //WifiWaitCounter +=1;
     }
@@ -368,9 +368,21 @@ void web_handle_switchDebug()
 void web_handle_coilDebug()
 {
     //There is no toggleDebug method within the coils - this needs fixing 
-    Serial.println("[web_handle] Coil Debug Toggled - will have no effect until class updated");
-    coilDebug = !coilDebug;
-    server.send(200, "text/html", "OK - Set to " + (String)coilDebug); //Send web page
+    Serial.println("[web_handle] Coil Debug Toggled");
+    //for each coil - run the toggleDebug() method
+    for ( byte col = 0; col < 2 ; col++) {
+      for (byte row = 0; row < 8; row++) 
+      {    
+        int CoilIDInteger = (col * 8)+row;
+        String CoilID = (String)CoilIDInteger;
+        byte CoilByte = CoilIDInteger;
+
+        
+        PinballCoil* thisCoil = coils[CoilByte].coilObject;
+        thisCoil->toggleDebug();
+      }//end row processing
+    }//end col processing
+    server.send(200, "text/html", "OK"); //Send web page
  
 }
 void web_handle_opsDebug()
@@ -426,6 +438,7 @@ void web_handle_action_solenoidTest()
 
 void web_handle_action_restart()
 {
+    server.send(200, "text/plain", "{'Status' : 'OK - restarting'}"); //Send ADC value only to client ajax request
     ESP.restart();
  
 }

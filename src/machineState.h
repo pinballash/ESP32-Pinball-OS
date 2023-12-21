@@ -16,7 +16,7 @@ void changeState(int newState)
             if(newState == 1)
             {
               //moving from Bootup to Atract : OK
-              Serial.println("[Function] changeState - Boot->Atract");
+              Serial.println("[changeState] - Boot->Atract");
               MachineState = 1;
               lastMachineState = 0;
               forceDisplayUpdate = true;
@@ -29,7 +29,7 @@ void changeState(int newState)
             if(newState == 2)
             {
               //moving from Bootup to Atract : OK
-              Serial.println("[Function] changeState - Attract->Game");
+              Serial.println("[changeState] - - Attract->Game");
               ScoreboardTText = "Lets, Play,";
               ScoreboardBText = "Pool!";
               MachineState = 2;
@@ -47,7 +47,7 @@ void changeState(int newState)
             if(newState == 3)
             {
               //moving from Game to End Game : OK
-              Serial.println("[Function] changeState - Game->End Game");
+              Serial.println("[changeState] - - Game->End Game");
 
               MachineState = 3;
               lastMachineState = 2;
@@ -65,7 +65,7 @@ void changeState(int newState)
             if(newState == 2)
             {
               //moving from End Game to Game : OK
-              Serial.println("[Function] changeState - End Game->Game");
+              Serial.println("[changeState] - - End Game->Game");
               ScoreboardTText = "Lets, Play,";
               ScoreboardBText = "Pool!";
               MachineState = 2;
@@ -77,7 +77,7 @@ void changeState(int newState)
             }else if (newState == 1)
             {
               //moving from End Game to Atract : OK
-              Serial.println("[Function] changeState - End Game->Attract");
+              Serial.println("[[changeState] - - End Game->Attract");
               MachineState = 1;
               lastMachineState = 3;
               forceDisplayUpdate = true;

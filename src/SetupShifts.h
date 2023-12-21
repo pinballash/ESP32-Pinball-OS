@@ -39,22 +39,22 @@ void setupShifts()
   digitalWrite(osr3latchPin, HIGH);
 
 
-  Serial.println("Flushing the shift registers.");
+  //Serial.println("Flushing the shift registers.");
   write_sr_matrix(); // flush out the shift registers
   write_sr_audio(); // flush out the shift registers
   write_sr_coils(); // flush out the shift registers
-  Serial.println(".");
+  //Serial.println(".");
   read_sr(); // read the shift registers. get rid of any spurious crap on power up.
-  Serial.println(".");
+  //Serial.println(".");
   delay(200);
-  Serial.println(".");
+  //Serial.println(".");
   write_sr_matrix(); // flush out the shift registers
   write_sr_audio(); // flush out the shift registers
   write_sr_coils(); // flush out the shift registers
-  Serial.println(".");
+  //Serial.println(".");
   read_sr(); // read again after a short delay
-  Serial.println(".");
+  //Serial.println(".");
   delay(1000);
-  Serial.println("done.");
+  //Serial.println("done.");
 
 }
