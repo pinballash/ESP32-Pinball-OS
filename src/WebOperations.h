@@ -631,19 +631,19 @@ void web_handle_getswitchcoilbindingConfig()
     deserializeJson(postedJSON,server.arg("plain"));
     String switchId = postedJSON["switchId"];
     String jsonConfig;
-    String dataFile = "/switchCoilBindingConfig." + switchId + ".json";
+    String dataFile = "/switchCoilBindingConf." + switchId + ".json";
     //Serial.println("Opening " + dataFile);
     File file = SPIFFS.open(dataFile);
     while (file.available()) {
         // Extract each characters by one by one
         jsonConfig = file.readString();
     }
-    Serial.print("JSON Document is: ");
-    Serial.println(jsonConfig);
+    //Serial.print("JSON Document is: ");
+    //Serial.println(jsonConfig);
     if(jsonConfig == "")
     {
       //we need to send a dummy set of values
-      String jsonString = "{\"switchId\" : " + switchId + ",\"coilBinding\":\"-1\"}";
+      String jsonString = "{\"switchId\" : " + switchId + ",\"coilBinding\":\"-1\",\"instantCoilFire\":\"false\"}";
       server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
 
     }else{
@@ -661,7 +661,7 @@ void web_handle_setswitchcoilbindingConfig()
   {
     Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
   }else{
-    //Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
+    Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
     DynamicJsonDocument postedJSON(2048);
     deserializeJson(postedJSON,server.arg("plain"));
     String switchId = postedJSON["switchId"];
@@ -669,8 +669,9 @@ void web_handle_setswitchcoilbindingConfig()
     JsonObject jobject = myJsonDocument.to<JsonObject>();
     jobject["switchId"] = postedJSON["switchId"];
     jobject["coilBinding"] = postedJSON["coilBinding"];
+    jobject["instantCoilFire"] = postedJSON["instantCoilFire"];
    
-    String dataFile = "/switchCoilBindingConfig." + switchId + ".json";
+    String dataFile = "/switchCoilBindingConf." + switchId + ".json";
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request

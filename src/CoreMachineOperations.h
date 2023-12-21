@@ -399,7 +399,6 @@ void IRAM_ATTR fireFlipper(int flipperSwitchID)
     }
   }  
 }
-
 void IRAM_ATTR releaseFlipper(int flipperSwitchID)
 {
   PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
@@ -449,67 +448,64 @@ void IRAM_ATTR releaseFlipper2()
 
 void triggerSwitches()
 {
-  //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
   for ( byte col = 0; col < setting_switchMatrixColumns ; col++) {
     for (byte row = 0; row < setting_switchMatrixRows; row++) 
     {    
       int triggeredSwitchID = (col*8)+row;
 
-      if((switchActive[col][row]==true) && (switches[triggeredSwitchID].switchObject->isFlipper()==false))//flipper processing done in triggerFlippers() function
-      {//switch triggered physically and not flipper
+      if(switchActive[col][row]==true) 
+      {//switch triggered physically
         Serial.println("function->triggerSwitches - switch name: " + switches[triggeredSwitchID].switchObject->getName());
         if(switches[triggeredSwitchID].switchObject->triggerSwitch()==true)//this will return false if debounce period still active
         {
-          switchScored[col][row]=true; //get credit for hitting the switch - this is picked up in processAllSwitches()
-          
-          if(switches[triggeredSwitchID].switchObject->isStart()==true)
-          {
-            switch_event_startbutton(triggeredSwitchID);
-            switchActive[col][row] = false;
-          }
-          
-          if(switches[triggeredSwitchID].switchObject->isOuthole()==true)
-          {
-            switch_event_outhole(triggeredSwitchID);
-            switchActive[col][row] = false;
-          }
+          switchScored[col][row]=true; //get credit for hitting the switch of do switch hit activity - this is picked up in processAllSwitches()
           if(generalMODebug)
           {
             Serial.print("TriggerSwitches(): ");
             Serial.println(switches[triggeredSwitchID].switchObject->getName());
           } 
-          if(switchCoilBindings[triggeredSwitchID].coilNumber > 0) //if we have a coil bound to the switch, it needs fireing immediately
+          if(switchCoilBindings[triggeredSwitchID].coilNumber > 0) //if we have a coil bound to the switch
           {
-            if(generalMODebug)
+            if(switchCoilBindings[triggeredSwitchID].instantFire == true) //we need to fire the coil straight away
             {
-              Serial.print("Switch triggered with coil binding....");
-              Serial.println(triggeredSwitchID);
-              Serial.println("need to locate coil associated ");
-              //Serial.println(switchCoilBindings[(byte)triggeredSwitchID].coilNumber);              
-            } 
-            byte* coilNumber = switchCoilBindings[(byte)triggeredSwitchID].coilNumber; //get the coil number bound to the switch
-            byte coilNumberByte = *coilNumber;
-            PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
-            if(MachineState == 2) //only if game is active
-            {
-              if(switchCoil->fireCoil()){ //try and fire the coil
-                coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-                ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
-                write_sr_coils(); //update shift register
+              if(generalMODebug)
+              {
+                Serial.print("Switch triggered with coil binding....");
+                Serial.println(triggeredSwitchID);
+                Serial.println("need to locate coil associated ");         
+              } 
+              byte* coilNumber = switchCoilBindings[(byte)triggeredSwitchID].coilNumber; //get the coil number bound to the switch
+              byte coilNumberByte = *coilNumber;
+              PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
+              if(MachineState == 2) //only if game is active
+              {
+                if(switchCoil->fireCoil())
+                { //try and fire the coil
+                  coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+                  ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
+                  write_sr_coils(); //update shift register
+                  //todo: add score and other mode logic
+                }
               }
+            }else{
+              if(generalMODebug)
+              {
+                Serial.print("Switch triggered with coil binding, but no instant trigger");
+                Serial.println(triggeredSwitchID);        
+              } 
             }
+            
           }else{
             //other switch actions can wait for processing
-            //set switchProcessingArray
             if(generalMODebug)
             {
               Serial.print("Switch triggered without coil binding....actions can wait");
               Serial.println(triggeredSwitchID);
             }
           }
+          switchActive[col][row]=false;
         }//end triggered switch processing  
       }//end switch processing
-      switchActive[col][row] = false;
     }//end row processing
   }//end col processing
 }
@@ -531,8 +527,18 @@ void processAllSwitches()
       {
         //Serial.print("[Function] processAllSwitches() -> scoredSwitch = ");
         byte coilNumber = 0;
-        int scoredSwitch = (col * 8)+row;
-        Serial.println(scoredSwitch);
+        int triggeredSwitchID = (col * 8)+row;
+        if(switches[triggeredSwitchID].switchObject->isStart()==true)
+        {
+          Serial.println("function->triggerSwitches : this is start");
+          switch_event_startbutton(triggeredSwitchID);
+        }
+          
+        if(switches[triggeredSwitchID].switchObject->isOuthole()==true)
+        {
+          Serial.println("function->triggerSwitches : this is outhole");
+          switch_event_outhole(triggeredSwitchID);
+        }
 
         /*switch(scoredSwitch)
         {
@@ -554,9 +560,6 @@ void processAllSwitches()
  */
 void ProcessShifts(PinballCoil* CoilObject)
 {
-  //Serial.print("Processing Shifts ");
-  //Serial.println(CoilObject->getName());
- 
   if(CoilObject->getSR() == 0)
   {
     if(CoilObject->checkStatus())
@@ -567,49 +570,41 @@ void ProcessShifts(PinballCoil* CoilObject)
         Serial.print(CoilObject->getName());
         Serial.print("- OSR3 - BIT:");
         Serial.println(CoilObject->getSRBit());
-
       } 
       bitSet(outgoing3,CoilObject->getSRBit());
-
     }else
     {
       Serial.print("Turning off coil ");
-        Serial.print(CoilObject->getName());
-        Serial.print("- OSR3 - BIT:");
-        Serial.println(CoilObject->getSRBit());
+      Serial.print(CoilObject->getName());
+      Serial.print("- OSR3 - BIT:");
+      Serial.println(CoilObject->getSRBit());
       bitClear(outgoing3,CoilObject->getSRBit());
-
     }
   }else if(CoilObject->getSR() == 1)
   {
     if(CoilObject->checkStatus())
     {
       Serial.print("Turning on coil ");
-        Serial.print(CoilObject->getName());
-        Serial.print("- OSR4 - BIT:");
-        Serial.println(CoilObject->getSRBit());
+      Serial.print(CoilObject->getName());
+      Serial.print("- OSR4 - BIT:");
+      Serial.println(CoilObject->getSRBit());
       bitSet(outgoing4,CoilObject->getSRBit());
 
     }else
     {
       Serial.print("Turning off coil ");
-        Serial.print(CoilObject->getName());
-        Serial.print("- OSR4 - BIT:");
-        Serial.println(CoilObject->getSRBit());
+      Serial.print(CoilObject->getName());
+      Serial.print("- OSR4 - BIT:");
+      Serial.println(CoilObject->getSRBit());
       bitClear(outgoing4,CoilObject->getSRBit());
     }
-    
   }
-
 }
 void manageCoils()
 {
   for ( byte coilNumber = 0; coilNumber < coilCount ; coilNumber++) {
     if(coilActive[coilNumber]==true)
     {
-      //if(generalMODebug) Serial.print("Attempting to manage coil....");
-      //if(generalMODebug) Serial.println(coilNumber);
-      //need to understand if its time to turn off the coil....
       PinballCoil* activeCoil = coils[coilNumber].coilObject;
       activeCoil->manage();
       if(activeCoil->checkStatus()==false)
@@ -718,8 +713,6 @@ void switch_event_outhole(int switchId)
   {
     //Do nothing - ball should be here when game not on
   }
-  
-
 }
 /*void switch_event_saucer(int switchID)
 {
@@ -742,20 +735,15 @@ void switch_event_startbutton(int switchId)
   Serial.println("switch_event_startbutton");
   if(MachineState == 1)
   {
-      changeState(2);
-
-
+    changeState(2);
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players
-      g_myPinballGame.addPlayer(); //This will add players up to the defined maximum
+    g_myPinballGame.addPlayer(); //This will add players up to the defined maximum
   } else if(MachineState == 3)
-  {
-    //new game
+  {//new game
     changeState(2);
   }
 }
-
-
 
 void addScore(int switchID)
 {
@@ -765,6 +753,5 @@ void addScore(int switchID)
   g_myPinballGame.setPlayerScore(playerNumber,playerscore);
   ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
   ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
-  //ScoreboardTLText = "Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
 }
 

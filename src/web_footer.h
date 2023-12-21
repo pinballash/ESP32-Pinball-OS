@@ -1310,6 +1310,7 @@ function loadSwitchSettings(row,col)
         const obj = JSON.parse(json);
         var switchIdInput = document.getElementById('switchId');
         var switchNameInput = document.getElementById('switchName');
+        var instantCoilFireInput = document.getElementById('instantCoilFire');
         
         switchIdInput.innerHTML = obj.switchId;
         
@@ -1318,6 +1319,12 @@ function loadSwitchSettings(row,col)
         switchNameInput.innerHTML = matrix_cell.innerHTML;
 
         selectElement("boundCoil", obj.coilBinding);
+        if(obj.instantCoilFire == "true")
+        {
+          instantCoilFireInput.checked = true;
+        }else{
+          instantCoilFireInput.checked = false;
+        }
 		  
       }
   };
@@ -1486,10 +1493,19 @@ function updateSwitch()
 {
 	var switchIdInput = document.getElementById('switchId').innerHTML;
   var coilBinding = document.getElementById('boundCoil').value;
+  var instantCoilFireInput = document.getElementById('instantCoilFire').checked
 	
+  if(instantCoilFireInput != true)
+	{
+		instantCoilFireInput = "false";
+	}else{
+    instantCoilFireInput = "true";
+  }
+
 	var switchVar = {
 		switchId : switchIdInput,
-		coilBinding : coilBinding
+		coilBinding : coilBinding,
+    instantCoilFire : instantCoilFireInput
     }
 
 	var json = JSON.stringify(switchVar);

@@ -188,6 +188,10 @@ const char CONFIG_SWITCHCOILBINDING_page[] PROGMEM = R"=====(
 							<option id="coil_15" value="15">15</option>
 						</select></td>
 					</tr>
+					<tr>
+						<td><label for="instantCoilFire">Instant fire on trigger?</label></td>
+						<td><input type="checkbox" id="instantCoilFire" name="instantCoilFire" value="true"></td>
+					</tr>
 					
 				</tbody>
 				<tfoot>
