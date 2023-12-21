@@ -737,7 +737,7 @@ void switch_event_outhole(int switchId)
   addScore(switchID);
 }*/
 
-void switch_event_startbutton()
+void switch_event_startbutton(int switchId)
 {
   Serial.println("switch_event_startbutton");
   if(MachineState == 1)
