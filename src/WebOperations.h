@@ -9,6 +9,7 @@
 #include "web_config_coils.h"
 #include "web_config_switch_coil_binding.h"
 #include "web_upload.h"
+#include "web_download.h"
 #include "web_css.h"
 #include "web_header.h"
 #include "web_footer.h"
@@ -59,12 +60,14 @@ void web_handle_config_switchcoilbinding();
 void web_handle_getswitchcoilbindingConfig();
 void web_handle_setswitchcoilbindingConfig();
 
+void web_handle_listFS();
+void web_handle_getFS();
 
 void web_handle_firmwareUpload();
+void web_handle_configDownload();
 void web_handle_css();
 
 bool web_handle_configUpdate();
-
 void web_handle_switchDebug();
 void web_handle_coilDebug();
 void web_handle_opsDebug();
@@ -106,6 +109,7 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/config_coils", web_handle_config_coils);
     server.on("/config_switch_coil_binding", web_handle_config_switchcoilbinding);
     server.on("/uploadDev", web_handle_firmwareUpload);
+    server.on("/downloadConfig", web_handle_configDownload);
 
     //CSS
      server.on("/css/w3c.css", web_handle_css);
@@ -143,9 +147,13 @@ void WebOperationsFunction( void * pvParameters)
 
     server.on("/", web_handle_viewState);
     server.on("/updateConfig", HTTP_POST, web_handle_configUpdate);
+    
 
     server.on("/api/switch/config/get", HTTP_POST, web_handle_getSwitchConfig);
     server.on("/api/switch/config/set", HTTP_POST, web_handle_setSwitchConfig);
+
+    server.on("/api/fs/list", web_handle_listFS);
+    server.on("/api/fs/get",HTTP_GET, web_handle_getFS);
 
     server.on("/api/switch/coil/config/get", HTTP_POST, web_handle_getswitchcoilbindingConfig);
     server.on("/api/switch/coil/config/set", HTTP_POST, web_handle_setswitchcoilbindingConfig);
@@ -272,7 +280,7 @@ void web_handle_AJAXState()
 }
 void web_handle_AJAXCPU0Hz()
 {
-    server.send(200, "text/plain", (String)CMOHz); //Send ADC value only to client ajax request
+    server.send(200, "text/plain", (String)reportedSwitchMatrixHz); //Send ADC value only to client ajax request
 }
 void web_handle_AJAXCPU1Hz()
 {
@@ -791,6 +799,24 @@ void web_handle_firmwareUpload()
   server.send(200, "text/html", concatString); //Send web page
   delete[] concatString;
 }
+
+void web_handle_configDownload()
+{
+    // calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(DOWNLOAD_page) + strlen(html_footer) + strlen(download_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, DOWNLOAD_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, download_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+}
 void web_handle_captive_connecttest()
 {
     //[](AsyncWebServerRequest *request) { request->redirect("http://logout.net"); });	// windows 11 captive portal workaround
@@ -824,8 +850,61 @@ void web_handle_css()
     server.send(200, "text/css", s); //Send web page
 }
 
+void web_handle_listFS()
+{
+  //get all files on spiffs and list back as a JSON
+  //SerialListDir(SPIFFS, "/");
 
+  //count number of files
+  int fileCount = CountConfigFiles(SPIFFS, "/");
+  Serial.println("Listing "+(String)fileCount+" files");
+  DynamicJsonDocument myJsonDocument(4096);
+  JsonObject jobject = myJsonDocument.to<JsonObject>();
+  for(int x = 0; x < fileCount; x++)
+  {
+    String jobjectKey = "value"+(String)x;
+    String jobjectValue = getFileNameByNumber(SPIFFS, "/", x);
+    //Serial.println("Adding item " + (String)x + "to the JSON -  key is " + jobjectKey + " value is " + jobjectValue);
+    jobject[jobjectKey] = jobjectValue;
 
+  }
+  
+  String jsonString;
+  serializeJson(jobject, jsonString);
+  server.send(200, "text/html", jsonString);
+}
+
+void web_handle_getFS(){
+  //Serial.print("Number of Arguments recieved is ");
+  //Serial.println(server.args());
+  String dataFile ="NULL";
+  String jsonConfig;
+  String jsonString = "{\"null\":\"null\"}";
+  if(server.args() == 1)
+  {
+    dataFile = server.arg(0);
+     
+    //need to return the JSON file
+    File file = SPIFFS.open("/"+dataFile);
+    while (file.available()) {
+        // Extract each characters by one by one
+        jsonConfig = file.readString();
+    }
+    if(jsonConfig == "")
+    {
+      //we need to send a dummy set of values
+      
+      server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
+
+    }else{
+      server.send(200, "application/octet-stream", jsonConfig); //Send ADC value only to client ajax request
+    }
+
+  }else{
+    server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
+  }
+
+}
 
 /* END web page functions */
 

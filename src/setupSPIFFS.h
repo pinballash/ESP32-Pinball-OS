@@ -41,6 +41,71 @@ void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
    }
 }
 
+void SerialListDir(fs::FS &fs, const char * dirname){
+   //Serial.printf("Listing directory: %s\r\n", dirname);
+
+   File root = fs.open(dirname);
+   if(!root){
+      //Serial.println("- failed to open directory");
+      return;
+   }
+   if(!root.isDirectory()){
+      //Serial.println(" - not a directory");
+      return;
+   }
+
+   File file = root.openNextFile();
+   while(file){
+      if(file.isDirectory()){
+         Serial.print("  DIR : ");
+         Serial.println(file.name());
+      } else {
+         Serial.print("  FILE: ");
+         Serial.print(file.name());
+         Serial.print("\tSIZE: ");
+         Serial.println(file.size());
+      }
+      file = root.openNextFile();
+   }
+}
+
+int CountConfigFiles(fs::FS &fs, const char * dirname){
+   //Serial.printf("Listing directory: %s\r\n", dirname);
+   int filecount = 0;
+   File root = fs.open(dirname);
+   File file = root.openNextFile();
+   while(file){
+      if(file.isDirectory()){
+         
+      } else {
+         filecount++;
+      }
+      file = root.openNextFile();
+   }
+   return filecount;
+}
+
+String getFileNameByNumber(fs::FS &fs, const char * dirname, int fileNumber){
+   String nullReturn;
+   //Serial.printf("Listing directory: %s\r\n", dirname);
+   int filecount = 0;
+   File root = fs.open(dirname);
+   File file = root.openNextFile();
+   while(file){
+      if(file.isDirectory()){
+         
+      } else {
+         if(filecount == fileNumber)
+         {
+            return (String)file.name();  
+         }
+         filecount++;
+      }
+      file = root.openNextFile();
+   }
+   return nullReturn;
+}
+
 void readFile(fs::FS &fs, const char * path){
    Serial.printf("Reading file: %s\r\n", path);
 

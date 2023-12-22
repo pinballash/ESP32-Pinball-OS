@@ -10,7 +10,10 @@ bool threadDebug = false;
 bool srDebug = false;
 bool osrDebug = false;
 bool generalMODebug = false;
-unsigned long ScanSwitchMatrixEveryMicroSeconds = 800; //this seems to be the value where we can operate at around 500 times per second
+unsigned long ScanSwitchMatrixEveryMicroSeconds = 100; //this seems to be the value where we can operate at around 1000 times per second
+
+
+
 
 PinballGame g_myPinballGame(setting_MachineName);
 
@@ -28,8 +31,8 @@ void IRAM_ATTR releaseFlipper1();
 void IRAM_ATTR fireFlipper2();
 void IRAM_ATTR releaseFlipper2();
 
-
 void MonitorSwitchesAndRegisterFunction( void * pvParameters);
+void ProcessSwitchesAndRulesFunction( void * pvParameters);
 void scanSwitchMatrix();
 void identifyFlippers(); //depriciated
 void triggerFlippers(); //depriciated
@@ -47,8 +50,29 @@ void switch_event_outhole(int switchId);
 void addScore(int switchID);
 void changeState(int newState);
 
+hw_timer_t *Timer0_Cfg = NULL;
+void IRAM_ATTR Timer0_ISR()
+{
+    if(scanInProgress == false)
+    {
+      scanInProgress = true;
+      scanSwitchMatrix();
+      triggerSwitches();//Needs to be done on a separate thread on a timer.
+      manageCoils();//Needs to be done on a separate thread on a timer.
+      INTHz++;
+      scanInProgress = false;
+    }
+  if (millis() - lastMillisSwINT > 1000 )
+  {
+    reportedSwitchMatrixHz = INTHz;
+    INTHz = 0;
+    lastMillisSwINT = millis();
+  }
+    
+}
 //setup a task to run on core 0;
 TaskHandle_t MonitorSwitchesAndRegister;
+TaskHandle_t ProcessSwitchesAndRules;
 
 //setup array for storing switch active
 const int tableRows = 8;//(int8_t)setting_switchMatrixRows; // 0 to 7
@@ -202,12 +226,12 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
       manageCoilMicro = manageCoilMicro + (micros() - measureMicro);
       //if(generalMODebug) Serial.println("[generalMODebug] Switch processing...");
       measureMicro = micros();
-      processAllSwitches();//Needs to be done on a separate thread on a timer.
-      processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
+      //processAllSwitches();//Needs to be done on a separate thread on a timer.
+      //processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
 
 
-      if(threadDebug)
+      /*if(threadDebug)
       {
         unsigned long totalLoopProcessingTime = 0;
 
@@ -231,16 +255,16 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
         totalLoopProcessingTime = totalLoopProcessingTime + manageCoilMicro;
         manageCoilMicro = 0;
 
-        Serial.print("Process Switch Time (uS) : ");
-        Serial.println(processSwitchMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
-        processSwitchMicro = 0;
+        //Serial.print("Process Switch Time (uS) : ");
+        //Serial.println(processSwitchMicro);
+        //totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
+        //processSwitchMicro = 0;
 
         Serial.print("Total Task Processing time uS : ");
         Serial.println(totalLoopProcessingTime);
 
         Serial.println("_________________________________");
-      }
+      }*/
 
 
 
@@ -252,6 +276,81 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
     
   }
 }
+
+void ProcessSwitchesAndRulesFunction( void * pvParameters)
+{
+  //Serial.print("MonitorSwitches running on core ");
+  //Serial.println(xPortGetCoreID());
+  //identifyFlippers();
+  int counterSw = 0;
+  unsigned long lastMillisSw = 0;
+  unsigned long lastMicrosLoopRan = 0;
+
+  unsigned long scanMicro = 0;
+  unsigned long flipperMicro = 0;
+  unsigned long triggerSwitchMicro = 0;
+  unsigned long manageCoilMicro = 0;
+  unsigned long processSwitchMicro = 0;
+  unsigned long measureMicro = 0;
+  for(;;)
+  {
+    if(micros() - lastMicrosLoopRan >= ScanSwitchMatrixEveryMicroSeconds) //we must not let this loop run away with itself, rate limiter here
+    {
+      
+      //do processing
+      // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
+      counterSw++;
+      //static int tempSound=1;
+      if (millis() - lastMillisSw > 1000 )
+      {
+        if(threadDebug)
+        {
+          Serial.print("[threadDebug] ProcessSwitches Loop: CORE ");
+          Serial.print(xPortGetCoreID());
+          Serial.print(" : is currently running at approximatly ");
+          Serial.print(counterSw);
+          Serial.println("Hz (full program cycles per second)");
+          
+        }
+        CMOHz = counterSw;
+        counterSw = 0;
+        lastMillisSw = millis();
+        
+      }// End of debug stuff 
+        
+
+      measureMicro = micros();
+      processAllSwitches();//Needs to be done on a separate thread on a timer.
+      processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
+      lastMicrosLoopRan = micros();
+
+
+      /*if(threadDebug)
+      {
+        unsigned long totalLoopProcessingTime = 0;
+
+        Serial.print("Process Switch Time (uS) : ");
+        Serial.println(processSwitchMicro);
+        totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
+        processSwitchMicro = 0;
+
+        Serial.print("Total Task Processing time uS : ");
+        Serial.println(totalLoopProcessingTime);
+
+        Serial.println("_________________________________");
+      }*/
+
+
+
+    }else{
+      //release the CPU for processing other tasks
+      //Serial.println("Switch Scan Taking a breather");
+      vTaskDelay(pdMS_TO_TICKS(1));
+    }  
+    
+  }
+}
+
 /*
 * Function scanSwitchMatrix
 * loop through all columns and rows and check for a switch closure.  
@@ -374,7 +473,7 @@ void triggerFlippers()
 
 void IRAM_ATTR fireFlipper(int flipperSwitchID)
 {
-  PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
+  /*PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
 
   if(generalMODebug)
   {
@@ -397,7 +496,7 @@ void IRAM_ATTR fireFlipper(int flipperSwitchID)
       write_sr_coils();  //action shift register changes
       flipperCoil->actioned(); //mark the coil changes as done
     }
-  }  
+  }  */
 }
 void IRAM_ATTR releaseFlipper(int flipperSwitchID)
 {
@@ -430,11 +529,14 @@ void IRAM_ATTR releaseFlipper(int flipperSwitchID)
 }
 void IRAM_ATTR fireFlipper1()
 {
-  fireFlipper(1);
+      Serial.println("FireFlipper1");
+      flip1Enabled = true;
+      lastMillisFlip1 = millis();
 }
 void IRAM_ATTR releaseFlipper1()
 {
-  releaseFlipper(1);
+
+  
 }
 void IRAM_ATTR fireFlipper2()
 {

@@ -1586,3 +1586,95 @@ function w3_close() {
 </body>
 </html>
 )=====";
+
+const char download_script_footer[] PROGMEM = R"=====(
+<!-- using JSZip library https://stuk.github.io/jszip/ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js"></script>
+
+<script>
+function loadPage()
+{
+	//do nothing
+}
+// Get the Sidebar
+var mySidebar = document.getElementById('mySidebar');
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById('myOverlay');
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = 'none';
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = 'block';
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = 'none';
+  overlayBg.style.display = 'none';
+}
+
+function generateDownload()
+{
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //Debug - schow json contents - uncomment this line
+      //document.getElementById('config').innerHTML = this.responseText ;
+      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
+      const json =  this.responseText;
+      const obj = JSON.parse(json);
+
+      var keyCount  = Object.keys(obj).length;
+      alert("There are "+keyCount+" files that will be downloaded in a zip");
+
+      const urls = Object.values(obj)
+      .map((url) => '/api/fs/get?filename=' + url);
+
+      fetchBlobs(urls)
+        .then(pack)
+        .then((zipFile) => dl.href = URL.createObjectURL(zipFile));
+
+    }
+  };
+  xhttp.open('GET', 'api/fs/list', true);
+  xhttp.send();
+}
+
+
+function fetchBlobs(urls) {
+  return Promise.all(
+    urls.map((url) =>
+      fetch(url)
+      .then((resp) => resp.blob())
+      .then((blob) => {
+        // store the file name
+        //alert("fetching "+url)
+        blob.name = url.slice(url.lastIndexOf('=') + 1)
+        alert("blob name is "+blob.name)
+        return blob;
+      })
+    )
+  );
+}
+function pack(blobs) {
+  const zip = new JSZip();
+  const folder = zip.folder('configs');
+  blobs.forEach((blob) => folder.file(blob.name, blob));
+  return zip.generateAsync({type : "blob"});
+}
+
+
+
+
+
+
+</script>
+</body>
+</html>
+)=====";

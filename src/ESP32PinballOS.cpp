@@ -23,6 +23,17 @@ int WEBHz = 0;
 int CMOHz = 0;
 int DisplayControllerHz = 0;
 
+unsigned long lastMillisSwINT = 0;
+
+unsigned long lastMillisFlip1 = 0;
+int INTHz = 0;
+int reportedSwitchMatrixHz = 0;
+bool scanInProgress = false;
+bool flip1Enabled = false;
+bool flip2Enabled= false;
+bool flip1Released = true;
+bool flip2Released= true;
+
 
 int MachineState = 0; //this can be Bootup-0, Atract-1, Game-2, End Game-3, End Ball-4
 int lastMachineState = 0;
@@ -53,9 +64,9 @@ void setup() {
   //Need to set up LEDs, flippers, high power relay
 
   pinMode(flipper1Pin, INPUT);
+  //attachInterrupt(flipper1Pin, fireFlipper1, HIGH);
+  //attachInterrupt(flipper1Pin, releaseFlipper1, LOW);
   
-  //attachInterrupt(flipper1Pin, fireFlipper1, RISING);
-  //attachInterrupt(flipper1Pin, releaseFlipper1, FALLING);
   pinMode(flipper2Pin, INPUT);
 
   //attachInterrupt(flipper2Pin, fireFlipper2, RISING);
@@ -83,13 +94,22 @@ void setup() {
   //Serial.println("Starting Switch Coil bonding");
   createSwitchCoilBindings();
 
-  xTaskCreatePinnedToCore(
+  /*xTaskCreatePinnedToCore(
     MonitorSwitchesAndRegisterFunction,
     "MonitorSwitchesAndRegister",
     10000,
     NULL,
     1,
     &MonitorSwitchesAndRegister,
+    0);*/
+  
+    xTaskCreatePinnedToCore(
+    ProcessSwitchesAndRulesFunction,
+    "ProcessSwitchesAndRules",
+    10000,
+    NULL,
+    2,
+    &ProcessSwitchesAndRules,
     0);
 
   xTaskCreatePinnedToCore(
@@ -194,9 +214,24 @@ void setup() {
     }
 
     changeState(1); 
+
+    Timer0_Cfg = timerBegin(0, 80, true);
+    timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
+    timerAlarmWrite(Timer0_Cfg, 1000, true);
+    timerAlarmEnable(Timer0_Cfg);
 }
 
 void loop() {
+  if(flip1Enabled == true)
+  {
+    if (millis() - lastMillisFlip1 > 300 )
+    {
+      
+        Serial.println("ReleaseFlipper1");
+        flip1Enabled = false;
+
+    }
+  }
 
   vTaskDelay(1);//do nothing
 }
