@@ -6,7 +6,7 @@
 #include <Effortless_SPIFFS.h>
 #include "PinballSwitch.h"
 
-//st up global switchObjects so they can be accessed later
+//set up global switchObjects so they can be accessed later
 PinballSwitch sw_0(0);
 PinballSwitch sw_1(1);
 PinballSwitch sw_2(2);
