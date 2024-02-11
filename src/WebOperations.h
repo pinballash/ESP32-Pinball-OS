@@ -5,22 +5,20 @@
 
 #include "web_dashboard.h"
 #include "web_config.h"
+#include "web_config_menu.h"
 #include "web_config_switches.h"
 #include "web_config_coils.h"
 #include "web_config_switch_coil_binding.h"
+#include "web_config_dummy.h"
 #include "web_upload.h"
 #include "web_download.h"
 #include "web_css.h"
 #include "web_header.h"
 #include "web_footer.h"
 
-
 WebServer server(80);
 
-
-
 void WebOperationsFunction( void * pvParameters);
-
 void web_handle_AJAXState();
 void web_handle_AJAXCPU0Hz();
 void web_handle_AJAXCPU1Hz();
@@ -48,6 +46,9 @@ void web_handle_captive_ffx2();//[](AsyncWebServerRequest *request) { request->s
 void web_handle_viewState();
 void web_handle_404();
 void web_handle_config();
+void web_handle_config_menu();
+
+
 void web_handle_config_switches();
 void web_handle_getSwitchConfig();
 void web_handle_setSwitchConfig();
@@ -59,6 +60,26 @@ void web_handle_setCoilConfig();
 void web_handle_config_switchcoilbinding();
 void web_handle_getswitchcoilbindingConfig();
 void web_handle_setswitchcoilbindingConfig();
+
+void web_handle_config_lighting();
+void web_handle_getlightingConfig();
+void web_handle_setlightingConfig();
+
+void web_handle_config_titles();
+void web_handle_gettitlesConfig();
+void web_handle_settitlesConfig();
+
+void web_handle_config_credits();
+void web_handle_getcreditsConfig();
+void web_handle_setcreditsConfig();
+
+void web_handle_config_instructions();
+void web_handle_getinstructionsConfig();
+void web_handle_setinstructionsConfig();
+
+void web_handle_config_modes();
+void web_handle_getmodesConfig();
+void web_handle_setmodesConfig();
 
 void web_handle_listFS();
 void web_handle_getFS();
@@ -105,9 +126,15 @@ void WebOperationsFunction( void * pvParameters)
     //Actual Web Pages
     server.on("/viewState", web_handle_viewState);
     server.on("/config", web_handle_config);
+    server.on("/config_menu", web_handle_config_menu);
     server.on("/config_switches", web_handle_config_switches);
     server.on("/config_coils", web_handle_config_coils);
     server.on("/config_switch_coil_binding", web_handle_config_switchcoilbinding);
+    server.on("/config_lighting", web_handle_config_lighting);
+    server.on("/config_titles", web_handle_config_titles);
+    server.on("/config_credits", web_handle_config_credits);
+    server.on("/config_instructions", web_handle_config_instructions);
+    server.on("/config_modes", web_handle_config_modes);
     server.on("/uploadDev", web_handle_firmwareUpload);
     server.on("/downloadConfig", web_handle_configDownload);
 
@@ -148,7 +175,7 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/", web_handle_viewState);
     server.on("/updateConfig", HTTP_POST, web_handle_configUpdate);
     
-
+    //API Calls, get and set data 
     server.on("/api/switch/config/get", HTTP_POST, web_handle_getSwitchConfig);
     server.on("/api/switch/config/set", HTTP_POST, web_handle_setSwitchConfig);
 
@@ -160,6 +187,23 @@ void WebOperationsFunction( void * pvParameters)
 
     server.on("/api/coil/config/get", HTTP_POST, web_handle_getCoilConfig);
     server.on("/api/coil/config/set", HTTP_POST, web_handle_setCoilConfig);
+
+    server.on("/api/lighting/config/get", HTTP_POST, web_handle_getlightingConfig);
+    server.on("/api/lighting/config/set", HTTP_POST, web_handle_setlightingConfig);
+	
+    server.on("/api/titles/config/get", HTTP_POST, web_handle_gettitlesConfig);
+    server.on("/api/titles/config/set", HTTP_POST, web_handle_settitlesConfig);
+	
+    server.on("/api/credits/config/get", HTTP_POST, web_handle_getcreditsConfig);
+    server.on("/api/credits/config/set", HTTP_POST, web_handle_setcreditsConfig);
+
+    server.on("/api/instructions/config/get", HTTP_POST, web_handle_getinstructionsConfig);
+    server.on("/api/instructions/config/set", HTTP_POST, web_handle_setinstructionsConfig);
+
+    server.on("/api/modes/config/get", HTTP_POST, web_handle_getmodesConfig);
+    server.on("/api/modes/config/set", HTTP_POST, web_handle_setmodesConfig);
+
+
 
     server.onNotFound(web_handle_404);
         /*handling uploading firmware file */
@@ -720,7 +764,174 @@ void web_handle_config_switchcoilbinding()
  
 }
 
+void web_handle_getlightingConfig()
+{
+}
+void web_handle_setlightingConfig()
+{
+}
 
+void web_handle_gettitlesConfig()
+{
+}
+void web_handle_settitlesConfig()
+{
+}
+
+void web_handle_getcreditsConfig()
+{
+}
+void web_handle_setcreditsConfig()
+{
+}
+
+void web_handle_getinstructionsConfig()
+{
+}
+void web_handle_setinstructionsConfig()
+{
+}
+
+void web_handle_getmodesConfig()
+{
+}
+void web_handle_setmodesConfig()
+{
+}
+
+
+void web_handle_config_()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, dummy_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
+void web_handle_config_menu()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_MENU_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_MENU_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, dummy_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
+void web_handle_config_lighting()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, dummy_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
+void web_handle_config_titles()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, dummy_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
+void web_handle_config_credits()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, dummy_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
+void web_handle_config_instructions()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, dummy_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
+
+void web_handle_config_modes()
+{
+// calculate the required buffer size (also accounting for the null terminator):
+  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+
+  // allocate enough memory for the concatenated string:
+  char* concatString = new char[ bufferSize ];
+
+  // copy strings one and two over to the new buffer:
+  strcpy( concatString, html_header );
+  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, html_footer );
+  strcat( concatString, dummy_script_footer );
+
+  server.send(200, "text/html", concatString); //Send web page
+  delete[] concatString;
+ 
+}
 
 bool web_handle_configUpdate()
 {

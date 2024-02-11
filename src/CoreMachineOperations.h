@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "PinballSwitch.h"
 #include "PinballCoil.h"
+#include "PinballLED.h"
 #include "PinballGame.h"
 
 bool switchDebug = true;
@@ -12,17 +13,14 @@ bool osrDebug = false;
 bool generalMODebug = false;
 unsigned long ScanSwitchMatrixEveryMicroSeconds = 100; //this seems to be the value where we can operate at around 1000 times per second
 
-
-
-
 PinballGame g_myPinballGame(setting_MachineName);
-
 
 //#include "switchArray_def.h" -> removing static definition in favour of dynamic from JSON files stored in SPIFFS and edited via Web page
 #include "switchArray_fromJSON.h"
 #include "coilArray_fromJSON.h"
 #include "flipperBindings_def.h"
 #include "coilBindings_fromJSON.h"
+#include "ledArray_fromJSON.h"
 
 void fireFlipper(int firedSwitchID);
 void releaseFlipper(int firedSwitchID);

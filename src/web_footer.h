@@ -10,6 +10,40 @@ const char html_footer[] PROGMEM = R"=====(
 </div>
 )=====";
 
+const char dummy_script_footer[] PROGMEM = R"=====(<script>
+function loadPage()
+{
+	//nothing
+}
+// Get the Sidebar
+var mySidebar = document.getElementById('mySidebar');
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById('myOverlay');
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = 'none';
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = 'block';
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = 'none';
+  overlayBg.style.display = 'none';
+}
+</script>
+
+</body>
+</html>
+)=====";
+
+
 const char upload_script_footer[] PROGMEM = R"=====(<script>
 function loadPage()
 {
@@ -1626,12 +1660,12 @@ function generateDownload()
     if (this.readyState == 4 && this.status == 200) {
       //Debug - schow json contents - uncomment this line
       //document.getElementById('config').innerHTML = this.responseText ;
-      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
+      //this is all well and good, but we really need to get this json, deserialze it and then use specific value pairs to upsate the UI.
       const json =  this.responseText;
       const obj = JSON.parse(json);
 
       var keyCount  = Object.keys(obj).length;
-      alert("There are "+keyCount+" files that will be downloaded in a zip");
+      alert("There are "+keyCount+" files that will be downloaded in a zip - the download link will be ready shortly");
 
       const urls = Object.values(obj)
       .map((url) => '/api/fs/get?filename=' + url);
@@ -1656,7 +1690,7 @@ function fetchBlobs(urls) {
         // store the file name
         //alert("fetching "+url)
         blob.name = url.slice(url.lastIndexOf('=') + 1)
-        alert("blob name is "+blob.name)
+        //alert("blob name is "+blob.name)
         return blob;
       })
     )

@@ -31,14 +31,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: 'Raleway', sans-serif}
   </div>
   <div class='w3-bar-block'>
     <a href='#' class='w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black' onclick='w3_close()' title='close menu'><i class='fa fa-remove fa-fw'></i>  Close Menu</a>
-    <a href='./viewState' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-play'></i> Live View</a>
-    <a href='./uploadDev' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Update</a>
-    <a href='./downloadConfig' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Download</a>
-    <a href='./action/solenoidTest' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Solenoid Test</a>
-    <a href='./config' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Basic Config</a>
-    <a href='./config_switches' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config Switches</a>
-    <a href='./config_coils' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config Coils</a>
-    <a href='./config_switch_coil_binding' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Config Switch Coil Bindings</a>
+    <a href='./viewState' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-play'></i>Live View</a>
+    <a href='./config_menu' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench'></i>Config Menu</a>
 
   </div>
 </nav>

@@ -94,6 +94,8 @@ void setup() {
   //Serial.println("Starting Switch Coil bonding");
   createSwitchCoilBindings();
 
+  createLedObjects();
+
   /*xTaskCreatePinnedToCore(
     MonitorSwitchesAndRegisterFunction,
     "MonitorSwitchesAndRegister",
