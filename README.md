@@ -28,20 +28,7 @@ To drive solenoids, you will need
 
 4 x DollaTek 4 Channels 4 Route MOSFET Button IRF540 V2.0 for Arduino <a href="https://www.amazon.co.uk/DollaTek-Channels-MOSFET-Button-Arduino/dp/B07MPB52GC/ref=sr_1_15?crid=2H95ZT40UJE51&keywords=mosfet+board&qid=1699020505&sprefix=mosfet+board%2Caps%2C93&sr=8-15">Here</a><br />
 
-<h2>The code will need customising to your environment</h2>
 
-<b>userSettings.h</b> will need updating to meet your wifi environment.  Your ESP32 will need to be quite close to your wireless to work.  I use a cheap netgear wireless extender to achieve this
-
-<b>switchArray_def.h</b> will need changing to match your plafield.  The first block of code creates instances of the PinballSwitch class.  Think of instance a real thing, with a name and properties of its own.  Each line here we will bring a switch to life so we can work with it.  The parameters in the brackets relate to Switch Name, debounch time in ms, is it a flipper true or false, show debug messages on console yes or no
-Later on in the switchArray_def.h we populate an array which is used as an index of switches.  Each row in the array has switch number, a pointer (& PinballSwitch instance name) and then the basic score for the switch.  The Switch number is very important, it must be (the Column number x 8) + the row number on the switch matrix.
-Please note, I'm currently breaking the flippers out of the switch matrix so it may appear that flippers can work when part of the switch matrix, but its likely they now wont.
-
-<b>coilArray_def.h</b> is similar to the switchArray_def.h, but this time, the values we need when creating the instances are Name, Output Shift register id, Output Shift register pin, fire time in ms, backoff time in ms.
-Later on in the coilArray_def.h we build a coil array.  The coil numbers should be sequencial from 0 up, however have no relevance to physical connections so you can order how you like.
-
-<b>coilBindings_def.h</b> is the file where we define which coils fire as soon as a switch is triggered.  Think Pops and Slings.  The array is should be the same size as the one in switchArray_def.h, the first number in each row refers to a switch id (as per the switchArray_def.h), the second number is 0 for no coil or the number of a coil you want to fire every switch trigger. 
-
-<b>webOperations.h</b> controls the web page elements.  Now there are links in the page that run commands to trigger switches (using AJAX).  You can edit what the links are called in web_dashboard.h.  The actions are at the foot of web.h. 
 
 
 
