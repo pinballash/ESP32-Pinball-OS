@@ -9,11 +9,16 @@
 #include "web_config_switches.h"
 #include "web_config_coils.h"
 #include "web_config_switch_coil_binding.h"
+#include "web_config_leds.h"
 #include "web_config_dummy.h"
 #include "web_upload.h"
 #include "web_download.h"
 #include "web_css.h"
 #include "web_header.h"
+#include "web_footer_scripts_basicconfig.h"
+#include "web_footer_scripts_switchesandcoils.h"
+#include "web_footer_scripts_liveview.h"
+#include "web_footer_scripts_lighting.h"
 #include "web_footer.h"
 
 WebServer server(80);
@@ -171,8 +176,8 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/action/restart", web_handle_action_restart);    
     server.on("/action/solenoidTest", web_handle_action_solenoidTest);
 
-
-    server.on("/", web_handle_viewState);
+    //where does the landing page go?
+    server.on("/", web_handle_config_menu);
     server.on("/updateConfig", HTTP_POST, web_handle_configUpdate);
     
     //API Calls, get and set data 
@@ -841,14 +846,14 @@ void web_handle_config_menu()
 void web_handle_config_lighting()
 {
 // calculate the required buffer size (also accounting for the null terminator):
-  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+  int bufferSize = strlen(html_header) + strlen(CONFIG_LEDS_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
 
   // allocate enough memory for the concatenated string:
   char* concatString = new char[ bufferSize ];
 
   // copy strings one and two over to the new buffer:
   strcpy( concatString, html_header );
-  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, CONFIG_LEDS_page );
   strcat( concatString, html_footer );
   strcat( concatString, dummy_script_footer );
 
