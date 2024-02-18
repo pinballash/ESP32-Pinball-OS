@@ -9,7 +9,7 @@ class PinballLED
         String _colour = "000000";
         String _LEDName = "Name not set";
         bool _isOn = false;
-
+        int _flashSpeed = 0;
   public:
    
 
@@ -19,7 +19,7 @@ class PinballLED
   PinballLED(int ID);
   
   //Public Functions 
-  void setValues(String ledName, String colour, bool isOn);
+  void setValues(String ledName, String colour, bool isOn, int flashSpeed);
   String getName();
   
 };

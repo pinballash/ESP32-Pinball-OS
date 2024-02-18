@@ -771,9 +771,59 @@ void web_handle_config_switchcoilbinding()
 
 void web_handle_getlightingConfig()
 {
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    //Serial.println("plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String LEDID = postedJSON["ledId"];
+    String jsonConfig;
+    String dataFile = "/ledConfig." + LEDID + ".json";
+    //Serial.println("Opening " + dataFile);
+    File file = SPIFFS.open(dataFile);
+    while (file.available()) {
+        // Extract each characters by one by one
+        jsonConfig = file.readString();
+    }
+    //Serial.print("JSON Document is: ");
+    //Serial.println(jsonConfig);
+    if(jsonConfig == "")
+    {
+      //we need to send a dummy set of values
+      String jsonString = "{\"ledId\" : " + LEDID + ",\"ledName\":\"LED_" + LEDID + "\",\"ledColour\":\"#000000\",\"ledIsOn\":\"false\",\"ledFlashSpeed\":\"0\"}";
+      server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
+    }else{
+      server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
+    }
+    
+  }
 }
 void web_handle_setlightingConfig()
 {
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    //Serial.println("SetCoilConfig: plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String LEDID = postedJSON["ledId"];
+    DynamicJsonDocument myJsonDocument(1024);
+    JsonObject jobject = myJsonDocument.to<JsonObject>();
+    //sonConfig = "{\"LEDId\" : " + LEDID + ",\"LEDName\":\"Unconfigured\",\"LEDColour\":\"#000000\",\"LEDisOn\":\"false\",\"LEDFlashSpeed\":\"0\"}";
+    jobject["ledId"] = postedJSON["ledId"];
+    jobject["ledName"] = postedJSON["ledName"];
+    jobject["ledColour"] = postedJSON["ledColour"];
+    jobject["ledisOn"] = postedJSON["ledIsOn"];
+    jobject["ledFlashSpeed"] = postedJSON["ledFlashSpeed"];
+
+    String dataFile = "/ledConfig." + LEDID + ".json";
+    const char * dataChar = dataFile.c_str();
+    fileSystem.saveToFile(dataChar,postedJSON);
+    server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+  }
 }
 
 void web_handle_gettitlesConfig()
@@ -846,7 +896,7 @@ void web_handle_config_menu()
 void web_handle_config_lighting()
 {
 // calculate the required buffer size (also accounting for the null terminator):
-  int bufferSize = strlen(html_header) + strlen(CONFIG_LEDS_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+  int bufferSize = strlen(html_header) + strlen(CONFIG_LEDS_page) + strlen(html_footer) + strlen(lightingConfig_script_footer) + 1;
 
   // allocate enough memory for the concatenated string:
   char* concatString = new char[ bufferSize ];
@@ -855,7 +905,7 @@ void web_handle_config_lighting()
   strcpy( concatString, html_header );
   strcat( concatString, CONFIG_LEDS_page );
   strcat( concatString, html_footer );
-  strcat( concatString, dummy_script_footer );
+  strcat( concatString, lightingConfig_script_footer );
 
   server.send(200, "text/html", concatString); //Send web page
   delete[] concatString;

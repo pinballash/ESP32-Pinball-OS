@@ -552,20 +552,20 @@ void createLedObjects()
     if(jsonConfig == "")
     {
       //we need to send a dummy set of values
-      jsonConfig = "{\"LEDId\" : " + LEDID + ",\"LEDName\":\"Unconfigured\",\"LEDColour\":\"000000\",\"LEDisOn\":\"false\"}";
+      jsonConfig = "{\"ledId\" : " + LEDID + ",\"ledName\":\"Unconfigured\",\"ledColour\":\"#000000\",\"ledIsOn\":\"false\",\"ledFlashSpeed\":\"0\"}";
     }
     //use the values in the json
     DynamicJsonDocument LEDJSON(2048);
     deserializeJson(LEDJSON,jsonConfig);
     PinballLED* thisLED = LEDs[LEDByte].ledObject;
     //sanitiseJSON
-    bool isOn = false;
-    if(LEDJSON["isOn"] == "true")
+    bool ledIsOn = false;
+    if(LEDJSON["ledIsOn"] == "true")
     {
-      isOn = true;
+      ledIsOn = true;
     }
 
-    thisLED->setValues(LEDJSON["LEDName"],LEDJSON["LEDColour"],isOn);
+    thisLED->setValues(LEDJSON["ledName"],LEDJSON["ledColour"],ledIsOn,LEDJSON["ledFlashSpeed"]);
 
   }//end 
 

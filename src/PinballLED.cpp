@@ -15,11 +15,12 @@ String PinballLED::getName()
 {
   return this->_LEDName;
 }
-void PinballLED::setValues(String ledName, String colour, bool isOn)
+void PinballLED::setValues(String ledName, String colour, bool isOn, int flashSpeed)
 {
   this->_LEDName = ledName;
   this->_colour = colour;
   this->_isOn = isOn;
+  this->_flashSpeed = flashSpeed;
 }
 
 

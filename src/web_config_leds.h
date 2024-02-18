@@ -1,8 +1,5 @@
 #include <Arduino.h>
 const char CONFIG_LEDS_page[] PROGMEM = R"=====(
-  <div class='w3-main' style='margin-left:300px;margin-top:43px;'>
-
-
 <!-- Header -->
   <header class='w3-container' style='padding-top:22px'>
     <h5><b><i class='fa fa-chalkboard-user'></i>LED Configuration</b></h5>
@@ -12,21 +9,15 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 	<span id='config'></span>
 	</code>
   </div>
-  <div>
-	
+  <div>	
 		<fieldset id="ledFieldset">
 		  <legend id="formLegend">WS2812 LED Sting:: </legend>
-
-			<table id="ledTable" style="width:100%;">
-			
+		  <input type="button" id="LoadLEDsButton" value="Load">
+			<table id="ledTable" style="width:100%;">	
 				<thead>
-
-
 				</thead>
-				<tbody>
-					
+				<tbody>	
 					<tr>
-						<th>0</th>
 						<td><span id="0_0" onclick="selectLED(0,0);">0</span></td>
 						<td><span id="0_1" onclick="selectLED(0,1);">1</span></td>
 						<td><span id="0_2" onclick="selectLED(0,2);">2</span></td>
@@ -45,7 +36,6 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="0_15" onclick="selectLED(0,15);">15</span></td>
 					</tr>
 					<tr>
-						<th>1</th>
 						<td><span id="1_0" onclick="selectLED(1,0);">16</span></td>
 						<td><span id="1_1" onclick="selectLED(1,1);">17</span></td>
 						<td><span id="1_2" onclick="selectLED(1,2);">18</span></td>
@@ -62,10 +52,8 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="1_13" onclick="selectLED(1,13);">29</span></td>
 						<td><span id="1_14" onclick="selectLED(1,14);">30</span></td>
 						<td><span id="1_15" onclick="selectLED(1,15);">31</span></td>
-				
 					</tr>
 					<tr>
-						<th>2</th>
 						<td><span id="2_0" onclick="selectLED(2,0);">32</span></td>
 						<td><span id="2_1" onclick="selectLED(2,1);">33</span></td>
 						<td><span id="2_2" onclick="selectLED(2,2);">34</span></td>
@@ -81,12 +69,9 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="2_12" onclick="selectLED(2,12);">44</span></td>
 						<td><span id="2_13" onclick="selectLED(2,13);">45</span></td>
 						<td><span id="2_14" onclick="selectLED(2,14);">46</span></td>
-						<td><span id="2_15" onclick="selectLED(2,15);">47</span></td>
-
-					
+						<td><span id="2_15" onclick="selectLED(2,15);">47</span></td>				
 					</tr>
 					<tr>
-						<th>3</th>
 						<td><span id="3_0" onclick="selectLED(3,0);">48</span></td>
 						<td><span id="3_1" onclick="selectLED(3,1);">49</span></td>
 						<td><span id="3_2" onclick="selectLED(3,2);">50</span></td>
@@ -105,7 +90,6 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="3_15" onclick="selectLED(3,15);">63</span></td>
 					</tr>
 					<tr>
-						<th>4</th>
 						<td><span id="4_0" onclick="selectLED(4,0);">64</span></td>
 						<td><span id="4_1" onclick="selectLED(4,1);">65</span></td>
 						<td><span id="4_2" onclick="selectLED(4,2);">66</span></td>
@@ -124,7 +108,6 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="4_15" onclick="selectLED(4,15);">79</span></td>
 					</tr>
 					<tr>
-						<th>5</th>
 						<td><span id="5_0" onclick="selectLED(5,0);">80</span></td>
 						<td><span id="5_1" onclick="selectLED(5,1);">81</span></td>
 						<td><span id="5_2" onclick="selectLED(5,2);">82</span></td>
@@ -143,7 +126,6 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="5_15" onclick="selectLED(5,15);">95</span></td>
 					</tr>
 					<tr>
-						<th>6</th>
 						<td><span id="6_0" onclick="selectLED(6,0);">96</span></td>
 						<td><span id="6_1" onclick="selectLED(6,1);">97</span></td>
 						<td><span id="6_2" onclick="selectLED(6,2);">98</span></td>
@@ -161,8 +143,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="6_14" onclick="selectLED(6,14);">110</span></td>
 						<td><span id="6_15" onclick="selectLED(6,15);">111</span></td>					
 					</tr>
-					<tr>
-						<th>7</th>
+					<tr>	
 						<td><span id="7_0" onclick="selectLED(7,0);">112</span></td>
 						<td><span id="7_1" onclick="selectLED(7,1);">113</span></td>
 						<td><span id="7_2" onclick="selectLED(7,2);">114</span></td>
@@ -180,9 +161,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="7_14" onclick="selectLED(7,14);">126</span></td>
 						<td><span id="7_15" onclick="selectLED(7,15);">127</span></td>
 					</tr>
-
                     <tr>
-						<th>8</th>
 						<td><span id="8_0" onclick="selectLED(8,0);">128</span></td>
 						<td><span id="8_1" onclick="selectLED(8,1);">129</span></td>
 						<td><span id="8_2" onclick="selectLED(8,2);">130</span></td>
@@ -200,9 +179,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="8_14" onclick="selectLED(8,14);">142</span></td>
 						<td><span id="8_15" onclick="selectLED(8,15);">143</span></td>
                     </tr>
-
                     <tr>
-						<th>9</th>
 						<td><span id="9_0" onclick="selectLED(9,0);">144</span></td>
 						<td><span id="9_1" onclick="selectLED(9,1);">145</span></td>
 						<td><span id="9_2" onclick="selectLED(9,2);">146</span></td>
@@ -220,9 +197,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="9_14" onclick="selectLED(9,14);">158</span></td>
 						<td><span id="9_15" onclick="selectLED(9,15);">159</span></td>
                     </tr>
-
                     <tr>
-						<th>10</th>
 						<td><span id="10_0" onclick="selectLED(10,0);">160</span></td>
 						<td><span id="10_1" onclick="selectLED(10,1);">161</span></td>
 						<td><span id="10_2" onclick="selectLED(10,2);">162</span></td>
@@ -240,9 +215,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="10_14" onclick="selectLED(10,14);">174</span></td>
 						<td><span id="10_15" onclick="selectLED(10,15);">175</span></td>
                     </tr>
-
                     <tr>
-						<th>11</th>
 						<td><span id="11_0" onclick="selectLED(11,0);">176</span></td>
 						<td><span id="11_1" onclick="selectLED(11,1);">177</span></td>
 						<td><span id="11_2" onclick="selectLED(11,2);">178</span></td>
@@ -260,9 +233,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="11_14" onclick="selectLED(11,14);">190</span></td>
 						<td><span id="11_15" onclick="selectLED(11,15);">191</span></td>
                     </tr>
-
                     <tr>
-						<th>12</th>
 						<td><span id="12_0" onclick="selectLED(12,0);">192</span></td>
 						<td><span id="12_1" onclick="selectLED(12,1);">193</span></td>
 						<td><span id="12_2" onclick="selectLED(12,2);">194</span></td>
@@ -280,9 +251,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="12_14" onclick="selectLED(12,14);">206</span></td>
 						<td><span id="12_15" onclick="selectLED(12,15);">207</span></td>
                     </tr>
-
                     <tr>
-						<th>13</th>
 						<td><span id="13_0" onclick="selectLED(13,0);">208</span></td>
 						<td><span id="13_1" onclick="selectLED(13,1);">209</span></td>
 						<td><span id="13_2" onclick="selectLED(13,2);">210</span></td>
@@ -300,9 +269,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="13_14" onclick="selectLED(13,14);">222</span></td>
 						<td><span id="13_15" onclick="selectLED(13,15);">223</span></td>
                     </tr>
-
                     <tr>
-						<th>14</th>
 						<td><span id="14_0" onclick="selectLED(14,0);">224</span></td>
 						<td><span id="14_1" onclick="selectLED(14,1);">225</span></td>
 						<td><span id="14_2" onclick="selectLED(14,2);">226</span></td>
@@ -320,9 +287,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="14_14" onclick="selectLED(14,14);">238</span></td>
 						<td><span id="14_15" onclick="selectLED(14,15);">239</span></td>
                     </tr>
-
                     <tr>
-						<th>15</th>
 						<td><span id="15_0" onclick="selectLED(15,0);">240</span></td>
 						<td><span id="15_1" onclick="selectLED(15,1);">241</span></td>
 						<td><span id="15_2" onclick="selectLED(15,2);">242</span></td>
@@ -339,26 +304,17 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="15_13" onclick="selectLED(15,13);">253</span></td>
 						<td><span id="15_14" onclick="selectLED(15,14);">254</span></td>
 						<td><span id="15_15" onclick="selectLED(15,15);">255</span></td>
-                    </tr>
-
-
-					
+                    </tr>					
 				</tbody>
-				<tfoot>
-					
+				<tfoot>				
 				</tfoot>
 			</table>
-
 		</fieldset>
-
-
-	
-	<div id="SwitchEdit" style="display:none;">
+	<div id="ledEdit" style="display:none;">
 		<form id="configForm" name="configForm" class="configForm"  method="POST" action="#" enctype="multipart/form-data" target="_self">
 		<fieldset id="coilsFieldset">
 		  <legend id="formLegend"> LED Edit:: </legend>
-			<!--Name, Debouce, isFlipper,debug -->
-			<table id="switchEditTable">
+			<table id="ledEditTable">
 				<thead>
 					<tr>
 						<th>Element</th>
@@ -377,23 +333,24 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 					</tr>
 					<tr>
 						<td><label for="ledColour">LED Colour</label></td>
-						<td><input type="text" id="ledColour" value=""></td>
+						<td><input type="text" id="ledColour" value="" data-coloris></td>
 					</tr>
 					<tr>
 						<td><label for="ledIsOn">Is On?</label></td>
 						<td><input type="checkbox" id="ledIsOn" name="ledIsOn" value="true"></td>
 					</tr>
-					
+					<tr>
+						<td><label for="ledFlashSpeed">Flash Speed (flash per second)</label></td>
+						<td><input type="text" id="ledFlashSpeed" value="0"></td>
+					</tr>
 				</tbody>
 				<tfoot>
 				</tfoot>
 			</table>	
-
 		</fieldset>
 		<input type="button" id="submitButton" value="Submit">
 	</form>
 	</div>
-
   </div>  
 
 )=====";

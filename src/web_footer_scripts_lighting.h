@@ -1,17 +1,37 @@
 #include <Arduino.h>
-const char lightingConfig_script_footer[] PROGMEM = R"=====(<script>
+const char lightingConfig_script_footer[] PROGMEM = R"=====(
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+<script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+<script>
 var SelectedRow = 0;
 var SelectedColumn = 0;
 
 function loadPage()
 {
 	//do nothing;
+  //prepareMatrix();
+}
+function prepareMatrix()
+{
+  for(let j = 0; j < 16; j++)
+	{
+		for(let i = 0; i < 16; i++)
+		{
+			//lets work on this cell
+			var cellRef = j+"_"+i;
+			//alert("Updating Cell Ref: "+cellRef);
+			var matrix_cell = document.getElementById(cellRef);
+      var ledId = (j * 16) + i;
+      loadLEDSettings(j,i);
+    }
+	}
 }
 
-function loadLEDSettings(ledId)
+function loadLEDSettings(row,col)
 {
 
   	// Creating a xhttp object
+  var ledId = (row * 16) + col;
   let xhttp = new XMLHttpRequest();
   let url = "/api/lighting/config/get";
 
@@ -25,61 +45,30 @@ function loadLEDSettings(ledId)
   xhttp.onreadystatechange = function () {
       if (xhttp.readyState === 4 && xhttp.status === 200) {
 
-        //we have the switch data lets use it
+        //we have the led data lets use it
         const json =  this.responseText;
-        //console.log(json);
+        console.log(json);
         const obj = JSON.parse(json);
-        var switchIdInput = document.getElementById('switchId');
-        var switchNameInput = document.getElementById('switchName');
-        var switchDebounceInput = document.getElementById('switchDebounce');
-        var switchIsFlipper = document.getElementById('switchIsFlipper');
-        var switchIsStart = document.getElementById('switchIsStart');
-        var switchIsCredit = document.getElementById('switchIsCredit');
-        var switchIsOuthole = document.getElementById('switchIsOuthole');                      
-        var switchDebug = document.getElementById('switchDebug');
+        var ledIdInput = document.getElementById('ledId');
+        var ledNameInput = document.getElementById('ledName');
+        var ledColourInput = document.getElementById('ledColour');
+        var ledIsOnInput = document.getElementById('ledIsOn');   
+        var ledFlashSpeedInput = document.getElementById('ledFlashSpeed');                     
         
-        switchNameInput.value = obj.switchName;
+        ledNameInput.value = obj.ledName;
+        ledColourInput.value = obj.ledColour;
+        document.querySelector('#ledColour').dispatchEvent(new Event('input', { bubbles: true }));
         var cellRef = row+"_"+col;
         var matrix_cell = document.getElementById(cellRef);
-        matrix_cell.innerHTML = obj.switchName;
-        
-        switchDebounceInput.value = obj.switchDebounce;
-        
-        if(obj.switchIsFlipper == "true")
+        matrix_cell.innerHTML = obj.ledName;
+                
+        if(obj.ledIsOn == "true")
         {
-          switchIsFlipper.checked = true;
+          ledIsOnInput.checked = true;
         }else{
-          switchIsFlipper.checked = false;
+          ledIsOnInput.checked = false;
         }
-
-        if(obj.switchIsStart == "true")
-        {
-          switchIsStart.checked = true;
-        }else{
-          switchIsStart.checked = false;
-        }
-
-        if(obj.switchIsCredit == "true")
-        {
-          switchIsCredit.checked = true;
-        }else{
-          switchIsCredit.checked = false;
-        }
-
-        if(obj.switchIsOuthole == "true")
-        {
-          switchIsOuthole.checked = true;
-        }else{
-          switchIsOuthole.checked = false;
-        }
-
-        if(obj.switchDebug == "true")
-        {
-          switchDebug.checked = true;
-        }else{
-          switchDebug.checked = false;
-        }
-		  
+        ledFlashSpeedInput.value = obj.ledFlashSpeed;
       }
   };
 
@@ -100,122 +89,76 @@ submitButton.addEventListener('click', (e) => {
 	updateLED();
 });
 
+const loadLEDsBtn = document.getElementById('LoadLEDsButton');
+
+loadLEDsBtn.addEventListener('click', (e) => {
+	e.preventDefault();
+	prepareMatrix();
+});
+
 var cols = 0;
 var rows = 0;
 //we need to get this from the main config
 function getConfig() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      //Debug - schow json contents - uncomment this line
-      //document.getElementById('config').innerHTML = this.responseText ;
-      //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
-      const json =  this.responseText;
-      const obj = JSON.parse(json);
 
-      rows = obj.switchMatrixRows;
-      cols = obj.switchMatrixColumns;
-      prepareMatrix();
-
-    }
-  };
-  xhttp.open('GET', 'ajax_getConfig', true);
-  xhttp.send();
 }
 
 
 
 function selectLED(row,col)
 {
-	var switchIdInput = document.getElementById('ledId');
-	var switchNameInput = document.getElementById('switchName');
-	var switchDebounceInput = document.getElementById('switchDebounce');
-	var switchIsFlipper = document.getElementById('SwitchIsFlipper');
-	var switchIsStart = document.getElementById('SwitchIsFlipper');
-
+	var ledIdInput = document.getElementById('ledId');
 	
-	//we get the switch id from the matrix (col * 8)+row
+	
+	//we get the led id from the matrix (col * 8)+row
 	var ledId = (row * 16) + col;
-	switchIdInput.value = ledId;
+	ledIdInput.value = ledId;
 	
 	//other values we can load from JSON
 	//to do - program AJAX call to get JSON
-  loadLEDSettings(ledId);
-  switchEdit_open();
+  loadLEDSettings(row,col);
+  ledEdit_open();
   SelectedRow = row;
   SelectedColumn = col;
 
 }
 
-function updateSwitch()
+function updateLED()
 {
-	var switchIdInput = document.getElementById('switchId').value;
-	var switchNameInput = document.getElementById('switchName').value;
-	var switchDebounceInput = document.getElementById('switchDebounce').value;
-	var switchIsFlipper = document.getElementById('switchIsFlipper').checked;
-  var switchIsStart = document.getElementById('switchIsStart').checked;
-  var switchIsCredit = document.getElementById('switchIsCredit').checked;
-  var switchIsOuthole = document.getElementById('switchIsOuthole').checked;
-	var switchDebug = document.getElementById('switchDebug').checked;
+	var ledIdInput = document.getElementById('ledId').value;
+	var ledNameInput = document.getElementById('ledName').value;
+	var ledColourInput = document.getElementById('ledColour').value;
+	var ledIsOn = document.getElementById('ledIsOn').checked;
+  var ledFlashSpeedInput = document.getElementById('ledFlashSpeed').value;
 	
-  //console.log(switchIsFlipper);
+
 	//to do - program AJAX call to send JSON
-	if(switchIsFlipper != true)
+	if(ledIsOn != true)
 	{
-		switchIsFlipper = "false";
+		ledIsOn = "false";
 	}else{
-    switchIsFlipper = "true";
+    ledIsOn= "true";
   }
 
-	if(switchIsStart != true)
-	{
-		switchIsStart = "false";
-	}else{
-    switchIsStart = "true";
-  }
-
-	if(switchIsCredit != true)
-	{
-		switchIsCredit = "false";
-	}else{
-    switchIsCredit = "true";
-  }
-
-	if(switchIsOuthole != true)
-	{
-		switchIsOuthole = "false";
-	}else{
-    switchIsOuthole = "true";
-  }  
-
-
-	if(switchDebug != true)
-	{
-		switchDebug = "false";
-	}else{
-    switchDebug = "true";
-  }
-	var switchVar = {
-		switchId : switchIdInput,
-		switchName : switchNameInput,
-		switchDebounce : switchDebounceInput,
-		switchIsFlipper : switchIsFlipper,
-    switchIsStart : switchIsStart,
-    switchIsCredit : switchIsCredit,
-    switchIsOuthole : switchIsOuthole,
-		switchDebug : switchDebug
+	
+	var ledVar = {
+		ledId : ledIdInput,
+		ledName : ledNameInput,
+		ledColour : ledColourInput,
+		ledIsOn : ledIsOn,
+    ledFlashSpeed : ledFlashSpeedInput
     }
-	//console.log(switchVar);
-	//var object = Object.create(switchVar);
+	//console.log(ledVar);
+	//var object = Object.create(ledVar);
 	//console.log(object);
 
-	var json = JSON.stringify(switchVar);
+	var json = JSON.stringify(ledVar);
 	//console.log(json);
 	
 	///
 	// Creating a xhttp object
   let xhttp = new XMLHttpRequest();
-  let url = "api/switch/config/set";
+  let url = "api/lighting/config/set";
 
   // open a connection
   xhttp.open("POST", url, true);
@@ -228,7 +171,7 @@ function updateSwitch()
       if (xhttp.readyState === 4 && xhttp.status === 200) {
 
           // Print received data from server
-          loadSwitchSettings(SelectedRow,SelectedColumn);
+          loadLEDSettings(SelectedRow,SelectedColumn);
 
       }
   };
@@ -238,13 +181,13 @@ function updateSwitch()
 
 }
 
-function switchEdit_open() {
-  var SwitchEdit = document.getElementById('SwitchEdit');
-  if (SwitchEdit.style.display === 'block') {
-    //SwitchEdit.style.display = 'none';
-    SwitchEdit.style.display = 'block';
+function ledEdit_open() {
+  var ledEdit = document.getElementById('ledEdit');
+  if (ledEdit.style.display === 'block') {
+    //ledEdit.style.display = 'none';
+    ledEdit.style.display = 'block';
   } else {
-    SwitchEdit.style.display = 'block';
+    ledEdit.style.display = 'block';
   }
 }
 
