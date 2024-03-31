@@ -816,6 +816,7 @@ void switch_event_outhole(int switchId)
   bool isGameActive = g_myPinballGame.isGameActive();
   if(isGameActive == true)
   {
+      
     if(g_myPinballGame.isBallSave()==false)
     {
       //ball save dont end ball
@@ -849,6 +850,7 @@ void switch_event_outhole(int switchId)
       //ok so game was active, now its not, game over calls need to be made
   
       changeState(3); //moving to End of game
+        digitalWrite(hvrPin, HIGH);
 
       //need much more code here, but ok for now
     }
@@ -879,6 +881,8 @@ void switch_event_startbutton(int switchId)
   {
     changeState(2);
     Serial.println("[switch_event_startbutton] Starting Game");
+    digitalWrite(hvrPin, LOW);
+    Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players
     Serial.println("[switch_event_startbutton] Add player");

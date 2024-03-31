@@ -74,7 +74,7 @@ void setup() {
 
   pinMode(hvrPin, OUTPUT);
   //turn off High Voltage Relay
-  digitalWrite(hvrPin, LOW);
+  digitalWrite(hvrPin, HIGH);
 
   setupShifts();
  
