@@ -560,6 +560,7 @@ void triggerSwitches()
 
       if(switchActive[col][row]==true) 
       {//switch triggered physically
+        switchActive[col][row]=false;
         if(switches[triggeredSwitchID].switchObject->triggerSwitch()==true)//this will return false if debounce period still active
         {
           switchScored[col][row]=true; //get credit for hitting the switch of do switch hit activity - this is picked up in processAllSwitches()
@@ -570,6 +571,7 @@ void triggerSwitches()
           } 
           byte* thisSwitchCoilBinding = switchCoilBindings[triggeredSwitchID].coilNumber;
    
+          //should we really be doing this when game is not active?
           if(thisSwitchCoilBinding > 0) //if we have a coil bound to the switch
           {
             if(switchCoilBindings[triggeredSwitchID].instantFire == true) //we need to fire the coil straight away
@@ -608,7 +610,7 @@ void triggerSwitches()
               Serial.println(triggeredSwitchID);
             }
           }
-          switchActive[col][row]=false;
+          
         }//end triggered switch processing  
       }//end switch processing
     }//end row processing
@@ -629,6 +631,17 @@ void processAllSwitches()
       if(switchScored[col][row]==true)
       {
         int triggeredSwitchID = (col * 8)+row;
+        if(MachineState == 5)
+        {
+              if(ScoreboardTText == ScoreboardBText ){
+                ScoreboardTText = ScoreboardBText;
+                ScoreboardBText = switches[triggeredSwitchID].switchObject->getName();
+              }else{
+                ScoreboardTText = ScoreboardBText;
+                ScoreboardBText = "Multi-hit";
+              }
+              
+        }
         if(switches[triggeredSwitchID].switchObject->isStart()==true)
         {
           switch_event_startbutton(triggeredSwitchID);
@@ -653,6 +666,7 @@ void processAllSwitches()
            * events can be count of switch hits, combinations, timers
            * for now we will be working just on default
           */
+          addScore(triggeredSwitchID);
 
         }
 
@@ -881,7 +895,7 @@ void switch_event_startbutton(int switchId)
   {
     changeState(2);
     Serial.println("[switch_event_startbutton] Starting Game");
-    digitalWrite(hvrPin, LOW);
+    //digitalWrite(hvrPin, LOW);
     Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players

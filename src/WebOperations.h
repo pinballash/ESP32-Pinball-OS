@@ -102,6 +102,7 @@ void web_handle_action_triggerswitch();
 void web_handle_action_restart();
 
 void web_handle_action_solenoidTest();
+void web_handle_action_diagnostics();
 
 
 //setup a task to run on core 0;
@@ -175,6 +176,7 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/action/triggerswitch", web_handle_action_triggerswitch);
     server.on("/action/restart", web_handle_action_restart);    
     server.on("/action/solenoidTest", web_handle_action_solenoidTest);
+    server.on("/action/diagnostics", web_handle_action_diagnostics);
 
     //where does the landing page go?
     server.on("/", web_handle_config_menu);
@@ -473,15 +475,19 @@ void web_handle_action_triggerswitch()
 
 void web_handle_action_solenoidTest()
 {
+  
   //for each coil, fire it
   String webText = "";
+  changeState(2);
   for(char coilNumber = 0; coilNumber < 16; coilNumber++)
   {
     delay(1000);
     PinballCoil* thisCoil = coils[coilNumber].coilObject; //get the PinballCoil instance associated
-    Serial.print("Solenod Test : ");
+   
     thisCoil->fireCoil();
-    Serial.println(thisCoil->getName());
+    ScoreboardTText = "Solenoid Test : ";
+    ScoreboardBText = thisCoil->getName();
+    oneTopOneBottomDisplay();
     ProcessShifts(thisCoil); //set shift register bytes to turn on solenoid
     //delay(1000);
     write_sr_coils();
@@ -489,9 +495,29 @@ void web_handle_action_solenoidTest()
     coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
    
   }
-   server.send(200, "text/html", "OK - SolenoidTest Complete"); //Send web page
-}
 
+   ScoreboardTText = "Solenoid Test : ";
+    ScoreboardBText = "Complete";
+    oneTopOneBottomDisplay();
+   delay(2000);
+   server.send(200, "text/html", "OK - Solenoid Test : Complete"); //Send web page
+   changeState(3);
+}
+void web_handle_action_diagnostics()
+{
+  
+  //for each coil, fire it
+  String webText = "";
+  changeState(5);
+  
+
+   ScoreboardTText = "Diagnostics : ";
+    ScoreboardBText = "Begin";
+    oneTopOneBottomDisplay();
+   
+   server.send(200, "text/html", "OK - Diagnostics Initiated"); //Send web page
+
+}
 
 void web_handle_action_restart()
 {
@@ -583,6 +609,8 @@ void web_handle_setSwitchConfig()
     String dataFile = "/switchConfig." + switchId + ".json";
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
+    //shouldn't we update the switch object live? To-Do
+    
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
   }
 

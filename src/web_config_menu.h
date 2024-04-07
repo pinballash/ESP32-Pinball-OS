@@ -59,8 +59,8 @@ const char CONFIG_MENU_page[] PROGMEM = R"=====(
     <h6>Tests</h6>
     <div class="w3-row">
       <div class="w3-col w3-container m2 w3-blue"><a href='./action/solenoidTest' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Solenoid Test</a></div>
-      <!--<div class="w3-col w3-container m2 w3-blue"><p>2</p></div>
-      <div class="w3-col w3-container m2 w3-blue"><p>3</p></div>
+      <div class="w3-col w3-container m2 w3-blue"><a href='./action/diagnostics' class='w3-bar-item w3-button w3-padding w3-blue'><i class='fa fa-wrench fa-fw'></i>Diagnostics Mode</a></div>
+      <!--<div class="w3-col w3-container m2 w3-blue"><p>3</p></div>
       <div class="w3-col w3-container m2 w3-blue"><p>4</p></div>
       <div class="w3-col w3-container m2 w3-blue"><p>5</p></div>-->
 

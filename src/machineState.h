@@ -2,7 +2,7 @@
 
 void changeState(int newState)
 {
-    /* states accepted are Bootup-0, Atract-1, Game-2, End Game-3, End Ball-4
+    /* states accepted are Bootup-0, Atract-1, Game-2, End Game-3, End Ball-4, Diagnostics-5
     Bootup, this is set during initialisation and cannot be set again
     Atract, this is fired automatically following bootup or end game
     Game, this can be triggered by start button press
@@ -37,7 +37,15 @@ void changeState(int newState)
               forceDisplayUpdate = true;
               g_myPinballGame.newGame();
               //enable power to coils
-              digitalWrite(hvrPin, HIGH);
+              digitalWrite(hvrPin, LOW);
+            }else if (newState == 5)
+            {
+              //moving from End Game to Atract : OK
+              Serial.println("[[changeState] - - Attract->Diagnostics");
+              MachineState = 5;
+              lastMachineState = 1;
+              forceDisplayUpdate = true;
+              
             }
             break;
           }    
@@ -54,8 +62,16 @@ void changeState(int newState)
               forceDisplayUpdate = true;
               g_myPinballGame.endGame(); //end the game - this resets a load of stuff, we may want to run this on a new game start??
               //disable power to coils
-              digitalWrite(hvrPin, LOW);
+              digitalWrite(hvrPin, HIGH);
 
+            }else if (newState == 5)
+            {
+              //moving from End Game to Atract : OK
+              Serial.println("[[changeState] - - Game->Diagnostics");
+              MachineState = 5;
+              lastMachineState = 2;
+              forceDisplayUpdate = true;
+              
             }
             break;
           }

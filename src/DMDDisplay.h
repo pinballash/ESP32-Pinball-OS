@@ -12,6 +12,7 @@ void DisplayAttractModeFunction(void * pvParameters);
 void DisplayGameModeFunction(void * pvParameters);
 void DisplayEndOfBallModeFunction(void * pvParameters);
 void DisplayEndOfGameModeFunction(void * pvParameters);
+void DisplayDiagnosticsFunction(void * pvParameters);
 
 //setup a task handler;
 TaskHandle_t DisplayController;
@@ -20,6 +21,7 @@ TaskHandle_t DisplayAttractMode;
 TaskHandle_t DisplayGameMode;
 TaskHandle_t DisplayEndOfBallMode;
 TaskHandle_t DisplayEndOfGameMode;
+TaskHandle_t DisplayDiagnosticsMode;
 
 
 // Definitions for the dot matrix score displays
@@ -131,6 +133,15 @@ void DisplayControllerFunction(void * pvParameters)
       xTaskCreatePinnedToCore(DisplayEndOfGameModeFunction, "DisplayEndOfGameMode", 10000, NULL, 99, &DisplayEndOfGameMode,1);
       forceDisplayUpdate = false;
       Serial.println("[DisplayControllerFunction] Display Changing to End of Game Mode");
+    }else if((MachineState == 5) && (forceDisplayUpdate == true) && (lastMachineState == 1)) //Change from Game to End Game
+    {
+      //Serial.println("Deleting DisplayGameMode Task");
+      vTaskSuspend(DisplayAttractMode);
+      vTaskDelete(DisplayAttractMode);
+      resetDisplay();
+      xTaskCreatePinnedToCore(DisplayDiagnosticsFunction, "DisplayDiagnosticsMode", 10000, NULL, 99, &DisplayDiagnosticsMode,1);
+      forceDisplayUpdate = false;
+      Serial.println("[DisplayControllerFunction] Display Changing to Diagnostics Mode");
     }
     vTaskDelay(10);
   }
@@ -144,6 +155,15 @@ void DisplayBootModeFunction(void * pvParameters)
     vTaskDelay(500);       
   }
 }
+void DisplayDiagnosticsFunction(void * pvParameters)
+{
+  //Serial.println("DisplayBootModeFunction.....");
+  resetDisplay();  
+  for(;;){
+    oneTopOneBottomDisplay();
+    vTaskDelay(50);       
+  }
+}
 void DisplayAttractModeFunction(void * pvParameters)
 {
   //Serial.println("DisplayAttractModeFunction.....");
@@ -151,26 +171,26 @@ void DisplayAttractModeFunction(void * pvParameters)
   static unsigned long atractModeMillis = 0;
   String topTextArray[arrayLen];
   String bottomTextArray[arrayLen];
-  topTextArray[0] = "The Early";
-  bottomTextArray[0] = "Gamers Present";
+  topTextArray[0] = "ESP32 Pinball OS";
+  bottomTextArray[0] = "Presents";
 
-  topTextArray[1] = "An Arctic Monkeys";
-  bottomTextArray[1] = "Inspired Game";
+  topTextArray[1] = "A Homebrew";
+  bottomTextArray[1] = "Pinball";
 
-  topTextArray[2] = "The Little Shop";
-  bottomTextArray[2] = "of Rock";
+  topTextArray[2] = "Pinball";
+  bottomTextArray[2] = "Name";
 
   topTextArray[3] = "Theme Design";
-  bottomTextArray[3] = "Lottie";
+  bottomTextArray[3] = "Ash";
 
   topTextArray[4] = "Development";
   bottomTextArray[4] = "Ash";
 
   topTextArray[5] = "Machine Build";
-  bottomTextArray[5] = "AlanJ";
+  bottomTextArray[5] = "Ash";
 
   topTextArray[6] = "Technical Design";
-  bottomTextArray[6] = "AlanJ";
+  bottomTextArray[6] = "Ash";
 
   topTextArray[7] = "Free Play";
   bottomTextArray[7] = "-->Press Start<--";
@@ -191,7 +211,7 @@ void DisplayAttractModeFunction(void * pvParameters)
   resetDisplay();  
   for(;;){
 
-    if (millis() - atractModeMillis > 1500 ){
+    if (millis() - atractModeMillis > 750 ){
         
         //every five seconds change display
         //Serial.println("Attract mode - next display");
@@ -240,14 +260,14 @@ void DisplayEndOfGameModeFunction(void * pvParameters)
   static unsigned long atractModeMillis = 0;
   String topTextArray[arrayLen];
   String bottomTextArray[arrayLen];
-  topTextArray[0] = "Who you gonna call?";
-  bottomTextArray[0] = "The Martini police?";
+  topTextArray[0] = "Game";
+  bottomTextArray[0] = "Over";
 
-  topTextArray[1] = "I bet that you";
-  bottomTextArray[1] = "look good on the";
+  topTextArray[1] = "One More";
+  bottomTextArray[1] = "Game?";
 
-  topTextArray[2] = "Pinball???";
-  bottomTextArray[2] = "Nah!! :)";
+  topTextArray[2] = "";
+  bottomTextArray[2] = "";
   int EOGCounter = 0;
   for(;;){
     if (millis() - gameModeMillis > 1000 ){
