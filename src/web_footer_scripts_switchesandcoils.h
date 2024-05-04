@@ -39,7 +39,8 @@ function loadSwitchSettings(row,col)
         var switchIsFlipper = document.getElementById('switchIsFlipper');
         var switchIsStart = document.getElementById('switchIsStart');
         var switchIsCredit = document.getElementById('switchIsCredit');
-        var switchIsOuthole = document.getElementById('switchIsOuthole');                      
+        var switchIsOuthole = document.getElementById('switchIsOuthole');  
+        var switchAutoOn = document.getElementById('switchAutoOn');                     
         var switchDebug = document.getElementById('switchDebug');
         
         switchNameInput.value = obj.switchName;
@@ -75,6 +76,12 @@ function loadSwitchSettings(row,col)
           switchIsOuthole.checked = true;
         }else{
           switchIsOuthole.checked = false;
+        }
+        if(obj.switchAutoOn == "true")
+        {
+          switchAutoOn.checked = true;
+        }else{
+          switchAutoOn.checked = false;
         }
 
         if(obj.switchDebug == "true")
@@ -200,6 +207,7 @@ function updateSwitch()
   var switchIsStart = document.getElementById('switchIsStart').checked;
   var switchIsCredit = document.getElementById('switchIsCredit').checked;
   var switchIsOuthole = document.getElementById('switchIsOuthole').checked;
+  var switchAutoOn = document.getElementById('switchAutoOn').checked;
 	var switchDebug = document.getElementById('switchDebug').checked;
 	
   //console.log(switchIsFlipper);
@@ -231,6 +239,12 @@ function updateSwitch()
 	}else{
     switchIsOuthole = "true";
   }  
+  	if(switchAutoOn != true)
+	{
+		switchAutoOn = "false";
+	}else{
+    switchAutoOn = "true";
+  }  
 
 
 	if(switchDebug != true)
@@ -247,6 +261,7 @@ function updateSwitch()
     switchIsStart : switchIsStart,
     switchIsCredit : switchIsCredit,
     switchIsOuthole : switchIsOuthole,
+    switchAutoOn : switchAutoOn,
 		switchDebug : switchDebug
     }
 	//console.log(switchVar);

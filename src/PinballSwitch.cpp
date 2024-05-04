@@ -16,7 +16,7 @@ String PinballSwitch::getName()
 {
   return _switchName;
 }
-void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, bool isStart, bool isCredit, bool isOuthole, bool debug)
+void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, bool isStart, bool isCredit, bool isOuthole, bool debug, bool autoOn)
 {
   this->_switchName = switchName;
   this->_debounce = debounce;
@@ -25,31 +25,41 @@ void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, b
   this->_isCredit = isCredit;
   this->_isOuthole = isOuthole;
   this->_debug = debug;
-  
+  this->_autoOn = autoOn;
+
 }
 
 //to fire the switch run mySwitchName.triggerSwitch(), this will return true or false depending on whether it was ok or not
 bool PinballSwitch::triggerSwitch()
 {
-  if((millis() - this->_lastMillis > this->_debounce) || this->_isFlipper)
+  //need a function to check if its ok to trigger the switch again.  For example, a drop traget will trigger over and over
+  //again so we may need to use this->_autoOn - if default as true, switch operates normally, but if is set to false, then we will supress further switch triggers until this->_isOn = false
+  
+  bool proceed = false;
+  if(this->_autoOn == true)
   {
-  	this->_isOn = true;
-  	this->_lastMillis = millis();
-    if(this->_debug == true)
-    {
-      Serial.print("[CLASS] PinballSwitch: [triggerSwitch] - ");
-      Serial.print(this->getName());
-      Serial.println(" - Success");
-    }
-  	return true;
-  }else
+    proceed = true; 
+  }else if(this->_isOn == false)
   {
-	  if(this->_debug  == true)
+    proceed = true;
+  }
+  if(proceed == true)
+  {
+    if((millis() - this->_lastMillis > this->_debounce) || this->_isFlipper)
     {
-      Serial.print("[CLASS] PinballSwitch: [triggerSwitch] - ");
-      Serial.print(this->getName());
-      Serial.println(" - Suppressed");
+      this->_isOn = true; 
+      this->_lastMillis = millis();
+      //switch triggered
+      return true;
+    }else
+    {
+      //switch supressed
+      return false;        
     }
+  }
+  else
+  {
+	  //switch supressed
 	  return false;        
   }
 }
@@ -78,5 +88,10 @@ bool PinballSwitch::isOuthole()
 void PinballSwitch::toggleDebug()
 {
   this->_debug = !this->_debug;
+}
+
+void PinballSwitch::turnOff()
+{
+  this->_isOn = false;
 }
  

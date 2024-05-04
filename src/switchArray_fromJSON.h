@@ -194,6 +194,7 @@ void createSwitchObjects()
       bool isCredit = false;
       bool isOuthole = false;
       bool isDebug = false;
+      bool autoOn = true;
 
       if(switchJSON["switchIsFlipper"] == "true")
       {
@@ -215,10 +216,14 @@ void createSwitchObjects()
       {
         isDebug = true;
       }
+      if(switchJSON["switchAutoOn"] == "false")
+      {
+        autoOn = false;
+      }
 
 
 
-      thisSwitch->setValues(switchJSON["switchName"],switchJSON["switchDebounce"],isFlipper,isStart,isCredit,isOuthole,isDebug);
+      thisSwitch->setValues(switchJSON["switchName"],switchJSON["switchDebounce"],isFlipper,isStart,isCredit,isOuthole,isDebug,autoOn);
       //Serial.println("JSON Loaded, this switch object is now called " + thisSwitch->getName());
     }//end row processing
   }//end col processing

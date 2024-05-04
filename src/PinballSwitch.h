@@ -15,6 +15,7 @@ class PinballSwitch
     bool _isStart = false;
     bool _isCredit = false;
     bool _isOuthole = false;  
+    bool _autoOn = false;
 
   public:
    
@@ -25,7 +26,7 @@ class PinballSwitch
   PinballSwitch(int ID);
   
   //Public Functions 
-  void setValues(String switchName, int debounce, bool isFlipper, bool isStart, bool isCredit, bool isOuthole, bool debug);
+  void setValues(String switchName, int debounce, bool isFlipper, bool isStart, bool isCredit, bool isOuthole, bool debug, bool autoOn);
   String getName();
   bool triggerSwitch();
   bool isFlipper();
@@ -33,5 +34,6 @@ class PinballSwitch
   bool isCredit();
   bool isOuthole();
   void toggleDebug();
+  void turnOff();
 };
 #endif

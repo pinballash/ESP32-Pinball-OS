@@ -177,8 +177,8 @@ void DisplayAttractModeFunction(void * pvParameters)
   topTextArray[1] = "A Homebrew";
   bottomTextArray[1] = "Pinball";
 
-  topTextArray[2] = "Pinball";
-  bottomTextArray[2] = "Name";
+  topTextArray[2] = setting_MachineName;
+  bottomTextArray[2] = setting_MachineVersion;
 
   topTextArray[3] = "Theme Design";
   bottomTextArray[3] = "Ash";
@@ -220,6 +220,7 @@ void DisplayAttractModeFunction(void * pvParameters)
         {
           ScoreboardTText = topTextArray[atractCounter];
           ScoreboardBText = bottomTextArray[atractCounter];
+          resetDisplay();  
           oneTopOneBottomDisplay();
           atractCounter +=1;
         }else{

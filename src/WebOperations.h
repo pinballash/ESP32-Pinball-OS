@@ -574,7 +574,7 @@ void web_handle_getSwitchConfig()
     if(jsonConfig == "")
     {
       //we need to send a dummy set of values
-      String jsonString = "{\"switchId\" : " + switchId + ",\"switchName\":\"undefined\",\"switchDebounce\":\"1000\",\"switchIsFlipper\":\"false\",\"switchIsStart\":\"false\",\"switchIsCredit\":\"false\",\"switchIsOuthole\":\"false\",\"switchDebug\":\"false\"}";
+      String jsonString = "{\"switchId\" : " + switchId + ",\"switchName\":\"undefined\",\"switchDebounce\":\"1000\",\"switchIsFlipper\":\"false\",\"switchIsStart\":\"false\",\"switchIsCredit\":\"false\",\"switchIsOuthole\":\"false\",\"switchAutoOn\":\"true\",\"switchDebug\":\"false\"}";
       server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
 
     }else{
@@ -605,6 +605,7 @@ void web_handle_setSwitchConfig()
     jobject["switchIsStart"] = postedJSON["switchIsStart"];
     jobject["switchIsCredit"] = postedJSON["switchIsCredit"];
     jobject["switchIsOuthole"] = postedJSON["switchIsOuthole"];
+    jobject["switchAutoOn"] = postedJSON["switchAutoOn"];
     jobject["switchDebug"] = postedJSON["switchDebug"];
     String dataFile = "/switchConfig." + switchId + ".json";
     const char * dataChar = dataFile.c_str();
