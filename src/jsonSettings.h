@@ -1,5 +1,4 @@
 #include <Arduino.h>
-
 #include <ArduinoJson.h> 
 #include <Effortless_SPIFFS.h>
 // Create fileSystem
