@@ -224,6 +224,7 @@ void createSwitchObjects()
 
 
       thisSwitch->setValues(switchJSON["switchName"],switchJSON["switchDebounce"],isFlipper,isStart,isCredit,isOuthole,isDebug,autoOn);
+      switchJSON.clear();
       //Serial.println("JSON Loaded, this switch object is now called " + thisSwitch->getName());
     }//end row processing
   }//end col processing

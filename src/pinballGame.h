@@ -32,6 +32,8 @@ class PinballGame
     int _player4ExtraBalls = 0;
     unsigned long _player4score = 0;
     
+    String DMDTopLine = "";
+    String DMDBottomLine = "";
 
     /*
     Variables from AlanJ - these used to exist in params.h in a gameParams Struct
@@ -72,5 +74,10 @@ class PinballGame
   void setPlayfieldMultiplier(int multiplier);
   int getBonusMultiplier();
   void setBonusMultiplier(int multiplier);
+  String getDMDTopLine();
+  String getDMDBottomLine();
+  void setDMDTopLine(String DMDText);
+  void setDMDBottomLine(String DMDText);
+  void setDMDText(String DMDTopLine, String DMDBottomLine);
 };
 #endif

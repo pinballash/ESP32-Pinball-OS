@@ -94,4 +94,14 @@ void PinballSwitch::turnOff()
 {
   this->_isOn = false;
 }
+
+int PinballSwitch::getSwitchScore()
+{ 
+  return this->_pointsScore;
+}
+
+void PinballSwitch::setSwitchScore(int pointsScore)
+{
+  this->_pointsScore = pointsScore;
+}
  

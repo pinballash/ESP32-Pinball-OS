@@ -470,6 +470,7 @@ void web_handle_action_triggerswitch()
     //Serial.println("Triggering Switch "+ server.arg("plain")); //no JSON no webpage my friend ;)
     switchActive[col][row]=true;
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
   }
 }
 
@@ -485,9 +486,7 @@ void web_handle_action_solenoidTest()
     PinballCoil* thisCoil = coils[coilNumber].coilObject; //get the PinballCoil instance associated
    
     thisCoil->fireCoil();
-    ScoreboardTText = "Solenoid Test : ";
-    ScoreboardBText = thisCoil->getName();
-    oneTopOneBottomDisplay();
+    g_myPinballGame.setDMDText("Solenoid Test",thisCoil->getName());
     ProcessShifts(thisCoil); //set shift register bytes to turn on solenoid
     //delay(1000);
     write_sr_coils();
@@ -496,27 +495,18 @@ void web_handle_action_solenoidTest()
    
   }
 
-   ScoreboardTText = "Solenoid Test : ";
-    ScoreboardBText = "Complete";
-    oneTopOneBottomDisplay();
+   g_myPinballGame.setDMDText("Solenoid Test","Complete");
    delay(2000);
    server.send(200, "text/html", "OK - Solenoid Test : Complete"); //Send web page
    changeState(3);
 }
 void web_handle_action_diagnostics()
-{
-  
+{ 
   //for each coil, fire it
   String webText = "";
   changeState(5);
-  
-
-   ScoreboardTText = "Diagnostics : ";
-    ScoreboardBText = "Begin";
-    oneTopOneBottomDisplay();
-   
-   server.send(200, "text/html", "OK - Diagnostics Initiated"); //Send web page
-
+  g_myPinballGame.setDMDText("Diagnostics : ","Begin");
+  server.send(200, "text/html", "OK - Diagnostics Initiated"); //Send web page
 }
 
 void web_handle_action_restart()
@@ -580,6 +570,7 @@ void web_handle_getSwitchConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 
@@ -613,6 +604,9 @@ void web_handle_setSwitchConfig()
     //shouldn't we update the switch object live? To-Do
     
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 
 
@@ -667,6 +661,7 @@ void web_handle_getCoilConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 
@@ -695,6 +690,9 @@ void web_handle_setCoilConfig()
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 
 
@@ -748,6 +746,7 @@ void web_handle_getswitchcoilbindingConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 
@@ -774,6 +773,9 @@ void web_handle_setswitchcoilbindingConfig()
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 
 
@@ -826,6 +828,7 @@ void web_handle_getlightingConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 }
@@ -852,6 +855,9 @@ void web_handle_setlightingConfig()
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 }
 
@@ -1053,6 +1059,7 @@ bool web_handle_configUpdate()
 
   updateConfigFiles();
   web_handle_action_restart();
+  postedJSON.clear();
   return true;
 }
 
@@ -1167,6 +1174,8 @@ void web_handle_listFS()
   String jsonString;
   serializeJson(jobject, jsonString);
   server.send(200, "text/html", jsonString);
+  myJsonDocument.clear();
+  jobject.clear();
 }
 
 void web_handle_getFS(){

@@ -29,7 +29,7 @@ void changeState(int newState)
             if(newState == 2)
             {
               //moving from Bootup to Atract : OK
-              Serial.println("[changeState] - - Attract->Game");
+              Serial.println("[changeState] - Attract->Game");
               ScoreboardTText = "Lets, Play,";
               ScoreboardBText = "Pool!";
               MachineState = 2;
@@ -41,7 +41,7 @@ void changeState(int newState)
             }else if (newState == 5)
             {
               //moving from End Game to Atract : OK
-              Serial.println("[[changeState] - - Attract->Diagnostics");
+              Serial.println("[[changeState] - Attract->Diagnostics");
               MachineState = 5;
               lastMachineState = 1;
               forceDisplayUpdate = true;
@@ -55,19 +55,21 @@ void changeState(int newState)
             if(newState == 3)
             {
               //moving from Game to End Game : OK
-              Serial.println("[changeState] - - Game->End Game");
+              Serial.println("[changeState] - Game->End Game");
 
               MachineState = 3;
               lastMachineState = 2;
               forceDisplayUpdate = true;
+              Serial.println("[changeState] - Ending Game");
               g_myPinballGame.endGame(); //end the game - this resets a load of stuff, we may want to run this on a new game start??
               //disable power to coils
+              Serial.println("[changeState] - Disable High Voltage");
               digitalWrite(hvrPin, HIGH);
 
             }else if (newState == 5)
             {
               //moving from End Game to Atract : OK
-              Serial.println("[[changeState] - - Game->Diagnostics");
+              Serial.println("[[changeState] - Game->Diagnostics");
               MachineState = 5;
               lastMachineState = 2;
               forceDisplayUpdate = true;
@@ -88,8 +90,7 @@ void changeState(int newState)
               lastMachineState = 3;
               forceDisplayUpdate = true;
               g_myPinballGame.newGame();
-              //enable power to coils
-              digitalWrite(hvrPin, HIGH);
+
             }else if (newState == 1)
             {
               //moving from End Game to Atract : OK

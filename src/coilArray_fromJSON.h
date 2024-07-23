@@ -85,6 +85,7 @@ void createCoilObjects()
       //String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff
       thisCoil->setValues(coilJSON["coilName"],coilJSON["shiftRegister"],coilJSON["shiftRegisterBit"],coilJSON["pulseTime"],coilJSON["pulseBackOff"]);
       //Serial.println("JSON Loaded, this coil object is now called " + thisCoil->getName());
+      coilJSON.clear();
     }//end row processing
   }//end col processing
 }

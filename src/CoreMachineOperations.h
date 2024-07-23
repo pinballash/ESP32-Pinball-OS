@@ -4,13 +4,14 @@
 #include "PinballLED.h"
 #include "PinballGame.h"
 
-bool switchDebug = true;
-bool coilDebug = true;
+bool switchDebug = false;
+bool coilDebug = false;
 bool loopDebug = false;
 bool threadDebug = false;
 bool srDebug = false;
 bool osrDebug = false;
 bool generalMODebug = false;
+bool memoryStats = false;
 unsigned long ScanSwitchMatrixEveryMicroSeconds = 100; //this seems to be the value where we can operate at around 1000 times per second
 
 PinballGame g_myPinballGame(setting_MachineName);
@@ -22,18 +23,12 @@ PinballGame g_myPinballGame(setting_MachineName);
 #include "coilBindings_fromJSON.h"
 #include "ledArray_fromJSON.h"
 
-void fireFlipper(int firedSwitchID);
-void releaseFlipper(int firedSwitchID);
-void IRAM_ATTR fireFlipper1();
-void IRAM_ATTR releaseFlipper1();
-void IRAM_ATTR fireFlipper2();
-void IRAM_ATTR releaseFlipper2();
+
 
 void MonitorSwitchesAndRegisterFunction( void * pvParameters);
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
 void scanSwitchMatrix();
-void identifyFlippers(); //depriciated
-void triggerFlippers(); //depriciated
+
 void triggerSwitches();
 void processAllSwitches();
 void ProcessShifts(PinballCoil* CoilObject);
@@ -69,7 +64,7 @@ void IRAM_ATTR Timer0_ISR()
     
 }
 //setup a task to run on core 0;
-TaskHandle_t MonitorSwitchesAndRegister;
+//TaskHandle_t MonitorSwitchesAndRegister;
 TaskHandle_t ProcessSwitchesAndRules;
 
 //setup array for storing switch active
@@ -380,87 +375,14 @@ void scanSwitchMatrix()
 * loop through all columns and rows and check for a switches that are marked as flippers.  
 * When they are identified, set the leftFlipperCol, LeftFlipperRow, rightFlipperCol, rightFlipperRow variables.
 */
-void identifyFlippers()
-{
-  //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
-  char i = 0;
-  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) 
-  {
-    for (byte row = 0; row < setting_switchMatrixRows; row++) 
-    {    
-      int flipperSwitchID = (col*8)+row;
-      if(switches[flipperSwitchID].switchObject->isFlipper()==true) //we are desling with flippers
-      { 
-        colflipper[i] = col;
-        rowflipper[i] = row;    
-        Serial.print("Flipper ");
-        Serial.print(i);
-        Serial.print(" Detected on Column[");
-        Serial.print(col);
-        Serial.print("] x Row[");
-        Serial.print(row);
-        Serial.println("]");
-        i++;
-      }
-    }
-  }   
-}
+
 /*
 * Function triggerFlippers
 * loop through all columns and rows and check for a switches that are marked as flippers.  
 * If a switch is closed, and its a flipper - enable the flipper solenoid.
 * If a switch is open, and its a flipper and the solenoid id on - disable the flipper solenoid.
 */
-void triggerFlippers()
-{
-  //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
-  for(char i = 0; i < flipperButtons; i++)
-  {
-    char col = colflipper[i];
-    char row = rowflipper[i];
-    int flipperSwitchID = (col*8)+row;
-    PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
-    if((switchActive[col][row]==true)) //flipper button is pressed
-    {
-      
-      if(generalMODebug)
-      {
-        Serial.print("Flipper button pressed....");
-        Serial.println(flipperSwitchID);
-        Serial.print("need to locate coil associated ");
-        Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
-      } 
-      if(flipperCoil->checkStatus()==false) //coil is currently off
-      {
-        if(generalMODebug)
-        {
-          Serial.print("Coil disabled but button pressed, enabling ");
-          Serial.println(flipperCoil->getName());
-        }
-        if(MachineState == 2) //only if game is active
-        {
-          flipperCoil->enable(); //mark the coil as enabled - perminantly on
-          ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
-          write_sr_coils();  //action shift register changes
-          flipperCoil->actioned(); //mark the coil changes as done
-        }
 
-      }
-    }else if(flipperCoil->checkStatus()==true)//so the button isnt on, but the coil is
-    {
-      if(generalMODebug)
-      {
-        Serial.println("Coil enable but button not pressed, starting manage() function to determine if it can be turned off");
-        Serial.println("Coil insists it needs action to turn on or off");  
-      } 
-      flipperCoil->disable(); //mark the coil as off
-      flipperCoil->manage(); //run management routine to do the needful
-      ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
-      write_sr_coils(); //action shift register changes
-      flipperCoil->actioned(); //mark the coil changes as done
-    }//end button not presesed  
-  } 
-}
 /*
 * Function triggerSwitches
 * loop through all columns and rows and check for a switches that are marked as NOT flippers, but are marked true in the switchActive array.  
@@ -469,81 +391,7 @@ void triggerFlippers()
 * If a switch is closed and nat bound to a coil, do no more work.
 */
 
-void IRAM_ATTR fireFlipper(int flipperSwitchID)
-{
-  /*PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
 
-  if(generalMODebug)
-  {
-    Serial.print("Flipper button pressed....");
-    Serial.println(flipperSwitchID);
-    Serial.print("need to locate coil associated ");
-    Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
-  } 
-  if(flipperCoil->checkStatus()==false) //coil is currently off
-  {
-    if(generalMODebug)
-    {
-      Serial.print("Coil disabled but button pressed, enabling ");
-      Serial.println(flipperCoil->getName());
-    }
-    if(MachineState == 2) //only if game is active
-    {
-      flipperCoil->enable(); //mark the coil as enabled - perminantly on
-      ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
-      write_sr_coils();  //action shift register changes
-      flipperCoil->actioned(); //mark the coil changes as done
-    }
-  }  */
-}
-void IRAM_ATTR releaseFlipper(int flipperSwitchID)
-{
-  PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
-
-  if(generalMODebug)
-  {
-    Serial.print("Flipper button pressed....");
-    Serial.println(flipperSwitchID);
-    Serial.print("need to locate coil associated ");
-    Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
-  } 
-  if(flipperCoil->checkStatus()==true) //coil is currently off
-  {
-    
-    if(MachineState == 2) //only if game is active
-    {
-      if(generalMODebug)
-      {
-        Serial.println("Coil enable but button not pressed, starting manage() function to determine if it can be turned off");
-        Serial.println("Coil insists it needs action to turn on or off");  
-      } 
-      flipperCoil->disable(); //mark the coil as off
-      flipperCoil->manage(); //run management routine to do the needful
-      ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
-      write_sr_coils(); //action shift register changes
-      flipperCoil->actioned(); //mark the coil changes as done
-    }
-  }  
-}
-void IRAM_ATTR fireFlipper1()
-{
-      Serial.println("FireFlipper1");
-      flip1Enabled = true;
-      lastMillisFlip1 = millis();
-}
-void IRAM_ATTR releaseFlipper1()
-{
-
-  
-}
-void IRAM_ATTR fireFlipper2()
-{
-  fireFlipper(2);
-}
-void IRAM_ATTR releaseFlipper2()
-{
-  fireFlipper(2);
-}
 
 /*
 * Function triggerSwitches
@@ -848,7 +696,7 @@ void switch_event_outhole(int switchId)
     {
       if(coilNumberByte >0)
       {
-        Serial.println("[switch_event_outhole] Fire Outhole");
+        //Serial.println("[switch_event_outhole] Fire Outhole");
         PinballCoil* switchCoil = coils[coilNumberByte].coilObject;
         if(switchCoil->fireCoil()){
           coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -856,7 +704,7 @@ void switch_event_outhole(int switchId)
           write_sr_coils(); //update shift register
         }
       }else{
-        Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
+        //Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
       }
       
     }else
