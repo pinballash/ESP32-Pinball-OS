@@ -50,12 +50,12 @@ String ScoreboardTRText = "";
 String ScoreboardTLText = "";
 String ScoreboardBText = "";
 
-String ThreadSerialOut_PinballGame = "";
-String ThreadSerialOut_PinballSwitch = "";
-String ThreadSerialOut_PinballCoil = "";
-String ThreadSerialOut_PinballDisplay = "";
-String ThreadSerialOut_SwitchesAndRules = "";
-String ThreadSerialOut_Webserver = "";
+String tso_PinballGame = "";
+String tso_PinballSwitch = "";
+String tso_PinballCoil = "";
+String tso_PinballDisplay = "";
+String tso_SwitchesAndRules = "";
+String tso_Webserver = "";
 
 unsigned long mainLoopMillis = 0;
 
@@ -64,6 +64,16 @@ unsigned long mainLoopMillis = 0;
 #include "WebOperations.h"
 #include "machineState.h"
 #include "setupShifts.h"
+
+SemaphoreHandle_t i2cSemaphoreSWITCH;
+SemaphoreHandle_t i2cSemaphoreCOIL;
+void createSemaphores(){
+    i2cSemaphoreSWITCH = xSemaphoreCreateMutex();
+    xSemaphoreGive( ( i2cSemaphoreSWITCH) );
+    i2cSemaphoreCOIL = xSemaphoreCreateMutex();
+    xSemaphoreGive( ( i2cSemaphoreCOIL) );
+}
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -105,6 +115,7 @@ void setup() {
 
   createLedObjects();
 
+  createSemaphores();
   /*xTaskCreatePinnedToCore(
     MonitorSwitchesAndRegisterFunction,
     "MonitorSwitchesAndRegister",
@@ -117,7 +128,7 @@ void setup() {
     xTaskCreatePinnedToCore(
     ProcessSwitchesAndRulesFunction,
     "ProcessSwitchesAndRules",
-    1000,
+    2000,
     NULL,
     2,
     &ProcessSwitchesAndRules,
@@ -227,41 +238,60 @@ void setup() {
 
 void loop() {
   
-  if(ThreadSerialOut_PinballGame != "")
+  
+  if(tso_PinballGame != "")
   {
-    Serial.println(ThreadSerialOut_PinballGame);
-    ThreadSerialOut_PinballGame = "";
+    Serial.println("[TSO_PG]"+tso_PinballGame);
+    tso_PinballGame = "";
   }
 
-  if(ThreadSerialOut_PinballSwitch != "")
+
+  if(tso_PinballSwitch != "")
   {
-    Serial.println(ThreadSerialOut_PinballSwitch);
-    ThreadSerialOut_PinballSwitch = "";
+    Serial.println("[TSO_PS]"+tso_PinballSwitch);
+    tso_PinballSwitch = "";
   }
 
-  if(ThreadSerialOut_PinballCoil != "")
+
+  //foreach coil check debug
+ /*for ( byte col = 0; col < 2 ; col++) {
+    for (byte row = 0; row < 8; row++) 
+    {    
+      String CoilLog = "";
+      int CoilIDInteger = (col * 8)+row;
+      CoilLog = coils[CoilIDInteger].coilObject->getDebugLog();
+      if(CoilLog != "")
+      {
+         Serial.println("[CoilLog]"+CoilLog);
+      }
+    }
+  }*/
+ if(tso_PinballCoil != "")
   {
-    Serial.println(ThreadSerialOut_PinballCoil);
-    ThreadSerialOut_PinballCoil = "";
+    Serial.println("[TSO_PC]"+tso_PinballCoil);
+    tso_PinballCoil = "";
   }
 
-  if(ThreadSerialOut_PinballDisplay != "")
+  
+
+  if(tso_PinballDisplay != "")
   {
-    Serial.println(ThreadSerialOut_PinballDisplay);
-    ThreadSerialOut_PinballDisplay = "";
+    Serial.println("[TSO_PD]"+tso_PinballDisplay);
+    tso_PinballDisplay = "";
   }
 
-  if(ThreadSerialOut_SwitchesAndRules != "")
+  if(tso_SwitchesAndRules != "")
   {
-    Serial.println(ThreadSerialOut_SwitchesAndRules);
-    ThreadSerialOut_SwitchesAndRules = "";
+    Serial.println("[TSO_SaR]"+tso_SwitchesAndRules);
+    tso_SwitchesAndRules = "";
   }
 
-  if(ThreadSerialOut_Webserver != "")
+  if(tso_Webserver != "")
   {
-    Serial.println(ThreadSerialOut_Webserver);
-    ThreadSerialOut_Webserver = "";
+    Serial.println("[TSO_WEB]"+tso_Webserver);
+    tso_Webserver = "";
   }
+ 
 
   //vTaskDelay(5000);//do nothing
   if((millis() > mainLoopMillis + 5000) && (memoryStats == true))

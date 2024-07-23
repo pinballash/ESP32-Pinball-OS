@@ -17,10 +17,12 @@ class PinballCoil
     String _coilName = "No name set";
     bool _needsAction = false;
     bool _debug = false;
+    String _debugLog = "";
     //in future we may wish to add pulse modulation after initial pulse time, lets leave for now.
   
   public:
   //set up ShiftRegisterItem
+    SemaphoreHandle_t i2cSemaphoreCOIL;
 
    
   //constructor
@@ -44,6 +46,8 @@ class PinballCoil
   byte getSRBit();
   void actioned();
   void toggleDebug();
+  String getDebugLog();
+  void clearDebugLog();
 
 };
 #endif

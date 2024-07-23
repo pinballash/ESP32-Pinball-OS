@@ -34,7 +34,12 @@ bool PinballSwitch::triggerSwitch()
 {
   //need a function to check if its ok to trigger the switch again.  For example, a drop traget will trigger over and over
   //again so we may need to use this->_autoOn - if default as true, switch operates normally, but if is set to false, then we will supress further switch triggers until this->_isOn = false
-  
+  if(this->_debug == true)
+  {
+    extern String tso_PinballSwitch;
+    tso_PinballSwitch = tso_PinballSwitch + "[CLASS] PinballSwitch: [triggerSwitch] Switch " + this->getName() + "Fired";
+
+  }
   bool proceed = false;
   if(this->_autoOn == true)
   {

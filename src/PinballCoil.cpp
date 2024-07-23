@@ -35,8 +35,9 @@ bool PinballCoil::fireCoil()
   {
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [fireCoil] ");
-      Serial.println(this->_coilName);
+        extern String tso_PinballCoil;
+        tso_PinballCoil = tso_PinballCoil + "[CLASS] PinballCoil: [fireCoil] Coil " + this->_coilName;
+
     }
     this->_isOn = true;
     this->_lastMillis = millis();
@@ -53,8 +54,12 @@ void PinballCoil::releaseCoil()
   //code to turn coil off
   if(this->_debug  == true)
   {
-    Serial.print("[CLASS] PinballCoil: [releaseCoil] ");
-    Serial.println(this->_coilName);
+    
+
+    //String DebugLog = this->_debugLog;
+    //DebugLog = DebugLog + "[CLASS] PinballCoil: [releaseCoil] Coil " + this->_coilName;
+    //this->_debugLog = DebugLog;
+
   }
   this->_needsAction = true;
   this->_isOn = false;
@@ -88,16 +93,21 @@ void PinballCoil::enable()
     this->fireCoil();
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [enable] ");
-      Serial.println(this->_coilName);
+
+      //String DebugLog = this->_debugLog;  
+      //DebugLog = DebugLog + "[CLASS] PinballCoil: [enable] Coil " + this->_coilName; 
+      //this->_debugLog = DebugLog;
+
     }
     //turn on coil indefinitely
   }else{
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [enable] ");
-      Serial.print(this->_coilName);
-      Serial.println(" failed, already marked as on");
+
+      //String DebugLog = this->_debugLog; 
+      //DebugLog = DebugLog + "[CLASS] PinballCoil: [enable] Coil " + this->_coilName + " failed, already marked as on";
+      //this->_debugLog = DebugLog;
+   
     }
   }
 }
@@ -108,8 +118,11 @@ void PinballCoil::disable()
     this->manage();
     if(this->_debug  == true)
     {
-      Serial.print("[CLASS] PinballCoil: [disable] ");
-      Serial.println(this->_coilName);
+
+      //String DebugLog = this->_debugLog;
+      //DebugLog = DebugLog + "[CLASS] PinballCoil: [disable] " + this->_coilName;
+      //this->_debugLog = DebugLog;
+
     }
 }
 
@@ -127,8 +140,11 @@ void PinballCoil::manage()
       {
         if(this->_debug  == true)
         {
-          Serial.print("[CLASS] PinballCoil: [manage] :turn off - ");  
-          Serial.println(this->_coilName);
+
+          //String DebugLog = this->_debugLog;
+          //DebugLog = DebugLog + "[CLASS] PinballCoil: [manage] turn off - " + this->_coilName;
+          //this->_debugLog = DebugLog;
+
         }
         this->releaseCoil();
       }else
@@ -155,3 +171,14 @@ void PinballCoil::toggleDebug()
 {
   this->_debug = !this->_debug;
 }
+
+  String PinballCoil::getDebugLog()
+  {
+    String DebugLog = this->_debugLog;
+    clearDebugLog();
+    return DebugLog;
+  }
+  void PinballCoil::clearDebugLog()
+  {
+    this->_debugLog = "";
+  }
