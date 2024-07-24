@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "PinballSwitch.h"
 #include "PinballCoil.h"
+#include "PinballAudio.h"
 #include "PinballLED.h"
 #include "PinballGame.h"
 
@@ -22,6 +23,7 @@ PinballGame g_myPinballGame(setting_MachineName);
 #include "flipperBindings_def.h"
 #include "coilBindings_fromJSON.h"
 #include "ledArray_fromJSON.h"
+#include "audioArray_fromJSON.h"
 
 
 
@@ -32,7 +34,9 @@ void scanSwitchMatrix();
 void triggerSwitches();
 void processAllSwitches();
 void ProcessShifts(PinballCoil* CoilObject);
+void ProcessAudioShifts(PinballAudio* AudioObject);
 void manageCoils();
+void manageAudio();
 void read_sr();
 void write_sr_matrix();
 void write_sr_audio();
@@ -52,6 +56,7 @@ void IRAM_ATTR Timer0_ISR()
       scanSwitchMatrix();
       triggerSwitches();//Needs to be done on a separate thread on a timer.
       manageCoils();//Needs to be done on a separate thread on a timer.
+      manageAudio();
       INTHz++;
       scanInProgress = false;
     }
@@ -85,6 +90,7 @@ int playfieldMultiplier = 1;
 //setup array fo maintaining the state of coils
 const int coilCount = 16;
 bool coilActive[coilCount];
+bool audioActive[2];
 
 
 // Define Connections to 74HC595 - Matrix Output Shift Register
@@ -515,6 +521,17 @@ void processAllSwitches()
            * for now we will be working just on default
           */
           addScore(triggeredSwitchID);
+          
+          if(audios[0].AudioObject->fireAudio())
+                { //try and fire the coil
+                  audioActive[1]=true;;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+                  ProcessAudioShifts(audios[0].AudioObject); //set shift register bytes to turn on solenoid
+                  write_sr_coils(); //update shift register
+                  //todo: add score and other mode logic
+                }
+          
+          
+
 
         }
 
@@ -604,6 +621,51 @@ void manageCoils()
     }
   }
 }
+void manageAudio()
+{
+  for ( byte audioNumber = 0; audioNumber < 2 ; audioNumber++) {
+    PinballAudio* activeAudio = audios[audioNumber].AudioObject;
+    activeAudio->manage();
+    if(audioActive[audioNumber]==false)
+    {
+     
+      
+      ProcessAudioShifts(activeAudio); 
+      write_sr_audio();
+      audioActive[audioNumber]=false;
+    }
+  }
+}
+
+void ProcessAudioShifts(PinballAudio* AudioObject)
+{
+  
+  if(AudioObject->checkStatus())
+  {
+    if(osrDebug)
+    {
+      Serial.print("Turning on Audio ");
+      Serial.print(AudioObject->getName());
+      Serial.print(" - BIT:");
+      Serial.println(AudioObject->getSRBit());
+    } 
+    bitClear(outgoing2,AudioObject->getSRBit());
+  }else
+  {
+    if(osrDebug)
+    {
+      Serial.print("Turning off audio ");
+      Serial.print(AudioObject->getName());
+      Serial.print(" - BIT:");
+      Serial.println(AudioObject->getSRBit());
+    }
+    bitSet(outgoing2,AudioObject->getSRBit());
+  }
+  
+
+}
+
+
 void read_sr() {//Read input shift registers
   // Write pulse to load pin
   digitalWrite(isrload, LOW);
@@ -638,7 +700,7 @@ void write_sr_matrix()
 void write_sr_audio() 
 { // Write to the output shift registers
   digitalWrite(osr2latchPin, LOW);
-  shiftOut(osr2dataPin, osr2clockPin, LSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
+  shiftOut(osr2dataPin, osr2clockPin, MSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
   digitalWrite(osr2latchPin, HIGH);   
   if(srDebug){
     Serial.print("write_sr_audio : outgoing2 [");
@@ -742,28 +804,28 @@ void switch_event_startbutton(int switchId)
   if(MachineState == 1)
   {
     changeState(2);
-    Serial.println("[switch_event_startbutton] Starting Game");
+    //Serial.println("[switch_event_startbutton] Starting Game");
     //digitalWrite(hvrPin, LOW);
-    Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
+    //Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players
-    Serial.println("[switch_event_startbutton] Add player");
+    //Serial.println("[switch_event_startbutton] Add player");
     g_myPinballGame.addPlayer(); //This will add players up to the defined maximum
 
   } else if(MachineState == 3)
   {//new game
-    Serial.println("[switch_event_startbutton] Starting Another Game");
+    //Serial.println("[switch_event_startbutton] Starting Another Game");
     changeState(2);
   }
 }
 
 void addScore(int switchID)
 {
-  int score = (switches[switchID].baseScore) * g_myPinballGame.getPlayfieldMultiplier();
+  int score = (switches[switchID].switchObject->getSwitchScore()) * g_myPinballGame.getPlayfieldMultiplier();
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
   int playerscore = g_myPinballGame.getPlayerScore(playerNumber) + score;
   g_myPinballGame.setPlayerScore(playerNumber,playerscore);
-  ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
-  ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
+  //ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
+  //ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
 }
 

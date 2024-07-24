@@ -55,6 +55,7 @@ String tso_PinballSwitch = "";
 String tso_PinballCoil = "";
 String tso_PinballDisplay = "";
 String tso_SwitchesAndRules = "";
+String tso_PinballAudio = "";
 String tso_Webserver = "";
 
 unsigned long mainLoopMillis = 0;
@@ -64,16 +65,6 @@ unsigned long mainLoopMillis = 0;
 #include "WebOperations.h"
 #include "machineState.h"
 #include "setupShifts.h"
-
-SemaphoreHandle_t i2cSemaphoreSWITCH;
-SemaphoreHandle_t i2cSemaphoreCOIL;
-void createSemaphores(){
-    i2cSemaphoreSWITCH = xSemaphoreCreateMutex();
-    xSemaphoreGive( ( i2cSemaphoreSWITCH) );
-    i2cSemaphoreCOIL = xSemaphoreCreateMutex();
-    xSemaphoreGive( ( i2cSemaphoreCOIL) );
-}
-
 
 void setup() {
   // put your setup code here, to run once:
@@ -108,23 +99,16 @@ void setup() {
 
   //Serial.println("Starting Switch Object Creation");
   createSwitchObjects();
+  createSwitchScoreObjects();
   //Serial.println("Starting Coil Object Creation");
   createCoilObjects();
+  
+  createAudioObjects();
   //Serial.println("Starting Switch Coil bonding");
   createSwitchCoilBindings();
 
   createLedObjects();
 
-  createSemaphores();
-  /*xTaskCreatePinnedToCore(
-    MonitorSwitchesAndRegisterFunction,
-    "MonitorSwitchesAndRegister",
-    10000,
-    NULL,
-    1,
-    &MonitorSwitchesAndRegister,
-    0);*/
-  
     xTaskCreatePinnedToCore(
     ProcessSwitchesAndRulesFunction,
     "ProcessSwitchesAndRules",
@@ -280,6 +264,12 @@ void loop() {
     tso_PinballDisplay = "";
   }
 
+  if(tso_PinballAudio != "")
+  {
+    Serial.println("[TSO_PA]"+tso_PinballAudio);
+    tso_PinballAudio = "";
+  }
+
   if(tso_SwitchesAndRules != "")
   {
     Serial.println("[TSO_SaR]"+tso_SwitchesAndRules);
@@ -302,6 +292,9 @@ void loop() {
     Serial.println("[Main Loop][MEM Stat] Display Controller Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(DisplayController)));
     Serial.println("[Main Loop][MEM Stat] WebOperations Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(WebOperationsTask)));
     Serial.println("[Main Loop][MEM Stat] Process Switches Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(ProcessSwitchesAndRules)));
+    //audios[0].AudioObject->fireAudio();
+    //ProcessAudioShifts(audios[0].AudioObject); 
+    //write_sr_audio();
   }
   
 }

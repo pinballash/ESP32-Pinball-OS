@@ -107,6 +107,9 @@ int PinballSwitch::getSwitchScore()
 
 void PinballSwitch::setSwitchScore(int pointsScore)
 {
+  
   this->_pointsScore = pointsScore;
+  //extern String tso_PinballSwitch;
+  //tso_PinballSwitch = tso_PinballSwitch + "[CLASS] PinballSwitch: [setSwitchScore] Switch " + this->getName() + " " + String(pointsScore);
 }
  
