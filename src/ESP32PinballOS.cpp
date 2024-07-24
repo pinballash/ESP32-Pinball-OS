@@ -125,7 +125,7 @@ void setup() {
     NULL,
     2,
     &WebOperationsTask,
-    0);
+    1);
 
 // setup dot matrix display stuff
   xTaskCreatePinnedToCore(
@@ -135,7 +135,7 @@ void setup() {
     NULL,
     10,
     &DisplayController,
-    0);
+    1);
 
     //OTA Updater
     // Connect to WiFi network

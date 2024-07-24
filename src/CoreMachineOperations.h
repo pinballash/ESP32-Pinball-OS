@@ -35,6 +35,7 @@ void triggerSwitches();
 void processAllSwitches();
 void ProcessShifts(PinballCoil* CoilObject);
 void ProcessAudioShifts(PinballAudio* AudioObject);
+void ResetAudioShifts();
 void manageCoils();
 void manageAudio();
 void read_sr();
@@ -522,13 +523,14 @@ void processAllSwitches()
           */
           addScore(triggeredSwitchID);
           
-          if(audios[0].AudioObject->fireAudio())
-                { //try and fire the coil
-                  audioActive[1]=true;;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-                  ProcessAudioShifts(audios[0].AudioObject); //set shift register bytes to turn on solenoid
-                  write_sr_coils(); //update shift register
-                  //todo: add score and other mode logic
-                }
+          if((audios[triggeredSwitchID].AudioObject->fireAudio())&&(outgoing2 == 255))
+          { //try and play sound
+            audioActive[triggeredSwitchID]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+            
+            ProcessAudioShifts(audios[triggeredSwitchID].AudioObject); //set shift register bytes to turn on audio channel
+            write_sr_coils(); //update shift register
+            //todo: add score and other mode logic
+          }
           
           
 
@@ -623,18 +625,27 @@ void manageCoils()
 }
 void manageAudio()
 {
-  for ( byte audioNumber = 0; audioNumber < 2 ; audioNumber++) {
-    PinballAudio* activeAudio = audios[audioNumber].AudioObject;
-    activeAudio->manage();
-    if(audioActive[audioNumber]==false)
+  for ( byte audioNumber = 0; audioNumber < 39 ; audioNumber++) {
+    if(audioActive[audioNumber]==true)
     {
-     
-      
-      ProcessAudioShifts(activeAudio); 
-      write_sr_audio();
-      audioActive[audioNumber]=false;
+      PinballAudio* activeAudio = audios[audioNumber].AudioObject;
+      activeAudio->manage();
+      if(activeAudio->checkStatus()==false)    
+      {
+        ProcessAudioShifts(activeAudio); 
+        write_sr_audio();
+        //tso_PinballAudio = tso_PinballAudio + "[manageAudio] Resetting Shifts";
+        audioActive[audioNumber]=false;
+      }else{
+        //tso_PinballAudio = tso_PinballAudio + "[manageAudio] still playing";
+        
+      }
+
     }
   }
+}
+void ResetAudioShifts(){
+  //outgoing2 = 255;
 }
 
 void ProcessAudioShifts(PinballAudio* AudioObject)
