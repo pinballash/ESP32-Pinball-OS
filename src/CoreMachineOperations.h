@@ -91,7 +91,7 @@ int playfieldMultiplier = 1;
 //setup array fo maintaining the state of coils
 const int coilCount = 16;
 bool coilActive[coilCount];
-bool audioActive[2];
+bool audioActive[39];
 
 
 // Define Connections to 74HC595 - Matrix Output Shift Register
@@ -523,13 +523,11 @@ void processAllSwitches()
           */
           addScore(triggeredSwitchID);
           
-          if((audios[triggeredSwitchID].AudioObject->fireAudio())&&(outgoing2 == 255))
+          if((audios[triggeredSwitchID].AudioObject->fireAudio()))
           { //try and play sound
             audioActive[triggeredSwitchID]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-            
             ProcessAudioShifts(audios[triggeredSwitchID].AudioObject); //set shift register bytes to turn on audio channel
-            write_sr_coils(); //update shift register
-            //todo: add score and other mode logic
+            write_sr_audio(); //update shift register
           }
           
           
@@ -625,55 +623,31 @@ void manageCoils()
 }
 void manageAudio()
 {
-  for ( byte audioNumber = 0; audioNumber < 39 ; audioNumber++) {
+  byte maxAudio = 39;
+  for ( byte audioNumber = 0; audioNumber < maxAudio ; audioNumber++) {
     if(audioActive[audioNumber]==true)
     {
       PinballAudio* activeAudio = audios[audioNumber].AudioObject;
       activeAudio->manage();
       if(activeAudio->checkStatus()==false)    
       {
-        ProcessAudioShifts(activeAudio); 
-        write_sr_audio();
-        //tso_PinballAudio = tso_PinballAudio + "[manageAudio] Resetting Shifts";
         audioActive[audioNumber]=false;
-      }else{
-        //tso_PinballAudio = tso_PinballAudio + "[manageAudio] still playing";
-        
+        ResetAudioShifts();
       }
-
     }
   }
 }
 void ResetAudioShifts(){
-  //outgoing2 = 255;
+  outgoing2 = 255;
+  write_sr_audio();
+  //tso_PinballAudio = tso_PinballAudio + "[ProcessAudioShifts] Setting Shift to "+String(outgoing2);
 }
 
 void ProcessAudioShifts(PinballAudio* AudioObject)
-{
-  
-  if(AudioObject->checkStatus())
-  {
-    if(osrDebug)
-    {
-      Serial.print("Turning on Audio ");
-      Serial.print(AudioObject->getName());
-      Serial.print(" - BIT:");
-      Serial.println(AudioObject->getSRBit());
-    } 
-    bitClear(outgoing2,AudioObject->getSRBit());
-  }else
-  {
-    if(osrDebug)
-    {
-      Serial.print("Turning off audio ");
-      Serial.print(AudioObject->getName());
-      Serial.print(" - BIT:");
-      Serial.println(AudioObject->getSRBit());
-    }
-    bitSet(outgoing2,AudioObject->getSRBit());
-  }
-  
-
+{  
+  outgoing2 = 255;
+  outgoing2 = outgoing2 - AudioObject->getSRBit();
+  //tso_PinballAudio = tso_PinballAudio + "[ProcessAudioShifts] Setting Shift to "+String(outgoing2);
 }
 
 

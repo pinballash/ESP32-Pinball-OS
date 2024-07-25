@@ -106,10 +106,11 @@ void createAudioObjects()
   for ( byte col = 0; col < 40 ; col++) {
     
       int AudioIDInteger = col;
-      int soundClipID = col;
+
+      
       String AudioID = (String)AudioIDInteger;
       byte AudioByte = col;
-      byte soundClipIDbyte = soundClipID;
+      byte soundClipIDbyte = AudioIDInteger;
 
       //get the json file for this CoilID
       /*String jsonConfig;
@@ -135,7 +136,7 @@ void createAudioObjects()
       PinballAudio* thisAudio = audios[AudioByte].AudioObject;
       //tso_PinballAudio = tso_PinballAudio + "[CreateAudioObjects] [setValues] Name = SoundClip"+AudioID;
       //String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff
-      thisAudio->setValues("SoundClip"+AudioID,0,soundClipIDbyte,50,50);
+      thisAudio->setValues("SoundClip"+AudioID,0,soundClipIDbyte,200,100);
       //Serial.println("JSON Loaded, this coil object is now called " + thisCoil->getName());
       //coilJSON.clear();
 

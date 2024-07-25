@@ -59,7 +59,7 @@ void PinballAudio::releaseAudio()
 
     //String DebugLog = this->_debugLog;
     extern String tso_PinballAudio;
-    tso_PinballAudio = tso_PinballAudio + "[CLASS] PinballAudio: [fireAudio] Audio " + this->_audioName + " SRb = " + String(this->_shiftRegisterBit);
+    tso_PinballAudio = tso_PinballAudio + "[CLASS] PinballAudio: [releaseAudio] Audio " + this->_audioName + " SRb = " + String(this->_shiftRegisterBit);
 
 
   }

@@ -135,7 +135,7 @@ void setup() {
     NULL,
     10,
     &DisplayController,
-    1);
+    0);
 
     //OTA Updater
     // Connect to WiFi network
@@ -163,11 +163,11 @@ void setup() {
     if(WiFi.status() ==  WL_CONNECTED)
     {
       WifiConnected = true;
-      Serial.println("");
-      Serial.print("Connected to ");
-      Serial.println(setting_SSID);
-      Serial.print("IP address: ");
-      Serial.println(WiFi.localIP());
+      //Serial.println("");
+      //Serial.print("Connected to ");
+      //Serial.println(setting_SSID);
+      //Serial.print("IP address: ");
+      //Serial.println(WiFi.localIP());
       localIP = WiFi.localIP();
       g_myPinballGame.setDMDTopLine("Connected");
       //Serial.println("Setting up MDNS as " + (String)host + ".local");
@@ -179,7 +179,7 @@ void setup() {
         }
       }else{
        
-        g_myPinballGame.setDMDTopLine((String)host + ".local");
+        g_myPinballGame.setDMDTopLine((String)localIP);
         //Serial.println("mDNS responder started");
       }
     }else
@@ -199,7 +199,7 @@ void setup() {
         
       }
       
-      g_myPinballGame.setDMDTopLine((String)host + ".local");
+      g_myPinballGame.setDMDTopLine((String)localIP);
       //Serial.println("mDNS responder started");
       //Serial.print("http://");
       //Serial.print(host);
@@ -237,19 +237,7 @@ void loop() {
   }
 
 
-  //foreach coil check debug
- /*for ( byte col = 0; col < 2 ; col++) {
-    for (byte row = 0; row < 8; row++) 
-    {    
-      String CoilLog = "";
-      int CoilIDInteger = (col * 8)+row;
-      CoilLog = coils[CoilIDInteger].coilObject->getDebugLog();
-      if(CoilLog != "")
-      {
-         Serial.println("[CoilLog]"+CoilLog);
-      }
-    }
-  }*/
+  
  if(tso_PinballCoil != "")
   {
     Serial.println("[TSO_PC]"+tso_PinballCoil);

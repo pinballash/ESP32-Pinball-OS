@@ -16,7 +16,7 @@ class PinballAudio
     unsigned long _lastMillis; //when last inititiated
     String _audioName = "No name set";
 
-    bool _debug = true;
+    bool _debug = false;
     String _debugLog = "";
     //in future we may wish to add pulse modulation after initial pulse time, lets leave for now.
   
