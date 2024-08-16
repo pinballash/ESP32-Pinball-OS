@@ -27,6 +27,8 @@ PinballGame g_myPinballGame(setting_MachineName);
 
 
 
+
+
 void MonitorSwitchesAndRegisterFunction( void * pvParameters);
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
 void scanSwitchMatrix();
@@ -47,6 +49,8 @@ void switch_event_outhole(int switchId);
 
 void addScore(int switchID);
 void changeState(int newState);
+
+void DoubleTrigger();
 
 hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
@@ -523,12 +527,13 @@ void processAllSwitches()
           */
           addScore(triggeredSwitchID);
           
-          if((audios[triggeredSwitchID].AudioObject->fireAudio()))
+          /*if((audios[triggeredSwitchID].AudioObject->fireAudio()))
           { //try and play sound
             audioActive[triggeredSwitchID]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
             ProcessAudioShifts(audios[triggeredSwitchID].AudioObject); //set shift register bytes to turn on audio channel
             write_sr_audio(); //update shift register
-          }
+          }*/
+          DoubleTrigger();
           
           
 
@@ -810,6 +815,12 @@ void addScore(int switchID)
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
   int playerscore = g_myPinballGame.getPlayerScore(playerNumber) + score;
   g_myPinballGame.setPlayerScore(playerNumber,playerscore);
+  PinballCoil* switchCoil = coils[11].coilObject;
+  if(switchCoil->fireCoil()){
+    coilActive[11]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+    ProcessShifts(switchCoil); //action the turning on
+    write_sr_coils(); //update shift register
+  }
   //ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
   //ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
 }

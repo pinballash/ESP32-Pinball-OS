@@ -62,6 +62,7 @@ unsigned long mainLoopMillis = 0;
 
 #include "CoreMachineOperations.h"
 #include "DMDDisplay.h"
+#include "InteractiveEffect.h"
 #include "WebOperations.h"
 #include "machineState.h"
 #include "setupShifts.h"
