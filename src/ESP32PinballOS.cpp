@@ -50,8 +50,19 @@ String ScoreboardTRText = "";
 String ScoreboardTLText = "";
 String ScoreboardBText = "";
 
+String tso_PinballGame = "";
+String tso_PinballSwitch = "";
+String tso_PinballCoil = "";
+String tso_PinballDisplay = "";
+String tso_SwitchesAndRules = "";
+String tso_PinballAudio = "";
+String tso_Webserver = "";
+
+unsigned long mainLoopMillis = 0;
+
 #include "CoreMachineOperations.h"
 #include "DMDDisplay.h"
+#include "InteractiveEffect.h"
 #include "WebOperations.h"
 #include "machineState.h"
 #include "setupShifts.h"
@@ -89,26 +100,20 @@ void setup() {
 
   //Serial.println("Starting Switch Object Creation");
   createSwitchObjects();
+  createSwitchScoreObjects();
   //Serial.println("Starting Coil Object Creation");
   createCoilObjects();
+  
+  createAudioObjects();
   //Serial.println("Starting Switch Coil bonding");
   createSwitchCoilBindings();
 
   createLedObjects();
 
-  /*xTaskCreatePinnedToCore(
-    MonitorSwitchesAndRegisterFunction,
-    "MonitorSwitchesAndRegister",
-    10000,
-    NULL,
-    1,
-    &MonitorSwitchesAndRegister,
-    0);*/
-  
     xTaskCreatePinnedToCore(
     ProcessSwitchesAndRulesFunction,
     "ProcessSwitchesAndRules",
-    10000,
+    2000,
     NULL,
     2,
     &ProcessSwitchesAndRules,
@@ -123,27 +128,15 @@ void setup() {
     &WebOperationsTask,
     1);
 
-
-  // setup dot matrix display stuff
-  xTaskCreatePinnedToCore(
-    DisplayBootModeFunction,
-    "DisplayBootMode",
-    10000,
-    NULL,
-    99,
-    &DisplayBootMode,
-    1);
-  
-
 // setup dot matrix display stuff
   xTaskCreatePinnedToCore(
     DisplayControllerFunction,
     "DisplayController",
-    10000,
+    5000,
     NULL,
     10,
     &DisplayController,
-    1);
+    0);
 
     //OTA Updater
     // Connect to WiFi network
@@ -159,7 +152,8 @@ void setup() {
     int WifiWaitCounter = 0;
     int MaxWait = 5;
     
-    ScoreboardTText = "Wi-Fi Connecting";
+
+    g_myPinballGame.setDMDTopLine("Wi-Fi Connecting");
     while ((WiFi.status() != WL_CONNECTED) && (WifiWaitCounter < MaxWait)) 
     {
       delay(1000);
@@ -170,13 +164,13 @@ void setup() {
     if(WiFi.status() ==  WL_CONNECTED)
     {
       WifiConnected = true;
-      Serial.println("");
-      Serial.print("Connected to ");
-      Serial.println(setting_SSID);
-      Serial.print("IP address: ");
-      Serial.println(WiFi.localIP());
+      //Serial.println("");
+      //Serial.print("Connected to ");
+      //Serial.println(setting_SSID);
+      //Serial.print("IP address: ");
+      //Serial.println(WiFi.localIP());
       localIP = WiFi.localIP();
-      ScoreboardBText = "CONNECTED";
+      g_myPinballGame.setDMDTopLine("Connected");
       //Serial.println("Setting up MDNS as " + (String)host + ".local");
       /*use mdns for host name resolution*/
       if (!MDNS.begin(host)) { //http://<host>.local
@@ -185,7 +179,8 @@ void setup() {
           delay(1000);
         }
       }else{
-        ScoreboardTText = (String)host + ".local";
+       
+        g_myPinballGame.setDMDTopLine((String)localIP);
         //Serial.println("mDNS responder started");
       }
     }else
@@ -204,15 +199,15 @@ void setup() {
         }
         
       }
-      ScoreboardTText = (String)host + ".local";
+      
+      g_myPinballGame.setDMDTopLine((String)localIP);
       //Serial.println("mDNS responder started");
       //Serial.print("http://");
       //Serial.print(host);
       //Serial.println(".local");
       delay(1000);
       wifiSoftAPInUse = true;
-      ScoreboardBText = "NOT CONNECTED";
-      ScoreboardTText = "SOFT AP ONLINE";
+      g_myPinballGame.setDMDBottomLine("SOFT AP ONLINE");
     }
 
     changeState(1); 
@@ -221,20 +216,75 @@ void setup() {
     timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
     timerAlarmWrite(Timer0_Cfg, 1000, true);
     timerAlarmEnable(Timer0_Cfg);
+
+
+
 }
 
 void loop() {
-  if(flip1Enabled == true)
+  
+  
+  if(tso_PinballGame != "")
   {
-    if (millis() - lastMillisFlip1 > 300 )
-    {
-      
-        Serial.println("ReleaseFlipper1");
-        flip1Enabled = false;
-
-    }
+    Serial.println("[TSO_PG]"+tso_PinballGame);
+    tso_PinballGame = "";
   }
 
-  vTaskDelay(1);//do nothing
+
+  if(tso_PinballSwitch != "")
+  {
+    Serial.println("[TSO_PS]"+tso_PinballSwitch);
+    tso_PinballSwitch = "";
+  }
+
+
+  
+ if(tso_PinballCoil != "")
+  {
+    Serial.println("[TSO_PC]"+tso_PinballCoil);
+    tso_PinballCoil = "";
+  }
+
+  
+
+  if(tso_PinballDisplay != "")
+  {
+    Serial.println("[TSO_PD]"+tso_PinballDisplay);
+    tso_PinballDisplay = "";
+  }
+
+  if(tso_PinballAudio != "")
+  {
+    Serial.println("[TSO_PA]"+tso_PinballAudio);
+    tso_PinballAudio = "";
+  }
+
+  if(tso_SwitchesAndRules != "")
+  {
+    Serial.println("[TSO_SaR]"+tso_SwitchesAndRules);
+    tso_SwitchesAndRules = "";
+  }
+
+  if(tso_Webserver != "")
+  {
+    Serial.println("[TSO_WEB]"+tso_Webserver);
+    tso_Webserver = "";
+  }
+ 
+
+  //vTaskDelay(5000);//do nothing
+  if((millis() > mainLoopMillis + 5000) && (memoryStats == true))
+  {
+    mainLoopMillis = millis();
+    Serial.println("[Main Loop][MEM Stat] Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark( NULL )));
+    Serial.println("[Main Loop][MEM Stat] Free memory: " + String(esp_get_free_heap_size()) + " bytes");
+    Serial.println("[Main Loop][MEM Stat] Display Controller Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(DisplayController)));
+    Serial.println("[Main Loop][MEM Stat] WebOperations Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(WebOperationsTask)));
+    Serial.println("[Main Loop][MEM Stat] Process Switches Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(ProcessSwitchesAndRules)));
+    //audios[0].AudioObject->fireAudio();
+    //ProcessAudioShifts(audios[0].AudioObject); 
+    //write_sr_audio();
+  }
+  
 }
 

@@ -1,5 +1,4 @@
 #include <Arduino.h>
-
 #include <ArduinoJson.h> 
 #include <Effortless_SPIFFS.h>
 // Create fileSystem
@@ -86,6 +85,8 @@ void createConfigFiles()
     //Serial.print("JSON Document Created is: ");
     //serializeJson(myJsonDocument, Serial);
     //Serial.println();
+    myJsonDocument.clear();
+    jobject.clear();
 }
 
 void openConfigFiles()
@@ -119,6 +120,7 @@ void openConfigFiles()
     setting_switchMatrixRows = (int8_t)jsonDocument["switchMatrixRows"];
     setting_switchMatrixColumns = (int8_t)jsonDocument["switchMatrixColumns"];
     setting_leds = (int8_t)jsonDocument["leds"];
+    jsonDocument.clear();
 }
 
 void updateConfigFiles()
@@ -154,5 +156,7 @@ void updateConfigFiles()
     //Serial.print("JSON Document Updates is: ");
     //serializeJson(myJsonDocument, Serial);
     //Serial.println();
+    myJsonDocument.clear();
+    jobject.clear();
 }
 

@@ -566,7 +566,7 @@ void createLedObjects()
     }
 
     thisLED->setValues(LEDJSON["ledName"],LEDJSON["ledColour"],ledIsOn,LEDJSON["ledFlashSpeed"]);
-
+    LEDJSON.clear();
   }//end 
 
 }

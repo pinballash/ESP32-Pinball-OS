@@ -21,6 +21,9 @@
 #include "web_footer_scripts_lighting.h"
 #include "web_footer.h"
 
+#include "web_config_switches_scores.h"
+#include "web_footer_scripts_scores.h"
+
 WebServer server(80);
 
 void WebOperationsFunction( void * pvParameters);
@@ -57,6 +60,8 @@ void web_handle_config_menu();
 void web_handle_config_switches();
 void web_handle_getSwitchConfig();
 void web_handle_setSwitchConfig();
+void web_handle_getSwitchScoreConfig();
+void web_handle_setSwitchScoreConfig();
 
 void web_handle_config_coils();
 void web_handle_getCoilConfig();
@@ -185,6 +190,9 @@ void WebOperationsFunction( void * pvParameters)
     //API Calls, get and set data 
     server.on("/api/switch/config/get", HTTP_POST, web_handle_getSwitchConfig);
     server.on("/api/switch/config/set", HTTP_POST, web_handle_setSwitchConfig);
+
+    server.on("/api/switch/score/default/get", HTTP_POST, web_handle_getSwitchScoreConfig);
+    server.on("/api/switch/score/default/set", HTTP_POST, web_handle_setSwitchScoreConfig);
 
     server.on("/api/fs/list", web_handle_listFS);
     server.on("/api/fs/get",HTTP_GET, web_handle_getFS);
@@ -470,6 +478,7 @@ void web_handle_action_triggerswitch()
     //Serial.println("Triggering Switch "+ server.arg("plain")); //no JSON no webpage my friend ;)
     switchActive[col][row]=true;
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
   }
 }
 
@@ -485,9 +494,7 @@ void web_handle_action_solenoidTest()
     PinballCoil* thisCoil = coils[coilNumber].coilObject; //get the PinballCoil instance associated
    
     thisCoil->fireCoil();
-    ScoreboardTText = "Solenoid Test : ";
-    ScoreboardBText = thisCoil->getName();
-    oneTopOneBottomDisplay();
+    g_myPinballGame.setDMDText("Solenoid Test",thisCoil->getName());
     ProcessShifts(thisCoil); //set shift register bytes to turn on solenoid
     //delay(1000);
     write_sr_coils();
@@ -496,27 +503,18 @@ void web_handle_action_solenoidTest()
    
   }
 
-   ScoreboardTText = "Solenoid Test : ";
-    ScoreboardBText = "Complete";
-    oneTopOneBottomDisplay();
+   g_myPinballGame.setDMDText("Solenoid Test","Complete");
    delay(2000);
    server.send(200, "text/html", "OK - Solenoid Test : Complete"); //Send web page
    changeState(3);
 }
 void web_handle_action_diagnostics()
-{
-  
+{ 
   //for each coil, fire it
   String webText = "";
   changeState(5);
-  
-
-   ScoreboardTText = "Diagnostics : ";
-    ScoreboardBText = "Begin";
-    oneTopOneBottomDisplay();
-   
-   server.send(200, "text/html", "OK - Diagnostics Initiated"); //Send web page
-
+  g_myPinballGame.setDMDText("Diagnostics : ","Begin");
+  server.send(200, "text/html", "OK - Diagnostics Initiated"); //Send web page
 }
 
 void web_handle_action_restart()
@@ -580,6 +578,7 @@ void web_handle_getSwitchConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 
@@ -613,11 +612,15 @@ void web_handle_setSwitchConfig()
     //shouldn't we update the switch object live? To-Do
     
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 
 
 
 }
+
 void web_handle_config_switches()
 {
 // calculate the required buffer size (also accounting for the null terminator):
@@ -636,6 +639,73 @@ void web_handle_config_switches()
   delete[] concatString;
  
 }
+
+void web_handle_getSwitchScoreConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    //Serial.println("plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    String jsonConfig;
+    String dataFile = "/switchScoreConfig." + switchId + ".json";
+    //Serial.println("Opening " + dataFile);
+    File file = SPIFFS.open(dataFile);
+    while (file.available()) {
+        // Extract each characters by one by one
+        jsonConfig = file.readString();
+    }
+    //Serial.print("JSON Document is: ");
+    //Serial.println(jsonConfig);
+    if(jsonConfig == "")
+    {
+      //we need to send a dummy set of values
+      String jsonString = "{\"switchId\" : " + switchId + ",\"switchName\":\"undefined\",\"switchScore\":\"0\"}";
+      server.send(200, "text/plain", jsonString ); //Send ADC value only to client ajax request
+
+    }else{
+      server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
+    }
+    postedJSON.clear();
+    
+  }
+
+
+
+}
+void web_handle_setSwitchScoreConfig()
+{
+  if(server.args() == 0)
+  {
+    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+  }else{
+    //Serial.println("SetSwitchConfig: plain: " + server.arg("plain"));
+    DynamicJsonDocument postedJSON(2048);
+    deserializeJson(postedJSON,server.arg("plain"));
+    String switchId = postedJSON["switchId"];
+    DynamicJsonDocument myJsonDocument(1024);
+    JsonObject jobject = myJsonDocument.to<JsonObject>();
+    jobject["switchId"] = postedJSON["switchId"];
+    jobject["switchName"] = postedJSON["switchName"];
+    jobject["switchScore"] = postedJSON["switchScore"];
+    String dataFile = "/switchScoreConfig." + switchId + ".json";
+    const char * dataChar = dataFile.c_str();
+    fileSystem.saveToFile(dataChar,postedJSON);
+    //shouldn't we update the switch object live? To-Do
+    Serial.println("Sent Score Update");
+    server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
+  }
+
+
+
+}
+
 
 
 void web_handle_getCoilConfig()
@@ -667,6 +737,7 @@ void web_handle_getCoilConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 
@@ -695,6 +766,9 @@ void web_handle_setCoilConfig()
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 
 
@@ -748,6 +822,7 @@ void web_handle_getswitchcoilbindingConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 
@@ -774,6 +849,9 @@ void web_handle_setswitchcoilbindingConfig()
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 
 
@@ -826,6 +904,7 @@ void web_handle_getlightingConfig()
     }else{
       server.send(200, "text/plain", jsonConfig); //Send ADC value only to client ajax request
     }
+    postedJSON.clear();
     
   }
 }
@@ -852,6 +931,9 @@ void web_handle_setlightingConfig()
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    postedJSON.clear();
+    myJsonDocument.clear();
+    jobject.clear();
   }
 }
 
@@ -1001,16 +1083,16 @@ void web_handle_config_instructions()
 void web_handle_config_modes()
 {
 // calculate the required buffer size (also accounting for the null terminator):
-  int bufferSize = strlen(html_header) + strlen(CONFIG_DUMMY_page) + strlen(html_footer) + strlen(dummy_script_footer) + 1;
+  int bufferSize = strlen(html_header) + strlen(CONFIG_SWITCHES_SCORES_page) + strlen(html_footer) + strlen(switch_score_script_footer) + 1;
 
   // allocate enough memory for the concatenated string:
   char* concatString = new char[ bufferSize ];
 
   // copy strings one and two over to the new buffer:
   strcpy( concatString, html_header );
-  strcat( concatString, CONFIG_DUMMY_page );
+  strcat( concatString, CONFIG_SWITCHES_SCORES_page );
   strcat( concatString, html_footer );
-  strcat( concatString, dummy_script_footer );
+  strcat( concatString, switch_score_script_footer );
 
   server.send(200, "text/html", concatString); //Send web page
   delete[] concatString;
@@ -1053,6 +1135,7 @@ bool web_handle_configUpdate()
 
   updateConfigFiles();
   web_handle_action_restart();
+  postedJSON.clear();
   return true;
 }
 
@@ -1167,6 +1250,8 @@ void web_handle_listFS()
   String jsonString;
   serializeJson(jobject, jsonString);
   server.send(200, "text/html", jsonString);
+  myJsonDocument.clear();
+  jobject.clear();
 }
 
 void web_handle_getFS(){

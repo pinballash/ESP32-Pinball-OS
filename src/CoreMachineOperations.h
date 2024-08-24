@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "PinballSwitch.h"
 #include "PinballCoil.h"
+#include "PinballAudio.h"
 #include "PinballLED.h"
 #include "PinballGame.h"
 
@@ -11,6 +12,7 @@ bool threadDebug = false;
 bool srDebug = false;
 bool osrDebug = false;
 bool generalMODebug = false;
+bool memoryStats = false;
 unsigned long ScanSwitchMatrixEveryMicroSeconds = 100; //this seems to be the value where we can operate at around 1000 times per second
 
 PinballGame g_myPinballGame(setting_MachineName);
@@ -21,16 +23,23 @@ PinballGame g_myPinballGame(setting_MachineName);
 #include "flipperBindings_def.h"
 #include "coilBindings_fromJSON.h"
 #include "ledArray_fromJSON.h"
+#include "audioArray_fromJSON.h"
+
+
+
+
 
 void MonitorSwitchesAndRegisterFunction( void * pvParameters);
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
 void scanSwitchMatrix();
-void identifyFlippers(); //depriciated
-void triggerFlippers(); //depriciated
+
 void triggerSwitches();
 void processAllSwitches();
 void ProcessShifts(PinballCoil* CoilObject);
+void ProcessAudioShifts(PinballAudio* AudioObject);
+void ResetAudioShifts();
 void manageCoils();
+void manageAudio();
 void read_sr();
 void write_sr_matrix();
 void write_sr_audio();
@@ -41,6 +50,8 @@ void switch_event_outhole(int switchId);
 void addScore(int switchID);
 void changeState(int newState);
 
+void DoubleTrigger();
+
 hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
 {
@@ -50,6 +61,7 @@ void IRAM_ATTR Timer0_ISR()
       scanSwitchMatrix();
       triggerSwitches();//Needs to be done on a separate thread on a timer.
       manageCoils();//Needs to be done on a separate thread on a timer.
+      manageAudio();
       INTHz++;
       scanInProgress = false;
     }
@@ -62,7 +74,7 @@ void IRAM_ATTR Timer0_ISR()
     
 }
 //setup a task to run on core 0;
-TaskHandle_t MonitorSwitchesAndRegister;
+//TaskHandle_t MonitorSwitchesAndRegister;
 TaskHandle_t ProcessSwitchesAndRules;
 
 //setup array for storing switch active
@@ -83,6 +95,7 @@ int playfieldMultiplier = 1;
 //setup array fo maintaining the state of coils
 const int coilCount = 16;
 bool coilActive[coilCount];
+bool audioActive[39];
 
 
 // Define Connections to 74HC595 - Matrix Output Shift Register
@@ -291,6 +304,28 @@ void scanSwitchMatrix()
   }
  }
 } 
+/*
+* Function identifyFlippers
+* loop through all columns and rows and check for a switches that are marked as flippers.  
+* When they are identified, set the leftFlipperCol, LeftFlipperRow, rightFlipperCol, rightFlipperRow variables.
+*/
+
+/*
+* Function triggerFlippers
+* loop through all columns and rows and check for a switches that are marked as flippers.  
+* If a switch is closed, and its a flipper - enable the flipper solenoid.
+* If a switch is open, and its a flipper and the solenoid id on - disable the flipper solenoid.
+*/
+
+/*
+* Function triggerSwitches
+* loop through all columns and rows and check for a switches that are marked as NOT flippers, but are marked true in the switchActive array.  
+* If a switch is closed, make the switchScored array value true
+* If a switch is closed and bound to a coil, fire the associated coil.
+* If a switch is closed and nat bound to a coil, do no more work.
+*/
+
+
 
 /*
 * Function triggerSwitches
@@ -414,6 +449,17 @@ void processAllSwitches()
            * for now we will be working just on default
           */
           addScore(triggeredSwitchID);
+          
+          /*if((audios[triggeredSwitchID].AudioObject->fireAudio()))
+          { //try and play sound
+            audioActive[triggeredSwitchID]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+            ProcessAudioShifts(audios[triggeredSwitchID].AudioObject); //set shift register bytes to turn on audio channel
+            write_sr_audio(); //update shift register
+          }*/
+          DoubleTrigger();
+          
+          
+
 
         }
 
@@ -474,6 +520,36 @@ void manageCoils()
     }
   }
 }
+void manageAudio()
+{
+  byte maxAudio = 39;
+  for ( byte audioNumber = 0; audioNumber < maxAudio ; audioNumber++) {
+    if(audioActive[audioNumber]==true)
+    {
+      PinballAudio* activeAudio = audios[audioNumber].AudioObject;
+      activeAudio->manage();
+      if(activeAudio->checkStatus()==false)    
+      {
+        audioActive[audioNumber]=false;
+        ResetAudioShifts();
+      }
+    }
+  }
+}
+void ResetAudioShifts(){
+  outgoing2 = 255;
+  write_sr_audio();
+  //tso_PinballAudio = tso_PinballAudio + "[ProcessAudioShifts] Setting Shift to "+String(outgoing2);
+}
+
+void ProcessAudioShifts(PinballAudio* AudioObject)
+{  
+  outgoing2 = 255;
+  outgoing2 = outgoing2 - AudioObject->getSRBit();
+  //tso_PinballAudio = tso_PinballAudio + "[ProcessAudioShifts] Setting Shift to "+String(outgoing2);
+}
+
+
 void read_sr() {//Read input shift registers
   // Write pulse to load pin
   digitalWrite(isrload, LOW);
@@ -495,7 +571,7 @@ void write_sr_matrix()
 void write_sr_audio() 
 { // Write to the output shift registers
   digitalWrite(osr2latchPin, LOW);
-  shiftOut(osr2dataPin, osr2clockPin, LSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
+  shiftOut(osr2dataPin, osr2clockPin, MSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
   digitalWrite(osr2latchPin, HIGH);   
 }   
 void write_sr_coils() 
@@ -538,7 +614,7 @@ void switch_event_outhole(int switchId)
     {
       if(coilNumberByte >0)
       {
-        Serial.println("[switch_event_outhole] Fire Outhole");
+        //Serial.println("[switch_event_outhole] Fire Outhole");
         PinballCoil* switchCoil = coils[coilNumberByte].coilObject;
         if(switchCoil->fireCoil()){
           coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -546,7 +622,7 @@ void switch_event_outhole(int switchId)
           write_sr_coils(); //update shift register
         }
       }else{
-        Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
+        //Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
       }
       
     }else
@@ -584,28 +660,34 @@ void switch_event_startbutton(int switchId)
   if(MachineState == 1)
   {
     changeState(2);
-    Serial.println("[switch_event_startbutton] Starting Game");
+    //Serial.println("[switch_event_startbutton] Starting Game");
     //digitalWrite(hvrPin, LOW);
-    Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
+    //Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players
-    Serial.println("[switch_event_startbutton] Add player");
+    //Serial.println("[switch_event_startbutton] Add player");
     g_myPinballGame.addPlayer(); //This will add players up to the defined maximum
 
   } else if(MachineState == 3)
   {//new game
-    Serial.println("[switch_event_startbutton] Starting Another Game");
+    //Serial.println("[switch_event_startbutton] Starting Another Game");
     changeState(2);
   }
 }
 
 void addScore(int switchID)
 {
-  int score = (switches[switchID].baseScore) * g_myPinballGame.getPlayfieldMultiplier();
+  int score = (switches[switchID].switchObject->getSwitchScore()) * g_myPinballGame.getPlayfieldMultiplier();
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
   int playerscore = g_myPinballGame.getPlayerScore(playerNumber) + score;
   g_myPinballGame.setPlayerScore(playerNumber,playerscore);
-  ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
-  ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
+  PinballCoil* switchCoil = coils[11].coilObject;
+  if(switchCoil->fireCoil()){
+    coilActive[11]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+    ProcessShifts(switchCoil); //action the turning on
+    write_sr_coils(); //update shift register
+  }
+  //ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
+  //ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
 }
 

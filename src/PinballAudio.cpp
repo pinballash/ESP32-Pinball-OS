@@ -1,7 +1,7 @@
-#include "PinballCoil.h"
+#include "PinballAudio.h"
 
 
-PinballCoil::PinballCoil(int ID)
+PinballAudio::PinballAudio(int ID)
 {
   this->_ID = ID;
 
@@ -15,18 +15,20 @@ PinballCoil::PinballCoil(int ID)
   this->_pulseBackOff = pulseBackOff;
 }*/
 
-void PinballCoil::setValues(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff)
+void PinballAudio::setValues(String audioName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff)
 {
-  this->_coilName = coilName;
+  this->_audioName = audioName;
   this->_shiftRegister = shiftRegister;
   this->_shiftRegisterBit = shiftRegisterBit;
   this->_pulseTime = pulseTime;
   this->_pulseBackOff = pulseBackOff;
+  //extern String tso_PinballAudio;
+  //tso_PinballAudio = tso_PinballAudio + "[CLASS] PinballAudio: [setValues] Audio " + this->_audioName + " SRb = " + String(this->_shiftRegisterBit);
 }
 
 //Public Functions
 
-bool PinballCoil::fireCoil()
+bool PinballAudio::fireAudio()
 {
   //replaces Alan's doFireSolenoid
   //in that implementation we would fire a solenoid, wait for the selay time and then turn it off.  In this implementation we will leave the on off decisions to the main loop
@@ -35,13 +37,12 @@ bool PinballCoil::fireCoil()
   {
     if(this->_debug  == true)
     {
-        extern String tso_PinballCoil;
-        tso_PinballCoil = tso_PinballCoil + "[CLASS] PinballCoil: [fireCoil] Coil " + this->_coilName;
+        extern String tso_PinballAudio;
+        tso_PinballAudio = tso_PinballAudio + "[CLASS] PinballAudio: [fireAudio] Audio " + this->_audioName + " SRb = " + String(this->_shiftRegisterBit);
 
     }
     this->_isOn = true;
     this->_lastMillis = millis();
-    this->_needsAction = true;
     return true;
   }else
   {
@@ -49,7 +50,7 @@ bool PinballCoil::fireCoil()
   }
 }
 
-void PinballCoil::releaseCoil()
+void PinballAudio::releaseAudio()
 {
   //code to turn coil off
   if(this->_debug  == true)
@@ -57,40 +58,40 @@ void PinballCoil::releaseCoil()
     
 
     //String DebugLog = this->_debugLog;
-    //DebugLog = DebugLog + "[CLASS] PinballCoil: [releaseCoil] Coil " + this->_coilName;
-    //this->_debugLog = DebugLog;
+    extern String tso_PinballAudio;
+    tso_PinballAudio = tso_PinballAudio + "[CLASS] PinballAudio: [releaseAudio] Audio " + this->_audioName + " SRb = " + String(this->_shiftRegisterBit);
+
 
   }
-  this->_needsAction = true;
   this->_isOn = false;
 }
 
-bool PinballCoil::checkStatus()
+bool PinballAudio::checkStatus()
 {
   return this->_isOn;
 }
 
-String PinballCoil::getName()
+String PinballAudio::getName()
 {
-  return _coilName;
+  return _audioName;
 }
 
-byte PinballCoil::getSR()
+byte PinballAudio::getSR()
 {
   return _shiftRegister;
 }
-byte PinballCoil::getSRBit()
+byte PinballAudio::getSRBit()
 {
   return _shiftRegisterBit;
 }
 
-void PinballCoil::enable()
+void PinballAudio::enable()
 {
   this->_enable = true;
   if(this->_isOn == false)
   {
     this->_isOn = true;
-    this->fireCoil();
+    this->fireAudio();
     if(this->_debug  == true)
     {
 
@@ -112,7 +113,7 @@ void PinballCoil::enable()
   }
 }
 
-void PinballCoil::disable()
+void PinballAudio::disable()
 {
     this->_enable = false;
     this->manage();
@@ -126,7 +127,7 @@ void PinballCoil::disable()
     }
 }
 
-void PinballCoil::manage()
+void PinballAudio::manage()
 {
   //am I energised
   //No, do nothing - yes, continue
@@ -146,7 +147,7 @@ void PinballCoil::manage()
           //this->_debugLog = DebugLog;
 
         }
-        this->releaseCoil();
+        this->releaseAudio();
       }else
       {
         //Serial.print("[CLASS] PinballCoil: [FUNCTION] manage : I'm on and within pulse time - stay on - ");  
@@ -154,31 +155,25 @@ void PinballCoil::manage()
       }
     }
   }
-  this->_needsAction = false;
+
 }
 
-bool PinballCoil::needsAction()
-{
-  return this->_needsAction;
-}
 
-void PinballCoil::actioned()
-{
-  this->_needsAction = false;
-}
+
+
  
-void PinballCoil::toggleDebug()
+void PinballAudio::toggleDebug()
 {
   this->_debug = !this->_debug;
 }
 
-  String PinballCoil::getDebugLog()
+  String PinballAudio::getDebugLog()
   {
     String DebugLog = this->_debugLog;
     clearDebugLog();
     return DebugLog;
   }
-  void PinballCoil::clearDebugLog()
+  void PinballAudio::clearDebugLog()
   {
     this->_debugLog = "";
   }
