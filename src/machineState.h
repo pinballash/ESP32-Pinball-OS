@@ -38,43 +38,6 @@ void changeState(int newState)
               g_myPinballGame.newGame();
               //enable power to coils
               digitalWrite(hvrPin, LOW);
-              //custom game start code here
-              /*fire the standups and enable score*/
-              /*
-              first we get the switch number, 
-              then we get the switch coil binding
-              we fire off the bound coil and then we reset the score
-              */
-             /*25,26,28,29,31*/
-              //delay(100);
-              byte switchByte1 = 25;
-              PinballSwitch* thisSwitch1 = switches[switchByte1].switchObject;
-              byte* thisSwitchCoilBinding1 = switchCoilBindings[switchByte1].coilNumber;
-              PinballCoil* thisCoil1 = coils[*thisSwitchCoilBinding1].coilObject; //get the PinballCoil instance associated
-              ScoreboardTText = "Firing ";
-              ScoreboardBText = (String)thisCoil1->getName();
-              forceDisplayUpdate = true;
-              thisCoil1->fireCoil();
-              thisSwitch1->turnOn();
-
-              delay(50);
-              byte switchByte2 = 26;
-              PinballSwitch* thisSwitch2 = switches[switchByte2].switchObject;
-              byte* thisSwitchCoilBinding2 = switchCoilBindings[switchByte2].coilNumber;
-              PinballCoil* thisCoil2 = coils[*thisSwitchCoilBinding2].coilObject; //get the PinballCoil instance associated
-              ScoreboardTText = "Fire";
-              ScoreboardBText = "Solenoid 2";
-              thisCoil2->fireCoil();
-              thisSwitch2->turnOn();
-              //delay(250);
-              //ScoreboardTText = "-";
-              //ScoreboardBText = "-";
-              //forceDisplayUpdate = true;
-             
-
-              //end custom game start code
-
-
             }else if (newState == 5)
             {
               //moving from End Game to Atract : OK
@@ -143,5 +106,3 @@ void changeState(int newState)
     }
 
 }
-
-

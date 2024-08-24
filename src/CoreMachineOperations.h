@@ -193,7 +193,15 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
       //static int tempSound=1;
       if (millis() - lastMillisSw > 1000 )
       {
-        
+        if(threadDebug)
+        {
+          Serial.print("[threadDebug] MonitorSwitches Loop: CORE ");
+          Serial.print(xPortGetCoreID());
+          Serial.print(" : is currently running at approximatly ");
+          Serial.print(counterSw);
+          Serial.println("Hz (full program cycles per second)");
+          
+        }
         CMOHz = counterSw;
         counterSw = 0;
         lastMillisSw = millis();
@@ -227,6 +235,43 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
       lastMicrosLoopRan = micros();
 
 
+      /*if(threadDebug)
+      {
+        unsigned long totalLoopProcessingTime = 0;
+
+        Serial.print("Scan Switch Matrix Time (uS) : ");
+        Serial.println(scanMicro);
+        totalLoopProcessingTime = totalLoopProcessingTime + scanMicro;
+        scanMicro = 0;
+
+        Serial.print("Trigger Flipper Time (uS) : ");
+        Serial.println(flipperMicro);
+        totalLoopProcessingTime = totalLoopProcessingTime + flipperMicro;
+        flipperMicro = 0;
+
+        Serial.print("Trigger Switch Time (uS) : ");
+        Serial.println(triggerSwitchMicro);
+        totalLoopProcessingTime = totalLoopProcessingTime + triggerSwitchMicro;
+        triggerSwitchMicro = 0;
+
+        Serial.print("Manage Coil Time (uS) : ");
+        Serial.println(manageCoilMicro);
+        totalLoopProcessingTime = totalLoopProcessingTime + manageCoilMicro;
+        manageCoilMicro = 0;
+
+        //Serial.print("Process Switch Time (uS) : ");
+        //Serial.println(processSwitchMicro);
+        //totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
+        //processSwitchMicro = 0;
+
+        Serial.print("Total Task Processing time uS : ");
+        Serial.println(totalLoopProcessingTime);
+
+        Serial.println("_________________________________");
+      }*/
+
+
+
     }else{
       //release the CPU for processing other tasks
       //Serial.println("Switch Scan Taking a breather");
@@ -238,7 +283,9 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters)
 {
-
+  //Serial.print("MonitorSwitches running on core ");
+  //Serial.println(xPortGetCoreID());
+  //identifyFlippers();
   int counterSw = 0;
   unsigned long lastMillisSw = 0;
   unsigned long lastMicrosLoopRan = 0;
@@ -260,18 +307,48 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
       //static int tempSound=1;
       if (millis() - lastMillisSw > 1000 )
       {
-        
+        if(threadDebug)
+        {
+          Serial.print("[threadDebug] ProcessSwitches Loop: CORE ");
+          Serial.print(xPortGetCoreID());
+          Serial.print(" : is currently running at approximatly ");
+          Serial.print(counterSw);
+          Serial.println("Hz (full program cycles per second)");
+          
+        }
         CMOHz = counterSw;
         counterSw = 0;
         lastMillisSw = millis();
         
-      }
+      }// End of debug stuff 
+        
+
       measureMicro = micros();
       processAllSwitches();//Needs to be done on a separate thread on a timer.
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
+
+
+      /*if(threadDebug)
+      {
+        unsigned long totalLoopProcessingTime = 0;
+
+        Serial.print("Process Switch Time (uS) : ");
+        Serial.println(processSwitchMicro);
+        totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
+        processSwitchMicro = 0;
+
+        Serial.print("Total Task Processing time uS : ");
+        Serial.println(totalLoopProcessingTime);
+
+        Serial.println("_________________________________");
+      }*/
+
+
+
     }else{
       //release the CPU for processing other tasks
+      //Serial.println("Switch Scan Taking a breather");
       vTaskDelay(pdMS_TO_TICKS(1));
     }  
     
@@ -488,18 +565,47 @@ void ProcessShifts(PinballCoil* CoilObject)
   {
     if(CoilObject->checkStatus())
     {
+      if(osrDebug)
+      {
+        Serial.print("Turning on coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR3 - BIT:");
+        Serial.println(CoilObject->getSRBit());
+      } 
       bitSet(outgoing3,CoilObject->getSRBit());
     }else
     {
+      if(osrDebug)
+      {
+        Serial.print("Turning off coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR3 - BIT:");
+        Serial.println(CoilObject->getSRBit());
+      }
       bitClear(outgoing3,CoilObject->getSRBit());
     }
   }else if(CoilObject->getSR() == 1)
   {
     if(CoilObject->checkStatus())
     {
-       bitSet(outgoing4,CoilObject->getSRBit());
+      if(osrDebug)
+      {
+        Serial.print("Turning on coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR4 - BIT:");
+        Serial.println(CoilObject->getSRBit());
+      }
+      bitSet(outgoing4,CoilObject->getSRBit());
+
     }else
     {
+      if(osrDebug)
+      {
+        Serial.print("Turning off coil ");
+        Serial.print(CoilObject->getName());
+        Serial.print("- OSR4 - BIT:");
+        Serial.println(CoilObject->getSRBit());
+      }
       bitClear(outgoing4,CoilObject->getSRBit());
     }
   }
@@ -561,25 +667,53 @@ void read_sr() {//Read input shift registers
   incoming2 = shiftIn(isrdataIn, isrclockIn, LSBFIRST);
   // read twice to simulate reading 2 165's
   digitalWrite(isrclockEnablePin, HIGH);
+  if(srDebug){
+    Serial.print("read_sr : incoming");
+    Serial.print("1->2[");
+    Serial.print(incoming);
+    Serial.print(",");
+    Serial.print(incoming2);
+    Serial.println("]");
+  }
 }
 void write_sr_matrix() 
 { // Write to the output shift registers
   digitalWrite(osr1latchPin, LOW);
   shiftOut(osr1dataPin, osr1clockPin, LSBFIRST, outgoing); // changed to MSB to reflect physical wiring
   digitalWrite(osr1latchPin, HIGH);   
+  if(srDebug){
+    Serial.print("write_sr_matrix : outgoing [");
+    Serial.print(outgoing);
+    Serial.println("]");
+  }   
 }  
 void write_sr_audio() 
 { // Write to the output shift registers
   digitalWrite(osr2latchPin, LOW);
   shiftOut(osr2dataPin, osr2clockPin, MSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
   digitalWrite(osr2latchPin, HIGH);   
+  if(srDebug){
+    Serial.print("write_sr_audio : outgoing2 [");
+    Serial.print(outgoing2);
+    Serial.println("]");
+  }   
 }   
 void write_sr_coils() 
 { // Write to the output shift registers
   digitalWrite(osr3latchPin, LOW);
+  
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
+  // do it 4 times to simulate writing to 4 595s at once
   digitalWrite(osr3latchPin, HIGH);   
+  if(osrDebug){
+    Serial.print("write_sr_coils : outgoing");
+    Serial.print("4->3[");
+    Serial.print(outgoing4);
+    Serial.print(",");
+    Serial.print(outgoing3);
+    Serial.println("]");
+  }   
 }   
 
 /*
@@ -602,7 +736,7 @@ void switch_event_outhole(int switchId)
       //ball save dont end ball
       int thisPlayerNumber = g_myPinballGame.getCurrentPlayerNumber();
       g_myPinballGame.endOfBall(g_myPinballGame.getCurrentPlayerNumber());
-      ScoreboardBText = "End of ball Plr " + (String)thisPlayerNumber; //this message isnt going to display for long without a delay - perhaps we need some additional display states to handle this.
+      ScoreboardBText = "End of ball P" + (String)thisPlayerNumber; //this message isnt going to display for long without a delay - perhaps we need some additional display states to handle this.
       ScoreboardTText = "Next....";
       //do other end of ball stuff - call additional functions here
     }
@@ -690,4 +824,3 @@ void addScore(int switchID)
   //ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
   //ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
 }
-
