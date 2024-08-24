@@ -94,4 +94,9 @@ void PinballSwitch::turnOff()
 {
   this->_isOn = false;
 }
+
+void PinballSwitch::turnOn()
+{
+  this->_isOn = true;
+}
  

@@ -35,5 +35,6 @@ class PinballSwitch
   bool isOuthole();
   void toggleDebug();
   void turnOff();
+  void turnOn();
 };
 #endif

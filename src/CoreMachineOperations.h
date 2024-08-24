@@ -4,8 +4,8 @@
 #include "PinballLED.h"
 #include "PinballGame.h"
 
-bool switchDebug = true;
-bool coilDebug = true;
+bool switchDebug = false;
+bool coilDebug = false;
 bool loopDebug = false;
 bool threadDebug = false;
 bool srDebug = false;
@@ -21,13 +21,6 @@ PinballGame g_myPinballGame(setting_MachineName);
 #include "flipperBindings_def.h"
 #include "coilBindings_fromJSON.h"
 #include "ledArray_fromJSON.h"
-
-void fireFlipper(int firedSwitchID);
-void releaseFlipper(int firedSwitchID);
-void IRAM_ATTR fireFlipper1();
-void IRAM_ATTR releaseFlipper1();
-void IRAM_ATTR fireFlipper2();
-void IRAM_ATTR releaseFlipper2();
 
 void MonitorSwitchesAndRegisterFunction( void * pvParameters);
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
@@ -187,15 +180,7 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
       //static int tempSound=1;
       if (millis() - lastMillisSw > 1000 )
       {
-        if(threadDebug)
-        {
-          Serial.print("[threadDebug] MonitorSwitches Loop: CORE ");
-          Serial.print(xPortGetCoreID());
-          Serial.print(" : is currently running at approximatly ");
-          Serial.print(counterSw);
-          Serial.println("Hz (full program cycles per second)");
-          
-        }
+        
         CMOHz = counterSw;
         counterSw = 0;
         lastMillisSw = millis();
@@ -229,43 +214,6 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
       lastMicrosLoopRan = micros();
 
 
-      /*if(threadDebug)
-      {
-        unsigned long totalLoopProcessingTime = 0;
-
-        Serial.print("Scan Switch Matrix Time (uS) : ");
-        Serial.println(scanMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + scanMicro;
-        scanMicro = 0;
-
-        Serial.print("Trigger Flipper Time (uS) : ");
-        Serial.println(flipperMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + flipperMicro;
-        flipperMicro = 0;
-
-        Serial.print("Trigger Switch Time (uS) : ");
-        Serial.println(triggerSwitchMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + triggerSwitchMicro;
-        triggerSwitchMicro = 0;
-
-        Serial.print("Manage Coil Time (uS) : ");
-        Serial.println(manageCoilMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + manageCoilMicro;
-        manageCoilMicro = 0;
-
-        //Serial.print("Process Switch Time (uS) : ");
-        //Serial.println(processSwitchMicro);
-        //totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
-        //processSwitchMicro = 0;
-
-        Serial.print("Total Task Processing time uS : ");
-        Serial.println(totalLoopProcessingTime);
-
-        Serial.println("_________________________________");
-      }*/
-
-
-
     }else{
       //release the CPU for processing other tasks
       //Serial.println("Switch Scan Taking a breather");
@@ -277,9 +225,7 @@ void MonitorSwitchesAndRegisterFunction( void * pvParameters)
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters)
 {
-  //Serial.print("MonitorSwitches running on core ");
-  //Serial.println(xPortGetCoreID());
-  //identifyFlippers();
+
   int counterSw = 0;
   unsigned long lastMillisSw = 0;
   unsigned long lastMicrosLoopRan = 0;
@@ -301,48 +247,18 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
       //static int tempSound=1;
       if (millis() - lastMillisSw > 1000 )
       {
-        if(threadDebug)
-        {
-          Serial.print("[threadDebug] ProcessSwitches Loop: CORE ");
-          Serial.print(xPortGetCoreID());
-          Serial.print(" : is currently running at approximatly ");
-          Serial.print(counterSw);
-          Serial.println("Hz (full program cycles per second)");
-          
-        }
+        
         CMOHz = counterSw;
         counterSw = 0;
         lastMillisSw = millis();
         
-      }// End of debug stuff 
-        
-
+      }
       measureMicro = micros();
       processAllSwitches();//Needs to be done on a separate thread on a timer.
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
-
-
-      /*if(threadDebug)
-      {
-        unsigned long totalLoopProcessingTime = 0;
-
-        Serial.print("Process Switch Time (uS) : ");
-        Serial.println(processSwitchMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
-        processSwitchMicro = 0;
-
-        Serial.print("Total Task Processing time uS : ");
-        Serial.println(totalLoopProcessingTime);
-
-        Serial.println("_________________________________");
-      }*/
-
-
-
     }else{
       //release the CPU for processing other tasks
-      //Serial.println("Switch Scan Taking a breather");
       vTaskDelay(pdMS_TO_TICKS(1));
     }  
     
@@ -375,175 +291,6 @@ void scanSwitchMatrix()
   }
  }
 } 
-/*
-* Function identifyFlippers
-* loop through all columns and rows and check for a switches that are marked as flippers.  
-* When they are identified, set the leftFlipperCol, LeftFlipperRow, rightFlipperCol, rightFlipperRow variables.
-*/
-void identifyFlippers()
-{
-  //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
-  char i = 0;
-  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) 
-  {
-    for (byte row = 0; row < setting_switchMatrixRows; row++) 
-    {    
-      int flipperSwitchID = (col*8)+row;
-      if(switches[flipperSwitchID].switchObject->isFlipper()==true) //we are desling with flippers
-      { 
-        colflipper[i] = col;
-        rowflipper[i] = row;    
-        Serial.print("Flipper ");
-        Serial.print(i);
-        Serial.print(" Detected on Column[");
-        Serial.print(col);
-        Serial.print("] x Row[");
-        Serial.print(row);
-        Serial.println("]");
-        i++;
-      }
-    }
-  }   
-}
-/*
-* Function triggerFlippers
-* loop through all columns and rows and check for a switches that are marked as flippers.  
-* If a switch is closed, and its a flipper - enable the flipper solenoid.
-* If a switch is open, and its a flipper and the solenoid id on - disable the flipper solenoid.
-*/
-void triggerFlippers()
-{
-  //IDEA - would it be faster to refine to just those with action? A list of switch numbers?
-  for(char i = 0; i < flipperButtons; i++)
-  {
-    char col = colflipper[i];
-    char row = rowflipper[i];
-    int flipperSwitchID = (col*8)+row;
-    PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
-    if((switchActive[col][row]==true)) //flipper button is pressed
-    {
-      
-      if(generalMODebug)
-      {
-        Serial.print("Flipper button pressed....");
-        Serial.println(flipperSwitchID);
-        Serial.print("need to locate coil associated ");
-        Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
-      } 
-      if(flipperCoil->checkStatus()==false) //coil is currently off
-      {
-        if(generalMODebug)
-        {
-          Serial.print("Coil disabled but button pressed, enabling ");
-          Serial.println(flipperCoil->getName());
-        }
-        if(MachineState == 2) //only if game is active
-        {
-          flipperCoil->enable(); //mark the coil as enabled - perminantly on
-          ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
-          write_sr_coils();  //action shift register changes
-          flipperCoil->actioned(); //mark the coil changes as done
-        }
-
-      }
-    }else if(flipperCoil->checkStatus()==true)//so the button isnt on, but the coil is
-    {
-      if(generalMODebug)
-      {
-        Serial.println("Coil enable but button not pressed, starting manage() function to determine if it can be turned off");
-        Serial.println("Coil insists it needs action to turn on or off");  
-      } 
-      flipperCoil->disable(); //mark the coil as off
-      flipperCoil->manage(); //run management routine to do the needful
-      ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
-      write_sr_coils(); //action shift register changes
-      flipperCoil->actioned(); //mark the coil changes as done
-    }//end button not presesed  
-  } 
-}
-/*
-* Function triggerSwitches
-* loop through all columns and rows and check for a switches that are marked as NOT flippers, but are marked true in the switchActive array.  
-* If a switch is closed, make the switchScored array value true
-* If a switch is closed and bound to a coil, fire the associated coil.
-* If a switch is closed and nat bound to a coil, do no more work.
-*/
-
-void IRAM_ATTR fireFlipper(int flipperSwitchID)
-{
-  /*PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
-
-  if(generalMODebug)
-  {
-    Serial.print("Flipper button pressed....");
-    Serial.println(flipperSwitchID);
-    Serial.print("need to locate coil associated ");
-    Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
-  } 
-  if(flipperCoil->checkStatus()==false) //coil is currently off
-  {
-    if(generalMODebug)
-    {
-      Serial.print("Coil disabled but button pressed, enabling ");
-      Serial.println(flipperCoil->getName());
-    }
-    if(MachineState == 2) //only if game is active
-    {
-      flipperCoil->enable(); //mark the coil as enabled - perminantly on
-      ProcessShifts(flipperCoil); //set shift register bytes to turn on solenoid
-      write_sr_coils();  //action shift register changes
-      flipperCoil->actioned(); //mark the coil changes as done
-    }
-  }  */
-}
-void IRAM_ATTR releaseFlipper(int flipperSwitchID)
-{
-  PinballCoil* flipperCoil = coils[flipperCoilBindings[flipperSwitchID].coilNumber].coilObject;
-
-  if(generalMODebug)
-  {
-    Serial.print("Flipper button pressed....");
-    Serial.println(flipperSwitchID);
-    Serial.print("need to locate coil associated ");
-    Serial.println(flipperCoilBindings[flipperSwitchID].coilNumber);
-  } 
-  if(flipperCoil->checkStatus()==true) //coil is currently off
-  {
-    
-    if(MachineState == 2) //only if game is active
-    {
-      if(generalMODebug)
-      {
-        Serial.println("Coil enable but button not pressed, starting manage() function to determine if it can be turned off");
-        Serial.println("Coil insists it needs action to turn on or off");  
-      } 
-      flipperCoil->disable(); //mark the coil as off
-      flipperCoil->manage(); //run management routine to do the needful
-      ProcessShifts(flipperCoil); //set shift register bytes to turn off solenoid
-      write_sr_coils(); //action shift register changes
-      flipperCoil->actioned(); //mark the coil changes as done
-    }
-  }  
-}
-void IRAM_ATTR fireFlipper1()
-{
-      Serial.println("FireFlipper1");
-      flip1Enabled = true;
-      lastMillisFlip1 = millis();
-}
-void IRAM_ATTR releaseFlipper1()
-{
-
-  
-}
-void IRAM_ATTR fireFlipper2()
-{
-  fireFlipper(2);
-}
-void IRAM_ATTR releaseFlipper2()
-{
-  fireFlipper(2);
-}
 
 /*
 * Function triggerSwitches
@@ -695,47 +442,18 @@ void ProcessShifts(PinballCoil* CoilObject)
   {
     if(CoilObject->checkStatus())
     {
-      if(osrDebug)
-      {
-        Serial.print("Turning on coil ");
-        Serial.print(CoilObject->getName());
-        Serial.print("- OSR3 - BIT:");
-        Serial.println(CoilObject->getSRBit());
-      } 
       bitSet(outgoing3,CoilObject->getSRBit());
     }else
     {
-      if(osrDebug)
-      {
-        Serial.print("Turning off coil ");
-        Serial.print(CoilObject->getName());
-        Serial.print("- OSR3 - BIT:");
-        Serial.println(CoilObject->getSRBit());
-      }
       bitClear(outgoing3,CoilObject->getSRBit());
     }
   }else if(CoilObject->getSR() == 1)
   {
     if(CoilObject->checkStatus())
     {
-      if(osrDebug)
-      {
-        Serial.print("Turning on coil ");
-        Serial.print(CoilObject->getName());
-        Serial.print("- OSR4 - BIT:");
-        Serial.println(CoilObject->getSRBit());
-      }
-      bitSet(outgoing4,CoilObject->getSRBit());
-
+       bitSet(outgoing4,CoilObject->getSRBit());
     }else
     {
-      if(osrDebug)
-      {
-        Serial.print("Turning off coil ");
-        Serial.print(CoilObject->getName());
-        Serial.print("- OSR4 - BIT:");
-        Serial.println(CoilObject->getSRBit());
-      }
       bitClear(outgoing4,CoilObject->getSRBit());
     }
   }
@@ -767,53 +485,25 @@ void read_sr() {//Read input shift registers
   incoming2 = shiftIn(isrdataIn, isrclockIn, LSBFIRST);
   // read twice to simulate reading 2 165's
   digitalWrite(isrclockEnablePin, HIGH);
-  if(srDebug){
-    Serial.print("read_sr : incoming");
-    Serial.print("1->2[");
-    Serial.print(incoming);
-    Serial.print(",");
-    Serial.print(incoming2);
-    Serial.println("]");
-  }
 }
 void write_sr_matrix() 
 { // Write to the output shift registers
   digitalWrite(osr1latchPin, LOW);
   shiftOut(osr1dataPin, osr1clockPin, LSBFIRST, outgoing); // changed to MSB to reflect physical wiring
   digitalWrite(osr1latchPin, HIGH);   
-  if(srDebug){
-    Serial.print("write_sr_matrix : outgoing [");
-    Serial.print(outgoing);
-    Serial.println("]");
-  }   
 }  
 void write_sr_audio() 
 { // Write to the output shift registers
   digitalWrite(osr2latchPin, LOW);
   shiftOut(osr2dataPin, osr2clockPin, LSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
   digitalWrite(osr2latchPin, HIGH);   
-  if(srDebug){
-    Serial.print("write_sr_audio : outgoing2 [");
-    Serial.print(outgoing2);
-    Serial.println("]");
-  }   
 }   
 void write_sr_coils() 
 { // Write to the output shift registers
   digitalWrite(osr3latchPin, LOW);
-  
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing4); // changed to MSB to reflect physical wiring
   shiftOut(osr3dataPin, osr3clockPin, MSBFIRST, outgoing3); // changed to MSB to reflect physical wiring
-  // do it 4 times to simulate writing to 4 595s at once
   digitalWrite(osr3latchPin, HIGH);   
-  if(osrDebug){
-    Serial.print("write_sr_coils : outgoing");
-    Serial.print("4->3[");
-    Serial.print(outgoing4);
-    Serial.print(",");
-    Serial.print(outgoing3);
-    Serial.println("]");
-  }   
 }   
 
 /*
@@ -836,7 +526,7 @@ void switch_event_outhole(int switchId)
       //ball save dont end ball
       int thisPlayerNumber = g_myPinballGame.getCurrentPlayerNumber();
       g_myPinballGame.endOfBall(g_myPinballGame.getCurrentPlayerNumber());
-      ScoreboardBText = "End of ball P" + (String)thisPlayerNumber; //this message isnt going to display for long without a delay - perhaps we need some additional display states to handle this.
+      ScoreboardBText = "End of ball Plr " + (String)thisPlayerNumber; //this message isnt going to display for long without a delay - perhaps we need some additional display states to handle this.
       ScoreboardTText = "Next....";
       //do other end of ball stuff - call additional functions here
     }
