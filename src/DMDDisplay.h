@@ -1,8 +1,10 @@
 #include <Arduino.h>
 //include dependancies
-#include <MD_Parola.h> 
+#include <MD_Parola.h> //propose remove - moving to an LCD display
 #include <MD_MAX72xx.h> 
 #include <SPI.h> 
+
+
 
 void oneTopOneBottomDisplay(String DMDTopLine, String DMDBottomLine);
 void resetDisplay();
@@ -25,9 +27,9 @@ TaskHandle_t DisplayDiagnosticsMode;
 #define MAX_ZONES   4
 #define ZONE_SIZE (MAX_DEVICES/MAX_ZONES)   // integer multiple works best
 
-#define DMCLK_PIN   4
-#define DMDATA_PIN  13
-#define DMCS_PIN    12
+#define DMCLK_PIN   4 
+#define DMDATA_PIN  13 
+#define DMCS_PIN    12 
 
 // Hardware SPI connection
 MD_Parola DMDDisplay = MD_Parola(HARDWARE_TYPE, DMDATA_PIN, DMCLK_PIN, DMCS_PIN, MAX_DEVICES);

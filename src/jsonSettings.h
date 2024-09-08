@@ -46,6 +46,7 @@ int setting_flipper2Pin = 35;
 int setting_switchMatrixRows = 8;
 int setting_switchMatrixColumns = 8;
 
+int setting_ledPin = 16;
 int setting_leds = 255;
 
 void createConfigFiles();
@@ -80,6 +81,7 @@ void createConfigFiles()
     jobject["flipper2Pin"] = setting_flipper2Pin;
     jobject["switchMatrixRows"] = setting_switchMatrixRows;
     jobject["switchMatrixColumns"] = setting_switchMatrixColumns;
+    jobject["ledPin"] = setting_ledPin;
     jobject["leds"] = setting_leds;
     fileSystem.saveToFile(localConfigFile,jobject);
     //Serial.print("JSON Document Created is: ");
@@ -119,6 +121,7 @@ void openConfigFiles()
     setting_flipper2Pin = (int8_t)jsonDocument["flipper2Pin"];
     setting_switchMatrixRows = (int8_t)jsonDocument["switchMatrixRows"];
     setting_switchMatrixColumns = (int8_t)jsonDocument["switchMatrixColumns"];
+    setting_ledPin = (int8_t)jsonDocument["ledPin"];
     setting_leds = (int8_t)jsonDocument["leds"];
     jsonDocument.clear();
 }
@@ -151,6 +154,7 @@ void updateConfigFiles()
     jobject["flipper2Pin"] = setting_flipper2Pin;
     jobject["switchMatrixRows"] = setting_switchMatrixRows;
     jobject["switchMatrixColumns"] = setting_switchMatrixColumns;
+    jobject["ledPin"] = setting_ledPin;
     jobject["leds"] = setting_leds;
     fileSystem.saveToFile(localConfigFile,jobject);
     //Serial.print("JSON Document Updates is: ");

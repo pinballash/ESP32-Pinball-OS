@@ -68,6 +68,7 @@ function getConfig() {
       //document.getElementById('config').innerHTML = this.responseText ;
       //this is all well and good, but we really need to get this json, deserialze it and then use pecific value pairs to upsate the UI.
       const json =  this.responseText;
+      
       const obj = JSON.parse(json);
       document.getElementById('machineNameInput').value = obj.Name;
       document.getElementById('machineVersionInput').value = obj.Version;
@@ -91,6 +92,8 @@ function getConfig() {
       document.getElementById('flipper2Pin').value = obj.flipper2Pin;
       document.getElementById('switchMatrixRows').value = obj.switchMatrixRows;
       document.getElementById('switchMatrixColumns').value = obj.switchMatrixColumns;
+      document.getElementById('ledPin').value = obj.ledPin;
+      document.getElementById('leds').value = obj.leds;
 
     }
   };
@@ -122,6 +125,8 @@ function updateSettings()
   let flipper2Pin = document.getElementById("flipper2Pin");
   let switchMatrixRows = document.getElementById("switchMatrixRows");
   let switchMatrixColumns = document.getElementById("switchMatrixColumns");
+  let ledPin = document.getElementById("ledPin");
+  let leds = document.getElementById("leds");
 
   // Creating a xhttp object
   let xhttp = new XMLHttpRequest();
@@ -166,8 +171,11 @@ function updateSettings()
     "flipper1Pin" : flipper1Pin.value,
     "flipper2Pin" : flipper2Pin.value,
     "switchMatrixRows" : switchMatrixRows.options[switchMatrixRows.selectedIndex].value,
-    "switchMatrixColumns" : switchMatrixColumns.options[switchMatrixColumns.selectedIndex].value
+    "switchMatrixColumns" : switchMatrixColumns.options[switchMatrixColumns.selectedIndex].value,
+    "ledPin" : ledPin.value,
+    "leds" : leds.value
     });
+    console.log(data);
 
   // Sending data with the request
   xhttp.send(data);
@@ -194,6 +202,11 @@ function loadPage()
 
 function generateDownload()
 {
+  let generateElement = document.getElementById("generate");
+  let processingElement = document.getElementById("proc");
+  let downloadElement = document.getElementById("dl");
+  generateElement.style.display = 'none';
+  processingElement.style.display = 'block';
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -204,15 +217,18 @@ function generateDownload()
       const obj = JSON.parse(json);
 
       var keyCount  = Object.keys(obj).length;
-      alert("There are "+keyCount+" files that will be downloaded in a zip - the download link will be ready shortly");
+      //alert("There are "+keyCount+" files that will be downloaded in a zip - the download link will be ready shortly");
 
       const urls = Object.values(obj)
       .map((url) => '/api/fs/get?filename=' + url);
 
       fetchBlobs(urls)
         .then(pack)
-        .then((zipFile) => dl.href = URL.createObjectURL(zipFile));
+        .then((zipFile) => dl.href = URL.createObjectURL(zipFile))
+        .then(dl.innerText = "Download Zip Now")
 
+      //processingElement.style.display = 'none';
+      downloadElement.style.display = 'block';
     }
   };
   xhttp.open('GET', 'api/fs/list', true);

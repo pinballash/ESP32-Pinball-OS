@@ -61,7 +61,8 @@ String tso_Webserver = "";
 unsigned long mainLoopMillis = 0;
 
 #include "CoreMachineOperations.h"
-#include "DMDDisplay.h"
+//#include "DMDDisplay.h"
+#include "LCDDisplay.h"
 #include "InteractiveEffect.h"
 #include "WebOperations.h"
 #include "machineState.h"
@@ -71,7 +72,16 @@ void setup() {
   // put your setup code here, to run once:
   // Setup Serial Monitor
   Serial.begin(115200);
-
+  lcd.init(I2C_SDA, I2C_SCL); // initialize the lcd to use user defined I2C pins
+	lcd.backlight();
+	lcd.setCursor(0,0);
+	lcd.print("ESP32 PinballOS");
+	lcd.setCursor(0,1);
+	lcd.print("by Ash Earl");
+	lcd.setCursor(0,2);
+	lcd.print("Booting");
+	lcd.setCursor(0,3);
+	lcd.print("Please wait...");
   //Need to set up LEDs, flippers, high power relay
 
   pinMode(flipper1Pin, INPUT);
@@ -170,7 +180,7 @@ void setup() {
       //Serial.print("IP address: ");
       //Serial.println(WiFi.localIP());
       localIP = WiFi.localIP();
-      g_myPinballGame.setDMDTopLine("Connected");
+      g_myPinballGame.setDMDTopLine("Connected           ");
       //Serial.println("Setting up MDNS as " + (String)host + ".local");
       /*use mdns for host name resolution*/
       if (!MDNS.begin(host)) { //http://<host>.local
@@ -180,7 +190,7 @@ void setup() {
         }
       }else{
        
-        g_myPinballGame.setDMDTopLine((String)localIP);
+        g_myPinballGame.setDMDBottomLine(WiFi.localIP().toString());
         //Serial.println("mDNS responder started");
       }
     }else
@@ -190,8 +200,9 @@ void setup() {
       setUpDNSServer(dnsServer, softAPlocalIP);
       server.begin();
       Serial.print("AP IP address: ");
-      Serial.println(WiFi.softAPIP());
+      Serial.println(WiFi.softAPIP().toString());
       localIP = WiFi.softAPIP();
+      g_myPinballGame.setDMDBottomLine(WiFi.softAPIP().toString());
       if (!MDNS.begin(host)) { //http://<host>.local
         //Serial.println("Error setting up MDNS responder!");
         while (1) {

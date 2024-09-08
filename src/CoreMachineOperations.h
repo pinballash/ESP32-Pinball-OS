@@ -155,6 +155,9 @@ const int flipper1Pin = setting_flipper1Pin;
 //const int flipper2Pin = 35;
 const int flipper2Pin = setting_flipper2Pin;
 
+//const int flipper2Pin = 35;
+const int ledPin = setting_ledPin;
+
 int counter;
 unsigned long lastMillis;
 

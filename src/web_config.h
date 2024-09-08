@@ -103,7 +103,7 @@ const char CONFIG_page[] PROGMEM = R"=====(
           <td><input type="text" id="hvrPin" name="hvrPin" value="" maxlength="2" size="2"></td>
         </tr>
         <tr>
-          <td colspan="2"><h6>Flippers</h6></td>
+          <td colspan="2"><h5>Flippers</h5></td>
         </tr>
         <tr>
           <td>flipper1Pin</td>
@@ -113,6 +113,18 @@ const char CONFIG_page[] PROGMEM = R"=====(
           <td>flipper2Pin</td>
           <td><input type="text" id="flipper2Pin" name="flipper2Pin" value="" maxlength="2" size="2"></td>
         </tr>
+        <tr>
+          <td colspan="2"><h65>Led Settings</h5></td>
+        </tr>
+        <tr>
+          <td>ledPin</td>
+          <td><input type="text" id="ledPin" name="ledPin" value="" maxlength="2" size="2"></td>
+        </tr>
+        <tr>
+          <td>led count</td>
+          <td><input type="text" id="leds" name="leds" value="" maxlength="2" size="2"></td>
+        </tr>
+       
 		  </table>
 		   
 		</fieldset>
@@ -160,7 +172,6 @@ const char CONFIG_page[] PROGMEM = R"=====(
 		</fieldset>
     <input type="submit" value="Submit" onclick="updateSettings();"> Updating Settings will restart the machine.<br><br>
 	</form>
-
   </div>
 
   <!-- Footer -->

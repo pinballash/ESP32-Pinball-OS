@@ -225,7 +225,9 @@ void WebOperationsFunction( void * pvParameters)
     server.on("/update", HTTP_POST, []() {
         server.sendHeader("Connection", "close");
         server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
-        delay(50); //give some time for web page to start reload
+        g_myPinballGame.setDMDTopLine("Updated");
+        g_myPinballGame.setDMDBottomLine("Rebooting");        
+        delay(5000); //give some time for web page to start reload
         ESP.restart();
     }, []() {
         HTTPUpload& upload = server.upload();
@@ -242,6 +244,8 @@ void WebOperationsFunction( void * pvParameters)
         } else if (upload.status == UPLOAD_FILE_END) {
         if (Update.end(true)) { //true to set the size to the current progress
             Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+            g_myPinballGame.setDMDTopLine("Update Successful");
+            g_myPinballGame.setDMDBottomLine("Rebooting"); 
         } else {
             Update.printError(Serial);
         }
@@ -520,6 +524,9 @@ void web_handle_action_diagnostics()
 void web_handle_action_restart()
 {
     server.send(200, "text/plain", "{'Status' : 'OK - restarting'}"); //Send ADC value only to client ajax request
+    g_myPinballGame.setDMDTopLine("User Reboot Called");
+    g_myPinballGame.setDMDBottomLine("Rebooting"); 
+    delay(2000);
     ESP.restart();
  
 }
@@ -1132,6 +1139,8 @@ bool web_handle_configUpdate()
   setting_flipper2Pin = postedJSON["flipper2Pin"];
   setting_switchMatrixRows = postedJSON["switchMatrixRows"];
   setting_switchMatrixColumns = postedJSON["switchMatrixColumns"];
+  setting_ledPin = postedJSON["ledPin"];
+  setting_leds = postedJSON["leds"];
 
   updateConfigFiles();
   web_handle_action_restart();

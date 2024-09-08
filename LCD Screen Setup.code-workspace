@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../LCDScreen/LCD Screen Setup"
+		},
+		{
+			"name": "ESP32-Pinball-OS",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"string_view": "cpp"
+		}
+	}
+}
