@@ -14,6 +14,7 @@ bool osrDebug = false;
 bool generalMODebug = false;
 bool memoryStats = false;
 unsigned long ScanSwitchMatrixEveryMicroSeconds = 100; //this seems to be the value where we can operate at around 1000 times per second
+unsigned long UpdateLedsEveryMicroSeconds = 5000000; //60 times a second
 
 PinballGame g_myPinballGame(setting_MachineName);
 
@@ -25,16 +26,13 @@ PinballGame g_myPinballGame(setting_MachineName);
 #include "ledArray_fromJSON.h"
 #include "audioArray_fromJSON.h"
 
-
-
-
-
-void MonitorSwitchesAndRegisterFunction( void * pvParameters);
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
+void ProcessLedsFunction( void * pvParameters);
 void scanSwitchMatrix();
 
 void triggerSwitches();
 void processAllSwitches();
+void processAllLeds();
 void ProcessShifts(PinballCoil* CoilObject);
 void ProcessAudioShifts(PinballAudio* AudioObject);
 void ResetAudioShifts();
@@ -59,8 +57,8 @@ void IRAM_ATTR Timer0_ISR()
     {
       scanInProgress = true;
       scanSwitchMatrix();
-      triggerSwitches();//Needs to be done on a separate thread on a timer.
-      manageCoils();//Needs to be done on a separate thread on a timer.
+      triggerSwitches();
+      manageCoils();
       manageAudio();
       INTHz++;
       scanInProgress = false;
@@ -76,6 +74,7 @@ void IRAM_ATTR Timer0_ISR()
 //setup a task to run on core 0;
 //TaskHandle_t MonitorSwitchesAndRegister;
 TaskHandle_t ProcessSwitchesAndRules;
+TaskHandle_t ProcessLeds;
 
 //setup array for storing switch active
 const int tableRows = 8;//(int8_t)setting_switchMatrixRows; // 0 to 7
@@ -97,36 +96,22 @@ const int coilCount = 16;
 bool coilActive[coilCount];
 bool audioActive[39];
 
-
 // Define Connections to 74HC595 - Matrix Output Shift Register
-//const int osr1latchPin = 18;
-//const int osr1clockPin = 5;
-//const int osr1dataPin = 17;
 const int osr1latchPin = setting_osr1latchPin;
 const int osr1clockPin = setting_osr1clockPin;
 const int osr1dataPin = setting_osr1dataPin;
 
 // Define Connections to 74HC595 - Audio Output Shift Register
-//const int osr2latchPin = 2; //changed from 3
-//const int osr2clockPin = 21;
-//const int osr2dataPin = 19;
 const int osr2latchPin = setting_osr2latchPin;
 const int osr2clockPin = setting_osr2clockPin;
 const int osr2dataPin = setting_osr2dataPin;
 
 // Define Connections to 74HC595 - Coil Output Shift Registers
-//const int osr3latchPin = 23;
-//const int osr3clockPin = 22;
-//const int osr3dataPin = 15; //changed from 1
 const int osr3latchPin = setting_osr3latchPin;
 const int osr3clockPin = setting_osr3clockPin;
 const int osr3dataPin = setting_osr3dataPin; 
 
 //Comms to 74HC165 - Input Shift Registers
-//int isrload = 25;
-//int isrclockEnablePin = 32; //latch
-//int isrdataIn = 33;
-//int isrclockIn = 26;
 int isrload = setting_isrload;
 int isrclockEnablePin = setting_isrclockEnablePin; //latch
 int isrdataIn = setting_isrdataIn;
@@ -161,128 +146,12 @@ const int ledPin = setting_ledPin;
 int counter;
 unsigned long lastMillis;
 
-
-
 int timerSw;
 unsigned long lastMillisTimerSw;
 
 int counterCoil;
 unsigned long lastMillisCoil;
 
-
-void MonitorSwitchesAndRegisterFunction( void * pvParameters)
-{
-  //Serial.print("MonitorSwitches running on core ");
-  //Serial.println(xPortGetCoreID());
-  //identifyFlippers();
-  int counterSw = 0;
-  unsigned long lastMillisSw = 0;
-  unsigned long lastMicrosLoopRan = 0;
-
-  unsigned long scanMicro = 0;
-  unsigned long flipperMicro = 0;
-  unsigned long triggerSwitchMicro = 0;
-  unsigned long manageCoilMicro = 0;
-  unsigned long processSwitchMicro = 0;
-  unsigned long measureMicro = 0;
-  for(;;)
-  {
-    if(micros() - lastMicrosLoopRan >= ScanSwitchMatrixEveryMicroSeconds) //we must not let this loop run away with itself, rate limiter here
-    {
-      
-      //do processing
-      // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
-      counterSw++;
-      //static int tempSound=1;
-      if (millis() - lastMillisSw > 1000 )
-      {
-        if(threadDebug)
-        {
-          Serial.print("[threadDebug] MonitorSwitches Loop: CORE ");
-          Serial.print(xPortGetCoreID());
-          Serial.print(" : is currently running at approximatly ");
-          Serial.print(counterSw);
-          Serial.println("Hz (full program cycles per second)");
-          
-        }
-        CMOHz = counterSw;
-        counterSw = 0;
-        lastMillisSw = millis();
-        
-      }// End of debug stuff 
-        
-      //if(generalMODebug) Serial.println("[generalMODebug] Switch Matrix Processing...");
-      //Check for switch triggers
-      measureMicro = micros();
-      scanSwitchMatrix();
-      scanMicro = scanMicro + (micros() - measureMicro);
-      //if(generalMODebug) Serial.println("[generalMODebug] Flipper triggering...");  
-      //fire off flippers if triggered 
-      measureMicro = micros();
-      //triggerFlippers();//soon to be redundant when flipper switches are direct connected to GPIO pins.
-      flipperMicro = flipperMicro + (micros() - measureMicro);
-      //if(generalMODebug) Serial.println("[generalMODebug] Switch triggering...");
-      //process switch events
-      measureMicro = micros();
-      triggerSwitches();//Needs to be done on a separate thread on a timer.
-      triggerSwitchMicro = triggerSwitchMicro + (micros() - measureMicro);
-      //if(generalMODebug) Serial.println("[generalMODebug] Coil processing...");
-      //manage coils - release if needed
-      measureMicro = micros();
-      manageCoils();//Needs to be done on a separate thread on a timer.
-      manageCoilMicro = manageCoilMicro + (micros() - measureMicro);
-      //if(generalMODebug) Serial.println("[generalMODebug] Switch processing...");
-      measureMicro = micros();
-      //processAllSwitches();//Needs to be done on a separate thread on a timer.
-      //processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
-      lastMicrosLoopRan = micros();
-
-
-      /*if(threadDebug)
-      {
-        unsigned long totalLoopProcessingTime = 0;
-
-        Serial.print("Scan Switch Matrix Time (uS) : ");
-        Serial.println(scanMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + scanMicro;
-        scanMicro = 0;
-
-        Serial.print("Trigger Flipper Time (uS) : ");
-        Serial.println(flipperMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + flipperMicro;
-        flipperMicro = 0;
-
-        Serial.print("Trigger Switch Time (uS) : ");
-        Serial.println(triggerSwitchMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + triggerSwitchMicro;
-        triggerSwitchMicro = 0;
-
-        Serial.print("Manage Coil Time (uS) : ");
-        Serial.println(manageCoilMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + manageCoilMicro;
-        manageCoilMicro = 0;
-
-        //Serial.print("Process Switch Time (uS) : ");
-        //Serial.println(processSwitchMicro);
-        //totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
-        //processSwitchMicro = 0;
-
-        Serial.print("Total Task Processing time uS : ");
-        Serial.println(totalLoopProcessingTime);
-
-        Serial.println("_________________________________");
-      }*/
-
-
-
-    }else{
-      //release the CPU for processing other tasks
-      //Serial.println("Switch Scan Taking a breather");
-      vTaskDelay(pdMS_TO_TICKS(1));
-    }  
-    
-  }
-}
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters)
 {
@@ -384,27 +253,40 @@ void scanSwitchMatrix()
   }
  }
 } 
-/*
-* Function identifyFlippers
-* loop through all columns and rows and check for a switches that are marked as flippers.  
-* When they are identified, set the leftFlipperCol, LeftFlipperRow, rightFlipperCol, rightFlipperRow variables.
-*/
 
-/*
-* Function triggerFlippers
-* loop through all columns and rows and check for a switches that are marked as flippers.  
-* If a switch is closed, and its a flipper - enable the flipper solenoid.
-* If a switch is open, and its a flipper and the solenoid id on - disable the flipper solenoid.
-*/
+void ProcessLedsFunction( void * pvParameters)
+{
+  //Serial.print("MonitorSwitches running on core ");
+  //Serial.println(xPortGetCoreID());
+  //identifyFlippers();
+  int counterSw = 0;
+  unsigned long lastMillisSw = 0;
+  unsigned long lastMicrosLoopRan = 0;
 
-/*
-* Function triggerSwitches
-* loop through all columns and rows and check for a switches that are marked as NOT flippers, but are marked true in the switchActive array.  
-* If a switch is closed, make the switchScored array value true
-* If a switch is closed and bound to a coil, fire the associated coil.
-* If a switch is closed and nat bound to a coil, do no more work.
-*/
-
+  unsigned long scanMicro = 0;
+  unsigned long flipperMicro = 0;
+  unsigned long triggerSwitchMicro = 0;
+  unsigned long manageCoilMicro = 0;
+  unsigned long processSwitchMicro = 0;
+  unsigned long measureMicro = 0;
+  for(;;)
+  {
+    if(micros() - lastMicrosLoopRan >= UpdateLedsEveryMicroSeconds) //we must not let this loop run away with itself, rate limiter here
+    {
+      
+      //do processing
+      Serial.println("Processing LEDs");
+      measureMicro = micros();
+      processAllLeds();//Needs to be done on a separate thread on a timer.
+      processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
+      lastMicrosLoopRan = micros();
+    }else{
+      //release the CPU for processing other tasks
+      
+      vTaskDelay(pdMS_TO_TICKS(1));
+    }  
+  }
+}
 
 
 /*
@@ -559,6 +441,39 @@ void processAllSwitches()
   }
   //need individual switch logic - things need to happen, different modes mean different outcomes - for later
 }
+
+/*
+* Function processAllLeds
+* loop through all columns and rows and check for a switchScored array values that are true. 
+* If a switch is assigned a special designation, like Start, Credit, Outhole or Flipper, action funtions can be called from here
+* TODO: If a switch is bound to a coil, without instanfFire, rules will need to be consulted to determine if coil needs to be fired or not
+*/
+void processAllLeds()
+{
+  
+  //ws2812b.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
+  //I think looping through all every time may be inefficient - surely we want to only update those that change - we will test and see
+  
+  for (byte id = 0; id < NUM_PIXELS ; id++) 
+  {
+    //get the led object and read its state
+    PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
+    if(thisLed->isOn()){
+      Serial.println("LED " + String(id) + "IS ON - Colour: " + thisLed->getColour()+ " R: "+ String(thisLed->getRed()) +" G: "+ String(thisLed->getGreen()) +" B: "+ String(thisLed->getBlue()));
+      ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*thisLed->getRed()/255, ledBrightness*thisLed->getGreen()/255, ledBrightness*thisLed->getBlue()/255));  // it only takes effect if pixels.show() is called
+      //ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*255/255, ledBrightness*255/255, ledBrightness*255/255));  // it only takes effect if pixels.show() is called
+  
+    }else{
+      //this led is off
+      Serial.println("LED " + String(id) + "IS OFF");
+      ws2812b.setPixelColor(id, ws2812b.Color(0, 0, 0));  // it only takes effect if pixels.show() is called
+    }
+
+    //to do - send a tick to the class - this will help manage blinking
+  }
+  ws2812b.show();  // update to the WS2812B Led Strip
+}
+
 /*
  * ProcessShifts is a function that updates the shift register byte variables based on the coil object sent
  */

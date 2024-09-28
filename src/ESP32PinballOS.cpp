@@ -58,11 +58,14 @@ String tso_SwitchesAndRules = "";
 String tso_PinballAudio = "";
 String tso_Webserver = "";
 
+
 unsigned long mainLoopMillis = 0;
 
+#include "ledLights.h"
 #include "CoreMachineOperations.h"
 //#include "DMDDisplay.h"
 #include "LCDDisplay.h"
+
 #include "InteractiveEffect.h"
 #include "WebOperations.h"
 #include "machineState.h"
@@ -127,6 +130,15 @@ void setup() {
     NULL,
     2,
     &ProcessSwitchesAndRules,
+    0);
+
+    xTaskCreatePinnedToCore(
+    ProcessLedsFunction,
+    "ProcessLeds",
+    2000,
+    NULL,
+    2,
+    &ProcessLeds,
     0);
 
   xTaskCreatePinnedToCore(
@@ -228,13 +240,39 @@ void setup() {
     timerAlarmWrite(Timer0_Cfg, 1000, true);
     timerAlarmEnable(Timer0_Cfg);
 
+    ws2812b.begin();
 
 
 }
 
 void loop() {
   
-  
+   /*ws2812b.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
+
+  // turn pixels to green one-by-one with delay between each pixel
+  for (int pixel = 0; pixel < NUM_PIXELS; pixel++) {         // for each pixel
+    ws2812b.setPixelColor(pixel, ws2812b.Color(0, 255, 0));  // it only takes effect if pixels.show() is called
+    ws2812b.show();                                          // update to the WS2812B Led Strip
+
+    delay(500);  // 500ms pause between each pixel
+  }
+
+  // turn off all pixels for two seconds
+  ws2812b.clear();
+  ws2812b.show();  // update to the WS2812B Led Strip
+  delay(2000);     // 2 seconds off time
+
+  // turn on all pixels to red at the same time for two seconds
+  for (int pixel = 0; pixel < NUM_PIXELS; pixel++) {         // for each pixel
+    ws2812b.setPixelColor(pixel, ws2812b.Color(255, 0, 0));  // it only takes effect if pixels.show() is called
+  }
+  ws2812b.show();  // update to the WS2812B Led Strip
+  delay(1000);     // 1 second on time
+
+  // turn off all pixels for one seconds
+  ws2812b.clear();
+  ws2812b.show();  // update to the WS2812B Led Strip
+  delay(1000);     // 1 second off time*/
   if(tso_PinballGame != "")
   {
     Serial.println("[TSO_PG]"+tso_PinballGame);
