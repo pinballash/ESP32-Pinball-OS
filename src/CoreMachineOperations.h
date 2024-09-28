@@ -459,13 +459,13 @@ void processAllLeds()
     //get the led object and read its state
     PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
     if(thisLed->isOn()){
-      Serial.println("LED " + String(id) + "IS ON - Colour: " + thisLed->getColour()+ " R: "+ String(thisLed->getRed()) +" G: "+ String(thisLed->getGreen()) +" B: "+ String(thisLed->getBlue()));
+      //Serial.println("LED " + String(id) + "IS ON - Colour: " + thisLed->getColour()+ " R: "+ String(thisLed->getRed()) +" G: "+ String(thisLed->getGreen()) +" B: "+ String(thisLed->getBlue()));
       ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*thisLed->getRed()/255, ledBrightness*thisLed->getGreen()/255, ledBrightness*thisLed->getBlue()/255));  // it only takes effect if pixels.show() is called
       //ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*255/255, ledBrightness*255/255, ledBrightness*255/255));  // it only takes effect if pixels.show() is called
   
     }else{
       //this led is off
-      Serial.println("LED " + String(id) + "IS OFF");
+      //Serial.println("LED " + String(id) + "IS OFF");
       ws2812b.setPixelColor(id, ws2812b.Color(0, 0, 0));  // it only takes effect if pixels.show() is called
     }
 
