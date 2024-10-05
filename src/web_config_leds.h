@@ -125,7 +125,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="5_14" onclick="selectLED(5,14);">94</span></td>
 						<td><span id="5_15" onclick="selectLED(5,15);">95</span></td>
 					</tr>
-					<tr>
+					<!--<tr>
 						<td><span id="6_0" onclick="selectLED(6,0);">96</span></td>
 						<td><span id="6_1" onclick="selectLED(6,1);">97</span></td>
 						<td><span id="6_2" onclick="selectLED(6,2);">98</span></td>
@@ -304,7 +304,7 @@ const char CONFIG_LEDS_page[] PROGMEM = R"=====(
 						<td><span id="15_13" onclick="selectLED(15,13);">253</span></td>
 						<td><span id="15_14" onclick="selectLED(15,14);">254</span></td>
 						<td><span id="15_15" onclick="selectLED(15,15);">255</span></td>
-                    </tr>					
+                    </tr>-->				
 				</tbody>
 				<tfoot>				
 				</tfoot>

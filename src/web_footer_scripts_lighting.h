@@ -5,6 +5,7 @@ const char lightingConfig_script_footer[] PROGMEM = R"=====(
 <script>
 var SelectedRow = 0;
 var SelectedColumn = 0;
+var maxRow = 6
 
 function loadPage()
 {
@@ -13,7 +14,7 @@ function loadPage()
 }
 function prepareMatrix()
 {
-  for(let j = 0; j < 16; j++)
+  for(let j = 0; j < maxRow; j++)
 	{
 		for(let i = 0; i < 16; i++)
 		{

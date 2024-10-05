@@ -19,9 +19,15 @@ void PinballLED::setValues(String ledName, String colour, bool isOn, int flashSp
 {
   this->_LEDName = ledName;
   this->_colour = colour;
-  this->_isOn = isOn;
+  if(isOn == true)
+  {
+    this->enable();
+  }else{
+    this->disable();
+  }
   this->_flashSpeed = flashSpeed;
   updateRGB();
+  this->_needsUpdate = true;
 }
 
 void PinballLED::changeColour(String colour)
@@ -84,6 +90,11 @@ bool PinballLED::getUpdate()
   return this->_needsUpdate;
 }
 
+void PinballLED::setUpdate()
+{
+  this->_needsUpdate = false;
+}
+
 bool PinballLED::isOn()
 {
   return this->_isOn;
@@ -98,6 +109,34 @@ void PinballLED::turnOff()
 {
   this->_isOn = false;
 }
+
+void PinballLED::tick()
+{
+ if((this->_flashSpeed > 0) && (this->_enabled == true))
+ {
+    unsigned long blinkInterval = (1000000/2)/this->_flashSpeed;
+    if(micros() - this->_lastBlink >= blinkInterval) //we must not let this loop run away with itself, rate limiter here
+    {
+      this->_isOn = !this->_isOn;
+      this->_needsUpdate = true;
+      this->_lastBlink = micros();
+
+    }  
+ }
+}
+
+void PinballLED::enable()
+{
+  this->_isOn = true;
+  this->_enabled = true;
+}
+
+void PinballLED::disable()
+{
+  this->_isOn = false;
+  this->_enabled = false;
+}
+
 
 
 

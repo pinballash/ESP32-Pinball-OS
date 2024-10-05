@@ -14,7 +14,8 @@ bool osrDebug = false;
 bool generalMODebug = false;
 bool memoryStats = false;
 unsigned long ScanSwitchMatrixEveryMicroSeconds = 100; //this seems to be the value where we can operate at around 1000 times per second
-unsigned long UpdateLedsEveryMicroSeconds = 5000000; //60 times a second
+unsigned long UpdateLedsEveryMicroSeconds = 100000; //10 times a second
+bool runningLeds = false;
 
 PinballGame g_myPinballGame(setting_MachineName);
 
@@ -256,10 +257,13 @@ void scanSwitchMatrix()
 
 void ProcessLedsFunction( void * pvParameters)
 {
-  //Serial.print("MonitorSwitches running on core ");
-  //Serial.println(xPortGetCoreID());
+  
+  Serial.print("ProcessLedsFunction running on core ");
+  Serial.println(xPortGetCoreID());
   //identifyFlippers();
-  int counterSw = 0;
+  /*ws2812b.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
+  ws2812b.show();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
+  int counterSw = 0;*/
   unsigned long lastMillisSw = 0;
   unsigned long lastMicrosLoopRan = 0;
 
@@ -271,19 +275,19 @@ void ProcessLedsFunction( void * pvParameters)
   unsigned long measureMicro = 0;
   for(;;)
   {
-    if(micros() - lastMicrosLoopRan >= UpdateLedsEveryMicroSeconds) //we must not let this loop run away with itself, rate limiter here
+    if((micros() - lastMicrosLoopRan >= UpdateLedsEveryMicroSeconds) && (runningLeds==false))//we must not let this loop run away with itself, rate limiter here
     {
       
+      runningLeds = true;
       //do processing
-      Serial.println("Processing LEDs");
+      //Serial.println("Processing LEDs");
       measureMicro = micros();
       processAllLeds();//Needs to be done on a separate thread on a timer.
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
     }else{
       //release the CPU for processing other tasks
-      
-      vTaskDelay(pdMS_TO_TICKS(1));
+      vTaskDelay(5);
     }  
   }
 }
@@ -450,28 +454,84 @@ void processAllSwitches()
 */
 void processAllLeds()
 {
-  
-  //ws2812b.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
+  // Turn the LED on, then pause
+   for(int whiteLed = 0; whiteLed < NUM_LEDS; whiteLed = whiteLed + 1) {
+      // Turn our current led on to white, then show the leds
+      ledArray[whiteLed] = CRGB::White;
+
+      // Show the leds (only one of which is set to white, from above)
+      FastLED.show();
+
+      // Wait a little bit
+      vTaskDelay(50);
+
+      // Turn our current led back to black for the next loop around
+      //void fadeall();
+      ledArray[whiteLed] = CRGB::Black;
+   }
+   /*static uint8_t hue = 0;
+    Serial.print("x");
+    // First slide the led in one direction
+    for(int i = 0; i < NUM_LEDS; i++) {
+        // Set the i'th led to red 
+        ledArray[i] = CHSV(hue++, 255, 255);
+        // Show the leds
+        FastLED.show(); 
+        // now that we've shown the leds, reset the i'th led to black
+        // leds[i] = CRGB::Black;
+        fadeall();
+        // Wait a little bit before we loop around and do it again
+        vTaskDelay(10);
+    }
+    Serial.print("x");
+ 
+    // Now go in the other direction.  
+    for(int i = (NUM_LEDS)-1; i >= 0; i--) {
+        // Set the i'th led to red 
+        ledArray[i] = CHSV(hue++, 255, 255);
+        // Show the leds
+        FastLED.show();
+        // now that we've shown the leds, reset the i'th led to black
+        // leds[i] = CRGB::Black;
+        fadeall();
+        // Wait a little bit before we loop around and do it again
+        vTaskDelay(10);
+    }*/
+  /*
   //I think looping through all every time may be inefficient - surely we want to only update those that change - we will test and see
-  
+  bool needsReload = false;
   for (byte id = 0; id < NUM_PIXELS ; id++) 
   {
     //get the led object and read its state
     PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
-    if(thisLed->isOn()){
-      //Serial.println("LED " + String(id) + "IS ON - Colour: " + thisLed->getColour()+ " R: "+ String(thisLed->getRed()) +" G: "+ String(thisLed->getGreen()) +" B: "+ String(thisLed->getBlue()));
-      ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*thisLed->getRed()/255, ledBrightness*thisLed->getGreen()/255, ledBrightness*thisLed->getBlue()/255));  // it only takes effect if pixels.show() is called
-      //ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*255/255, ledBrightness*255/255, ledBrightness*255/255));  // it only takes effect if pixels.show() is called
-  
-    }else{
-      //this led is off
-      //Serial.println("LED " + String(id) + "IS OFF");
-      ws2812b.setPixelColor(id, ws2812b.Color(0, 0, 0));  // it only takes effect if pixels.show() is called
+    thisLed->tick();
+    if(thisLed->getUpdate() == true)
+    {
+      if(thisLed->isOn()){
+        //Serial.println("LED " + String(id) + " IS ON - Colour: " + thisLed->getColour()+ " R: "+ String(thisLed->getRed()) +" G: "+ String(thisLed->getGreen()) +" B: "+ String(thisLed->getBlue()));
+        ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*thisLed->getRed()/255, ledBrightness*thisLed->getGreen()/255, ledBrightness*thisLed->getBlue()/255));  // it only takes effect if pixels.show() is called
+        thisLed->setUpdate();
+        needsReload = true;
+      }else{
+        //this led is off
+        //Serial.println("LED " + String(id) + " IS OFF");
+        ws2812b.setPixelColor(id, ws2812b.Color(0, 0, 0));  // it only takes effect if pixels.show() is called
+        thisLed->setUpdate();
+        needsReload = true;
+      }
     }
-
-    //to do - send a tick to the class - this will help manage blinking
   }
-  ws2812b.show();  // update to the WS2812B Led Strip
+  //gove the leds some time to update
+  //vTaskDelay(pdMS_TO_TICKS(5));
+  if(needsReload == true)
+  {
+    //portDISABLE_INTERRUPTS();
+    ws2812b.show();  // update to the WS2812B Led Strip
+    //portENABLE_INTERRUPTS();
+    vTaskDelay(100);
+    
+  }*/
+  runningLeds = false;
 }
 
 /*

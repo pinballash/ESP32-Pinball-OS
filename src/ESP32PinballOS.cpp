@@ -126,29 +126,29 @@ void setup() {
     xTaskCreatePinnedToCore(
     ProcessSwitchesAndRulesFunction,
     "ProcessSwitchesAndRules",
-    2000,
+    5000,
     NULL,
-    2,
+    30,
     &ProcessSwitchesAndRules,
-    0);
+    1);
 
     xTaskCreatePinnedToCore(
     ProcessLedsFunction,
     "ProcessLeds",
-    2000,
+    20000,
     NULL,
-    2,
+    24,
     &ProcessLeds,
     0);
 
   xTaskCreatePinnedToCore(
     WebOperationsFunction,
     "WebOperationsTask",
-    10000,
+    20000,
     NULL,
-    2,
+    30,
     &WebOperationsTask,
-    1);
+    0);
 
 // setup dot matrix display stuff
   xTaskCreatePinnedToCore(
@@ -156,9 +156,9 @@ void setup() {
     "DisplayController",
     5000,
     NULL,
-    10,
+    32,
     &DisplayController,
-    0);
+    1);
 
     //OTA Updater
     // Connect to WiFi network
@@ -194,7 +194,7 @@ void setup() {
       localIP = WiFi.localIP();
       g_myPinballGame.setDMDTopLine("Connected           ");
       //Serial.println("Setting up MDNS as " + (String)host + ".local");
-      /*use mdns for host name resolution*/
+      //use mdns for host name resolution
       if (!MDNS.begin(host)) { //http://<host>.local
         //Serial.println("Error setting up MDNS responder!");
         while (1) {
@@ -211,8 +211,8 @@ void setup() {
       startSoftAccessPoint(softAPssid, softAPpassword, softAPlocalIP, softAPgatewayIP);
       setUpDNSServer(dnsServer, softAPlocalIP);
       server.begin();
-      Serial.print("AP IP address: ");
-      Serial.println(WiFi.softAPIP().toString());
+      //Serial.print("AP IP address: ");
+      //Serial.println(WiFi.softAPIP().toString());
       localIP = WiFi.softAPIP();
       g_myPinballGame.setDMDBottomLine(WiFi.softAPIP().toString());
       if (!MDNS.begin(host)) { //http://<host>.local
@@ -240,39 +240,16 @@ void setup() {
     timerAlarmWrite(Timer0_Cfg, 1000, true);
     timerAlarmEnable(Timer0_Cfg);
 
-    ws2812b.begin();
+    //ws2812b.begin();
+    FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
+    FastLED.setBrightness(64);
 
 
 }
 
 void loop() {
   
-   /*ws2812b.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
 
-  // turn pixels to green one-by-one with delay between each pixel
-  for (int pixel = 0; pixel < NUM_PIXELS; pixel++) {         // for each pixel
-    ws2812b.setPixelColor(pixel, ws2812b.Color(0, 255, 0));  // it only takes effect if pixels.show() is called
-    ws2812b.show();                                          // update to the WS2812B Led Strip
-
-    delay(500);  // 500ms pause between each pixel
-  }
-
-  // turn off all pixels for two seconds
-  ws2812b.clear();
-  ws2812b.show();  // update to the WS2812B Led Strip
-  delay(2000);     // 2 seconds off time
-
-  // turn on all pixels to red at the same time for two seconds
-  for (int pixel = 0; pixel < NUM_PIXELS; pixel++) {         // for each pixel
-    ws2812b.setPixelColor(pixel, ws2812b.Color(255, 0, 0));  // it only takes effect if pixels.show() is called
-  }
-  ws2812b.show();  // update to the WS2812B Led Strip
-  delay(1000);     // 1 second on time
-
-  // turn off all pixels for one seconds
-  ws2812b.clear();
-  ws2812b.show();  // update to the WS2812B Led Strip
-  delay(1000);     // 1 second off time*/
   if(tso_PinballGame != "")
   {
     Serial.println("[TSO_PG]"+tso_PinballGame);
@@ -330,6 +307,7 @@ void loop() {
     Serial.println("[Main Loop][MEM Stat] Display Controller Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(DisplayController)));
     Serial.println("[Main Loop][MEM Stat] WebOperations Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(WebOperationsTask)));
     Serial.println("[Main Loop][MEM Stat] Process Switches Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(ProcessSwitchesAndRules)));
+    Serial.println("[Main Loop][MEM Stat] Led High Water Mark: " + String(uxTaskGetStackHighWaterMark(ProcessLeds)));
     //audios[0].AudioObject->fireAudio();
     //ProcessAudioShifts(audios[0].AudioObject); 
     //write_sr_audio();

@@ -232,7 +232,7 @@ void WebOperationsFunction( void * pvParameters)
     }, []() {
         HTTPUpload& upload = server.upload();
         if (upload.status == UPLOAD_FILE_START) {
-        Serial.printf("Update: %s\n", upload.filename.c_str());
+        //Serial.printf("Update: %s\n", upload.filename.c_str());
         if (!Update.begin(UPDATE_SIZE_UNKNOWN)) { //start with max available size
             Update.printError(Serial);
         }
@@ -243,7 +243,7 @@ void WebOperationsFunction( void * pvParameters)
         }
         } else if (upload.status == UPLOAD_FILE_END) {
         if (Update.end(true)) { //true to set the size to the current progress
-            Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+            //Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
             g_myPinballGame.setDMDTopLine("Update Successful");
             g_myPinballGame.setDMDBottomLine("Rebooting"); 
         } else {
@@ -261,7 +261,7 @@ void WebOperationsFunction( void * pvParameters)
     }
   
     server.begin();
-    Serial.println("Webserver Started");
+    //Serial.println("Webserver Started");
     
   bool clientConnected = false;
   bool lastConnectionStatus = false;
@@ -289,7 +289,7 @@ void WebOperationsFunction( void * pvParameters)
     {
         if(lastConnectionStatus == false)
         {
-          Serial.println("Client Connected");
+          //Serial.println("Client Connected");
           lastConnectionStatus = true;
           clientConnected = true;
         }
@@ -297,7 +297,7 @@ void WebOperationsFunction( void * pvParameters)
       //no client connected
       if(lastConnectionStatus == true)
         {
-          Serial.println("Client Disconnected");
+          //Serial.println("Client Disconnected");
           lastConnectionStatus = false;
           clientConnected = false;
         }
@@ -919,7 +919,7 @@ void web_handle_setlightingConfig()
 {
   if(server.args() == 0)
   {
-    Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
+    //Serial.println("No JSON in request"); //no JSON no webpage my friend ;)
   }else{
     //Serial.println("SetCoilConfig: plain: " + server.arg("plain"));
     DynamicJsonDocument postedJSON(2048);
@@ -938,9 +938,20 @@ void web_handle_setlightingConfig()
     const char * dataChar = dataFile.c_str();
     fileSystem.saveToFile(dataChar,postedJSON);
     server.send(200, "text/plain", "{'Status' : 'OK'}"); //Send ADC value only to client ajax request
+    //update object
+    int ledId = int(postedJSON["ledId"]);
+    PinballLED* thisLed = LEDs[ledId].ledObject;
+    bool ledIsOn = false;
+    if(postedJSON["ledIsOn"] == "true")
+    {
+      ledIsOn = true;
+    }
+    thisLed->setValues(postedJSON["ledName"],postedJSON["ledColour"],ledIsOn,postedJSON["ledFlashSpeed"]);
+    //clear up json
     postedJSON.clear();
     myJsonDocument.clear();
     jobject.clear();
+    
   }
 }
 
