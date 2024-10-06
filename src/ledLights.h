@@ -16,10 +16,7 @@ Adafruit_NeoPixel ws2812b(NUM_PIXELS, PIN_WS2812B, NEO_GRB + NEO_KHZ800);
 #include <FastLED.h>
 
 #define DATA_PIN 16  // The ESP32 pin GPIO16 connected to WS2812B
-#define NUM_LEDS 100   // The number of LEDs (pixels) on WS2812B LED strip
+#define NUM_LEDS 93  // The number of LEDs (pixels) on WS2812B LED strip
 
 CRGB ledArray[NUM_LEDS];
 
-void fadeall() 
-{ //for(int i = 0; i < NUM_LEDS; i++) { ledArray[i].nscale8(250); } 
-}

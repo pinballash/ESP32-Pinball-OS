@@ -132,12 +132,12 @@ void setup() {
     &ProcessSwitchesAndRules,
     1);
 
-    xTaskCreatePinnedToCore(
+   xTaskCreatePinnedToCore(
     ProcessLedsFunction,
     "ProcessLeds",
     20000,
     NULL,
-    24,
+    25,
     &ProcessLeds,
     0);
 
@@ -146,7 +146,7 @@ void setup() {
     "WebOperationsTask",
     20000,
     NULL,
-    30,
+    50,
     &WebOperationsTask,
     0);
 
@@ -242,7 +242,7 @@ void setup() {
 
     //ws2812b.begin();
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
-    FastLED.setBrightness(64);
+    FastLED.setBrightness(16);
 
 
 }

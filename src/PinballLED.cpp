@@ -120,6 +120,10 @@ void PinballLED::tick()
       this->_isOn = !this->_isOn;
       this->_needsUpdate = true;
       this->_lastBlink = micros();
+      if((this->_flashOnce == true) && (this->_isOn == false))
+      {
+        this->disable();
+      }
 
     }  
  }
@@ -135,6 +139,13 @@ void PinballLED::disable()
 {
   this->_isOn = false;
   this->_enabled = false;
+}
+
+void PinballLED::flashOnce(int flashTime)
+{
+  this->_flashSpeed = flashTime;
+  this->_enabled = true;
+  this->_flashOnce = true;
 }
 
 

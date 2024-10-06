@@ -60,7 +60,7 @@ void IRAM_ATTR Timer0_ISR()
       scanSwitchMatrix();
       triggerSwitches();
       manageCoils();
-      manageAudio();
+      //manageAudio();
       INTHz++;
       scanInProgress = false;
     }
@@ -287,7 +287,7 @@ void ProcessLedsFunction( void * pvParameters)
       lastMicrosLoopRan = micros();
     }else{
       //release the CPU for processing other tasks
-      vTaskDelay(5);
+      vTaskDelay(50); //yeild for a 20th of a second
     }  
   }
 }
@@ -454,84 +454,61 @@ void processAllSwitches()
 */
 void processAllLeds()
 {
-  // Turn the LED on, then pause
-   for(int whiteLed = 0; whiteLed < NUM_LEDS; whiteLed = whiteLed + 1) {
-      // Turn our current led on to white, then show the leds
-      ledArray[whiteLed] = CRGB::White;
+  
+  if (cycleLedPottedBalls == true)
+  {
+    ledArrayPottedBallsEven =  LED_display_oddsAndEvens(ledArray_PottedBalls, ledArrayPottedBallsCount, ledArrayPottedBallsEven, 2);
+  }
+    
+  if (cycleLedEIGHTBALL == true)
+  {
+    LED_display_flashBlock(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2);
+  }
+  
+  if (cycleLedLeftSide == true)
+  {
+    ledArrayLeftSideCounter = LED_display_chase(ledArray_LeftSide, ledArrayLeftSideCount, 6, ledArrayLeftSideCounter);
+  }
 
-      // Show the leds (only one of which is set to white, from above)
-      FastLED.show();
+  if (cycleLedRightSide == true)
+  {
+    ledArrayRightSideCounter = LED_display_chase(ledArray_RightSide, ledArrayRightSideCount, 6, ledArrayRightSideCounter);
+  }
 
-      // Wait a little bit
-      vTaskDelay(50);
-
-      // Turn our current led back to black for the next loop around
-      //void fadeall();
-      ledArray[whiteLed] = CRGB::Black;
-   }
-   /*static uint8_t hue = 0;
-    Serial.print("x");
-    // First slide the led in one direction
-    for(int i = 0; i < NUM_LEDS; i++) {
-        // Set the i'th led to red 
-        ledArray[i] = CHSV(hue++, 255, 255);
-        // Show the leds
-        FastLED.show(); 
-        // now that we've shown the leds, reset the i'th led to black
-        // leds[i] = CRGB::Black;
-        fadeall();
-        // Wait a little bit before we loop around and do it again
-        vTaskDelay(10);
-    }
-    Serial.print("x");
- 
-    // Now go in the other direction.  
-    for(int i = (NUM_LEDS)-1; i >= 0; i--) {
-        // Set the i'th led to red 
-        ledArray[i] = CHSV(hue++, 255, 255);
-        // Show the leds
-        FastLED.show();
-        // now that we've shown the leds, reset the i'th led to black
-        // leds[i] = CRGB::Black;
-        fadeall();
-        // Wait a little bit before we loop around and do it again
-        vTaskDelay(10);
-    }*/
-  /*
-  //I think looping through all every time may be inefficient - surely we want to only update those that change - we will test and see
+  if (cycleLedCHAMP == true)
+  {
+    LED_display_flashBlock(ledArray_CHAMP, ledArrayCHAMPCount, 1);
+  }
+  
   bool needsReload = false;
-  for (byte id = 0; id < NUM_PIXELS ; id++) 
+  for (byte id = 0; id < NUM_LEDS ; id++) 
   {
     //get the led object and read its state
     PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
     thisLed->tick();
     if(thisLed->getUpdate() == true)
     {
+      needsReload = true;
       if(thisLed->isOn()){
         //Serial.println("LED " + String(id) + " IS ON - Colour: " + thisLed->getColour()+ " R: "+ String(thisLed->getRed()) +" G: "+ String(thisLed->getGreen()) +" B: "+ String(thisLed->getBlue()));
-        ws2812b.setPixelColor(id, ws2812b.Color(ledBrightness*thisLed->getRed()/255, ledBrightness*thisLed->getGreen()/255, ledBrightness*thisLed->getBlue()/255));  // it only takes effect if pixels.show() is called
+        ledArray[id].setRGB(thisLed->getRed(),thisLed->getGreen(), thisLed->getBlue());  // it only takes effect if pixels.show() is called
         thisLed->setUpdate();
-        needsReload = true;
       }else{
         //this led is off
         //Serial.println("LED " + String(id) + " IS OFF");
-        ws2812b.setPixelColor(id, ws2812b.Color(0, 0, 0));  // it only takes effect if pixels.show() is called
+        ledArray[id] = CRGB::Black; // it only takes effect if pixels.show() is called
         thisLed->setUpdate();
-        needsReload = true;
       }
     }
   }
-  //gove the leds some time to update
-  //vTaskDelay(pdMS_TO_TICKS(5));
+
   if(needsReload == true)
   {
-    //portDISABLE_INTERRUPTS();
-    ws2812b.show();  // update to the WS2812B Led Strip
-    //portENABLE_INTERRUPTS();
-    vTaskDelay(100);
-    
-  }*/
+    FastLED.show();  // update to the WS2812B Led Strip
+  }
+  //give 50ms for other processes (therefor max Hz of the LED is 1000/50 = 50Hz)
   runningLeds = false;
+  vTaskDelay(5);
 }
 
 /*

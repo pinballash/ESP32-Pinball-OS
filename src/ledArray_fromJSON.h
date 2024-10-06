@@ -99,7 +99,8 @@ PinballLED led_90(90);
 PinballLED led_91(91);
 PinballLED led_92(92);
 PinballLED led_93(93);
-PinballLED led_94(94);
+/*no need to waste space with unused objects*/
+/*PinballLED led_94(94);
 PinballLED led_95(95);
 PinballLED led_96(96);
 PinballLED led_97(97);
@@ -259,7 +260,7 @@ PinballLED led_250(250);
 PinballLED led_251(251);
 PinballLED led_252(252);
 PinballLED led_253(253);
-PinballLED led_254(254);
+PinballLED led_254(254);*/
 
 typedef struct {
   byte ledNum; 
@@ -335,34 +336,34 @@ LEDList LEDs = {
   {62,&led_62},
   {63,&led_63},
   {64,&led_64},
-{65,&led_65},
-{66,&led_66},
-{67,&led_67},
-{68,&led_68},
-{69,&led_69},
-{70,&led_70},
-{71,&led_71},
-{72,&led_72},
-{73,&led_73},
-{74,&led_74},
-{75,&led_75},
-{76,&led_76},
-{77,&led_77},
-{78,&led_78},
-{79,&led_79},
-{80,&led_80},
-{81,&led_81},
-{82,&led_82},
-{83,&led_83},
-{84,&led_84},
-{85,&led_85},
-{86,&led_86},
-{87,&led_87},
-{88,&led_88},
-{89,&led_89},
-{90,&led_90},
-{91,&led_91},
-{92,&led_92},
+  {65,&led_65},
+  {66,&led_66},
+  {67,&led_67},
+  {68,&led_68},
+  {69,&led_69},
+  {70,&led_70},
+  {71,&led_71},
+  {72,&led_72},
+  {73,&led_73},
+  {74,&led_74},
+  {75,&led_75},
+  {76,&led_76},
+  {77,&led_77},
+  {78,&led_78},
+  {79,&led_79},
+  {80,&led_80},
+  {81,&led_81},
+  {82,&led_82},
+  {83,&led_83},
+  {84,&led_84},
+  {85,&led_85},
+  {86,&led_86},
+  {87,&led_87},
+  {88,&led_88},
+  {89,&led_89},
+  {90,&led_90},
+  {91,&led_91},
+  {92,&led_92}/*,
 {93,&led_93},
 {94,&led_94},
 {95,&led_95},
@@ -524,7 +525,7 @@ LEDList LEDs = {
 {251,&led_251},
 {252,&led_252},
 {253,&led_253},
-{254,&led_254}
+{254,&led_254}*/
 };
 
 
@@ -569,4 +570,104 @@ void createLedObjects()
     LEDJSON.clear();
   }//end 
 
+}
+
+//define LED Groups 
+char ledArray_special[] = {
+  9,23,49,77,80,83
+};
+char ledSecialCount = 6;
+
+char ledArray_CHAMP[] = {
+  82,19,20,21,78
+};
+char ledArrayCHAMPCount = 5;
+bool cycleLedCHAMP = true;
+
+char ledArray_EIGHTBALL[] = {
+  44,45,46,47,36,58,57,56,48
+};
+char ledArrayEIGHTBALLCount = 9;
+char ledArrayEIGHTBALLCounter = 0;
+bool cycleLedEIGHTBALL = true;
+
+char ledArray_LeftSide[] = {
+  13,12,11,10,9,8
+};
+char ledArrayLeftSideCount = 6;
+char ledArrayLeftSideCounter = 0;
+bool cycleLedLeftSide = true;
+
+char ledArray_RightSide[] = {
+  27,26,25,24,23,22
+};
+char ledArrayRightSideCount = 6;
+char ledArrayRightSideCounter = 0;
+bool cycleLedRightSide = true;
+
+char ledArray_PottedBalls[] = {
+  62,64,67,70,72,73,75,68,63,65,66,69,71,74,76
+};
+char ledArrayPottedBallsCount = 15;
+char ledArrayPottedBallsCounter = 0;
+bool cycleLedPottedBalls = true;
+bool ledArrayPottedBallsEven = true;
+
+bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond)
+{
+  bool isActioned = false;
+  for(char ledId = 0; ledId < LED_array_length; ledId++)
+    {
+      if ((isEven == true) && (ledId % 2) == 0) //if number is even and we are workinh with even
+      {
+        PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
+        if(thisCLed->isOn() == false)
+        {
+          thisCLed->flashOnce(flashesPerSecond); 
+          isActioned = true;
+        }
+      }else if ((isEven == false) && ((ledId % 2) != 0))//its an odd number and we are working with odd
+      {
+        
+        PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
+        if(thisCLed->isOn() == false)
+        {
+          thisCLed->flashOnce(flashesPerSecond); 
+          isActioned = true;
+        }
+      }
+    }
+    if(isActioned == true)
+    {
+      isEven = !isEven;
+    }
+    return isEven;
+}
+
+char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter)
+{
+  PinballLED* thisCLed = LEDs[LED_ID_array[counter]].ledObject;
+  if(thisCLed->isOn() == false)
+  {
+    thisCLed->flashOnce(flashesPerSecond); //cycle once a second second
+  }
+  if(counter < LED_array_length)
+  {
+    counter++;
+  }else{
+    counter = 0;
+  }
+  return counter;
+}
+
+void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond)
+{
+  for(char ledId = 0; ledId < LED_array_length; ledId++)
+    {
+      PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
+      if(thisCLed->isOn() == false)
+      {
+        thisCLed->flashOnce(flashesPerSecond); 
+      }
+    }
 }

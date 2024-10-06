@@ -16,6 +16,7 @@ class PinballLED
         byte _blue;
         bool _needsUpdate = false;
         unsigned long _lastBlink = 0;
+        bool _flashOnce = false;
   public:
    
 
@@ -43,6 +44,7 @@ class PinballLED
   void tick();
   void enable();
   void disable();
+  void flashOnce(int flashTime);
   
   
 };
