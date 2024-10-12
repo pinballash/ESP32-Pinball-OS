@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "PinballSwitch.h"
 #include "PinballCoil.h"
-#include "PinballAudio.h"
+//#include "PinballAudio.h"
 #include "PinballLED.h"
 #include "PinballGame.h"
 
@@ -25,7 +25,8 @@ PinballGame g_myPinballGame(setting_MachineName);
 #include "flipperBindings_def.h"
 #include "coilBindings_fromJSON.h"
 #include "ledArray_fromJSON.h"
-#include "audioArray_fromJSON.h"
+//not using audio in this table - commented out
+//#include "audioArray_fromJSON.h"
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
 void ProcessLedsFunction( void * pvParameters);
@@ -35,13 +36,13 @@ void triggerSwitches();
 void processAllSwitches();
 void processAllLeds();
 void ProcessShifts(PinballCoil* CoilObject);
-void ProcessAudioShifts(PinballAudio* AudioObject);
-void ResetAudioShifts();
+//void ProcessAudioShifts(PinballAudio* AudioObject);
+//void ResetAudioShifts();
 void manageCoils();
-void manageAudio();
+//void manageAudio();
 void read_sr();
 void write_sr_matrix();
-void write_sr_audio();
+//void write_sr_audio();
 void write_sr_coils();
 void switch_event_startbutton(int switchId);
 void switch_event_outhole(int switchId);
@@ -95,7 +96,7 @@ int playfieldMultiplier = 1;
 //setup array fo maintaining the state of coils
 const int coilCount = 16;
 bool coilActive[coilCount];
-bool audioActive[39];
+//bool audioActive[39];
 
 // Define Connections to 74HC595 - Matrix Output Shift Register
 const int osr1latchPin = setting_osr1latchPin;
@@ -581,7 +582,7 @@ void manageCoils()
     }
   }
 }
-void manageAudio()
+/*void manageAudio()
 {
   byte maxAudio = 39;
   for ( byte audioNumber = 0; audioNumber < maxAudio ; audioNumber++) {
@@ -596,19 +597,21 @@ void manageAudio()
       }
     }
   }
-}
+}*/
+/*
 void ResetAudioShifts(){
   outgoing2 = 255;
   write_sr_audio();
   //tso_PinballAudio = tso_PinballAudio + "[ProcessAudioShifts] Setting Shift to "+String(outgoing2);
 }
+*/
 
-void ProcessAudioShifts(PinballAudio* AudioObject)
+/*void ProcessAudioShifts(PinballAudio* AudioObject)
 {  
   outgoing2 = 255;
   outgoing2 = outgoing2 - AudioObject->getSRBit();
   //tso_PinballAudio = tso_PinballAudio + "[ProcessAudioShifts] Setting Shift to "+String(outgoing2);
-}
+}*/
 
 
 void read_sr() {//Read input shift registers
@@ -642,7 +645,7 @@ void write_sr_matrix()
     Serial.println("]");
   }   
 }  
-void write_sr_audio() 
+/*void write_sr_audio() 
 { // Write to the output shift registers
   digitalWrite(osr2latchPin, LOW);
   shiftOut(osr2dataPin, osr2clockPin, MSBFIRST, outgoing2); // changed to MSB to reflect physical wiring
@@ -652,7 +655,7 @@ void write_sr_audio()
     Serial.print(outgoing2);
     Serial.println("]");
   }   
-}   
+} */  
 void write_sr_coils() 
 { // Write to the output shift registers
   digitalWrite(osr3latchPin, LOW);

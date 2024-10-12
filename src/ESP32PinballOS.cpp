@@ -72,7 +72,6 @@ unsigned long mainLoopMillis = 0;
 #include "setupShifts.h"
 
 void setup() {
-  // put your setup code here, to run once:
   // Setup Serial Monitor
   Serial.begin(115200);
   lcd.init(I2C_SDA, I2C_SCL); // initialize the lcd to use user defined I2C pins
@@ -88,42 +87,20 @@ void setup() {
   //Need to set up LEDs, flippers, high power relay
 
   pinMode(flipper1Pin, INPUT);
-  //attachInterrupt(flipper1Pin, fireFlipper1, HIGH);
-  //attachInterrupt(flipper1Pin, releaseFlipper1, LOW);
-  
   pinMode(flipper2Pin, INPUT);
-
-  //attachInterrupt(flipper2Pin, fireFlipper2, RISING);
-  //attachInterrupt(flipper2Pin, releaseFlipper2, FALLING);
-
   pinMode(hvrPin, OUTPUT);
   //turn off High Voltage Relay
   digitalWrite(hvrPin, HIGH);
 
   setupShifts();
- 
-  //Serial.println("Now read settings files...");
-  //Serial.println("Starting SPIFFS");
-
   setupFileSystem();
-  
-
-  //Serial.print("Setup running on core ");
-  //Serial.println(xPortGetCoreID());
-
-  //Serial.println("Starting Switch Object Creation");
   createSwitchObjects();
   createSwitchScoreObjects();
-  //Serial.println("Starting Coil Object Creation");
   createCoilObjects();
-  
-  createAudioObjects();
-  //Serial.println("Starting Switch Coil bonding");
   createSwitchCoilBindings();
-
   createLedObjects();
 
-    xTaskCreatePinnedToCore(
+  xTaskCreatePinnedToCore(
     ProcessSwitchesAndRulesFunction,
     "ProcessSwitchesAndRules",
     5000,
@@ -132,7 +109,7 @@ void setup() {
     &ProcessSwitchesAndRules,
     1);
 
-   xTaskCreatePinnedToCore(
+  xTaskCreatePinnedToCore(
     ProcessLedsFunction,
     "ProcessLeds",
     20000,
@@ -150,7 +127,7 @@ void setup() {
     &WebOperationsTask,
     0);
 
-// setup dot matrix display stuff
+  // setup dot matrix display stuff
   xTaskCreatePinnedToCore(
     DisplayControllerFunction,
     "DisplayController",
@@ -160,21 +137,12 @@ void setup() {
     &DisplayController,
     1);
 
-    //OTA Updater
-    // Connect to WiFi network
-
-    //now need some logic here - do we have credentials saved in the config?
-    //Yes, try and connect to the wifi, if fail create a soft ap
-    //no, create a soft ap
     WiFi.begin(setting_SSID, setting_SSIDPassword);
-    //Serial.println("");
-
     // Wait for connection
 
     int WifiWaitCounter = 0;
     int MaxWait = 5;
-    
-
+ 
     g_myPinballGame.setDMDTopLine("Wi-Fi Connecting");
     while ((WiFi.status() != WL_CONNECTED) && (WifiWaitCounter < MaxWait)) 
     {
@@ -186,24 +154,15 @@ void setup() {
     if(WiFi.status() ==  WL_CONNECTED)
     {
       WifiConnected = true;
-      //Serial.println("");
-      //Serial.print("Connected to ");
-      //Serial.println(setting_SSID);
-      //Serial.print("IP address: ");
-      //Serial.println(WiFi.localIP());
       localIP = WiFi.localIP();
       g_myPinballGame.setDMDTopLine("Connected           ");
-      //Serial.println("Setting up MDNS as " + (String)host + ".local");
-      //use mdns for host name resolution
+      
       if (!MDNS.begin(host)) { //http://<host>.local
-        //Serial.println("Error setting up MDNS responder!");
         while (1) {
           delay(1000);
         }
       }else{
-       
         g_myPinballGame.setDMDBottomLine(WiFi.localIP().toString());
-        //Serial.println("mDNS responder started");
       }
     }else
     {
@@ -211,12 +170,9 @@ void setup() {
       startSoftAccessPoint(softAPssid, softAPpassword, softAPlocalIP, softAPgatewayIP);
       setUpDNSServer(dnsServer, softAPlocalIP);
       server.begin();
-      //Serial.print("AP IP address: ");
-      //Serial.println(WiFi.softAPIP().toString());
       localIP = WiFi.softAPIP();
       g_myPinballGame.setDMDBottomLine(WiFi.softAPIP().toString());
       if (!MDNS.begin(host)) { //http://<host>.local
-        //Serial.println("Error setting up MDNS responder!");
         while (1) {
           delay(1000);
         }
@@ -224,10 +180,6 @@ void setup() {
       }
       
       g_myPinballGame.setDMDTopLine((String)localIP);
-      //Serial.println("mDNS responder started");
-      //Serial.print("http://");
-      //Serial.print(host);
-      //Serial.println(".local");
       delay(1000);
       wifiSoftAPInUse = true;
       g_myPinballGame.setDMDBottomLine("SOFT AP ONLINE");
@@ -240,7 +192,6 @@ void setup() {
     timerAlarmWrite(Timer0_Cfg, 1000, true);
     timerAlarmEnable(Timer0_Cfg);
 
-    //ws2812b.begin();
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
     FastLED.setBrightness(16);
 

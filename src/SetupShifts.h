@@ -41,7 +41,7 @@ void setupShifts()
 
   //Serial.println("Flushing the shift registers.");
   write_sr_matrix(); // flush out the shift registers
-  write_sr_audio(); // flush out the shift registers
+  //write_sr_audio(); // flush out the shift registers
   write_sr_coils(); // flush out the shift registers
   //Serial.println(".");
   read_sr(); // read the shift registers. get rid of any spurious crap on power up.
@@ -49,7 +49,7 @@ void setupShifts()
   delay(200);
   //Serial.println(".");
   write_sr_matrix(); // flush out the shift registers
-  write_sr_audio(); // flush out the shift registers
+  //write_sr_audio(); // flush out the shift registers
   write_sr_coils(); // flush out the shift registers
   //Serial.println(".");
   read_sr(); // read again after a short delay

@@ -48,9 +48,9 @@ void DoubleTriggerFunction(void * pvParameters)
       Serial.println("[DoubleTriggerFunction] Run");
       outgoing2 = 254;
       //ProcessAudioShifts(audios[0].AudioObject); //set shift register bytes to turn on audio channel
-      write_sr_audio(); //update shift register
+      //write_sr_audio(); //update shift register
       vTaskDelay(750);
-      ResetAudioShifts();
+      //ResetAudioShifts();
       vTaskDelay(5);
   }
          
@@ -69,9 +69,9 @@ void TripleTriggerFunction(void * pvParameters)
       Serial.println("[DoubleTriggerFunction] Run");
       outgoing2 = 254;
       //ProcessAudioShifts(audios[0].AudioObject); //set shift register bytes to turn on audio channel
-      write_sr_audio(); //update shift register
+      //write_sr_audio(); //update shift register
       vTaskDelay(750);
-      ResetAudioShifts();
+      //ResetAudioShifts();
       vTaskDelay(5);
   }
          
