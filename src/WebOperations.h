@@ -812,14 +812,14 @@ void web_handle_getswitchcoilbindingConfig()
     String switchId = postedJSON["switchId"];
     String jsonConfig;
     String dataFile = "/switchCoilBindingConf." + switchId + ".json";
-    //Serial.println("Opening " + dataFile);
+    Serial.println("Opening switch coil binding file " + dataFile);
     File file = SPIFFS.open(dataFile);
     while (file.available()) {
         // Extract each characters by one by one
         jsonConfig = file.readString();
     }
-    //Serial.print("JSON Document is: ");
-    //Serial.println(jsonConfig);
+    Serial.print("JSON Document is: ");
+    Serial.println(jsonConfig);
     if(jsonConfig == "")
     {
       //we need to send a dummy set of values

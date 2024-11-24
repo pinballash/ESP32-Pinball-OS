@@ -155,8 +155,8 @@ void createSwitchCoilBindings()
 
       //get the json file for this switchID
       String jsonConfig;
-      String dataFile = "/switchCoilBindingConfig." + SwitchID + ".json";
-      //Serial.println("Opening " + dataFile);
+      String dataFile = "/switchCoilBindingConf." + SwitchID + ".json";
+      //Serial.println("Opening switch to coil binding file " + dataFile);
       File file = SPIFFS.open(dataFile);
       while (file.available()) {
           // Extract each characters by one by one

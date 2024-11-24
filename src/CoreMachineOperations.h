@@ -51,6 +51,7 @@ void addScore(int switchID);
 void changeState(int newState);
 
 void DoubleTrigger();
+void Tune1Trigger();
 
 hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
@@ -396,6 +397,7 @@ void processAllSwitches()
           switch_event_startbutton(triggeredSwitchID);
         }else if(switches[triggeredSwitchID].switchObject->isOuthole()==true)
         {
+          //Serial.println("[processAllSwitches] Outhole Fired");
           switch_event_outhole(triggeredSwitchID);
         }else if(switches[triggeredSwitchID].switchObject->isCredit()==true)
         {
@@ -423,7 +425,7 @@ void processAllSwitches()
             ProcessAudioShifts(audios[triggeredSwitchID].AudioObject); //set shift register bytes to turn on audio channel
             write_sr_audio(); //update shift register
           }*/
-          DoubleTrigger();
+          //DoubleTrigger();
           
           
 
@@ -702,11 +704,15 @@ void switch_event_outhole(int switchId)
     byte* coilNumber = switchCoilBindings[(byte)switchId].coilNumber; //get the coil number bound to the switch
     byte coilNumberByte = *coilNumber;
     //only fire if in a game
+    Serial.println("[INFO][switch_event_outhole] Outhole switch triggered, game is active");
     if(g_myPinballGame.isGameActive()==true)
     {
       if(coilNumberByte >0)
       {
         //Serial.println("[switch_event_outhole] Fire Outhole");
+        Serial.println("[INFO][switch_event_outhole] Outhole firing");
+        Serial.print("[INFO][switch_event_outhole] Coil choice is ");
+        Serial.println(coilNumberByte);
         PinballCoil* switchCoil = coils[coilNumberByte].coilObject;
         if(switchCoil->fireCoil()){
           coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -714,7 +720,7 @@ void switch_event_outhole(int switchId)
           write_sr_coils(); //update shift register
         }
       }else{
-        //Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
+        Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
       }
       
     }else
@@ -722,13 +728,15 @@ void switch_event_outhole(int switchId)
       //ok so game was active, now its not, game over calls need to be made
   
       changeState(3); //moving to End of game
-        digitalWrite(hvrPin, HIGH);
+      digitalWrite(hvrPin, HIGH);
+      Serial.println("[INFO][switch_event_outhole] Thats the last ball, end of game");
 
       //need much more code here, but ok for now
     }
   }else
   {
     //Do nothing - ball should be here when game not on
+    Serial.println("[INFO][switch_event_outhole] Do nothing - the ball should be here");
   }
 }
 /*void switch_event_saucer(int switchID)

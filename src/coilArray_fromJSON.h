@@ -62,7 +62,7 @@ void createCoilObjects()
       //get the json file for this CoilID
       String jsonConfig;
       String dataFile = "/coilConfig." + CoilID + ".json";
-      //Serial.println("Opening " + dataFile);
+      //Serial.println("Opening Coil settings " + dataFile);
       File file = SPIFFS.open(dataFile);
       while (file.available()) {
           // Extract each characters by one by one

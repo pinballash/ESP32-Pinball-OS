@@ -38,6 +38,7 @@ void changeState(int newState)
               g_myPinballGame.newGame();
               //enable power to coils
               digitalWrite(hvrPin, LOW);
+              Tune1Trigger();
             }else if (newState == 5)
             {
               //moving from End Game to Atract : OK
@@ -83,18 +84,20 @@ void changeState(int newState)
             if(newState == 2)
             {
               //moving from End Game to Game : OK
-              Serial.println("[changeState] - - End Game->Game");
+              Serial.println("[changeState] - End Game->Game");
               ScoreboardTText = "Lets, Play,";
               ScoreboardBText = "Pool!";
               MachineState = 2;
               lastMachineState = 3;
               forceDisplayUpdate = true;
               g_myPinballGame.newGame();
+              Serial.println("[changeState] - Enable High Voltage");
+              digitalWrite(hvrPin, LOW);
 
             }else if (newState == 1)
             {
               //moving from End Game to Atract : OK
-              Serial.println("[[changeState] - - End Game->Attract");
+              Serial.println("[[changeState] - End Game->Attract");
               MachineState = 1;
               lastMachineState = 3;
               forceDisplayUpdate = true;
