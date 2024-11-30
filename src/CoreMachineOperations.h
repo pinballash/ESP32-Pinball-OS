@@ -50,11 +50,58 @@ void switch_event_outhole(int switchId);
 void addScore(int switchID);
 bool ChimeRing(char coilNum);
 void turnOffAllLeds();
+void setNewBallLEDs(bool dots); //sets up playfield lights - dots true, 1-7, false 9-15
+void resetChampLeds();
+bool checkChamp();
 void changeState(int newState);
 
 void DoubleTrigger();
 void Tune1Trigger();
 void resetDrops();
+
+
+//define LED named objects
+//CHAMP
+PinballLED* c_champ = LEDs[82].ledObject;
+PinballLED* h_champ = LEDs[19].ledObject;
+PinballLED* a_champ = LEDs[20].ledObject;
+PinballLED* m_champ = LEDs[21].ledObject;
+PinballLED* p_champ = LEDs[78].ledObject;
+
+//Table Balls
+PinballLED* oneball_table = LEDs[39].ledObject;
+PinballLED* twoball_table = LEDs[37].ledObject;
+PinballLED* threeball_table = LEDs[34].ledObject;
+PinballLED* fourball_table = LEDs[32].ledObject;
+PinballLED* fiveeball_table = LEDs[30].ledObject;
+PinballLED* sixball_table = LEDs[42].ledObject;
+PinballLED* sevenball_table = LEDs[54].ledObject;
+PinballLED* eightball_table = LEDs[2].ledObject;
+PinballLED* nineball_table = LEDs[40].ledObject;
+PinballLED* tenball_table = LEDs[14].ledObject;
+PinballLED* elevenball_table = LEDs[33].ledObject;
+PinballLED* twelveball_table = LEDs[31].ledObject;
+PinballLED* thirteenball_table = LEDs[29].ledObject;
+PinballLED* fourteenball_table = LEDs[43].ledObject;
+PinballLED* fifteenball_table = LEDs[51].ledObject;
+
+//Pocket Balls
+PinballLED* oneball_pocket = LEDs[62].ledObject;
+PinballLED* twoball_pocket = LEDs[64].ledObject;
+PinballLED* threeball_pocket = LEDs[67].ledObject;
+PinballLED* fourball_pocket = LEDs[70].ledObject;
+PinballLED* fiveeball_pocket = LEDs[72].ledObject;
+PinballLED* sixball_pocket = LEDs[73].ledObject;
+PinballLED* sevenball_pocket = LEDs[75].ledObject;
+PinballLED* eightball_pocket = LEDs[68].ledObject;
+PinballLED* nineball_pocket = LEDs[63].ledObject;
+PinballLED* tenball_pocket = LEDs[65].ledObject;
+PinballLED* elevenball_pocket = LEDs[66].ledObject;
+PinballLED* twelveball_pocket = LEDs[69].ledObject;
+PinballLED* thirteenball_pocket = LEDs[71].ledObject;
+PinballLED* fourteenball_pocket = LEDs[74].ledObject;
+PinballLED* fifteenball_pocket = LEDs[76].ledObject;
+
 
 hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
@@ -422,6 +469,9 @@ void processAllSwitches()
           */
           addScore(triggeredSwitchID);
           
+
+
+          
           /*if((audios[triggeredSwitchID].AudioObject->fireAudio()))
           { //try and play sound
             audioActive[triggeredSwitchID]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -435,15 +485,111 @@ void processAllSwitches()
 
         }
 
-        /*switch(scoredSwitch)
+        switch(triggeredSwitchID)
         {
-          case 0: //outhole switch fire coil 14 - outhole
+          case 23: //C - Inlane Left
           {
-            switch_event_outhole();
+            //this is part of 5 bank 
+            if(c_champ->isOn()==true)
+            {
+              c_champ->disable();
+              c_champ->updateLed();
+              if(checkChamp() == false)
+              {
+                //champ off
+                //reset champ
+                resetChampLeds();
+
+                //increase multiplier - to do
+
+              }
+
+            }
             break;
           }
 
-        }*/
+          case 22: //H - Lane Left
+          {
+            //this is part of 5 bank 
+            if(h_champ->isOn()==true)
+            {
+              h_champ->disable();
+              h_champ->updateLed();
+              if(checkChamp() == false)
+              {
+                //champ off
+                //reset champ
+                resetChampLeds();
+
+                //increase multiplier - to do
+
+              }
+
+            }
+            break;
+          }
+          case 21: //A - Inlane middle
+          {
+            //this is part of 5 bank 
+            if(a_champ->isOn()==true)
+            {
+              a_champ->disable();
+              a_champ->updateLed();
+              if(checkChamp() == false)
+              {
+                //champ off
+                //reset champ
+                resetChampLeds();
+
+                //increase multiplier - to do
+
+              }
+
+            }
+            break;
+          }
+          case 20: //M - Lane Right
+          {
+            //this is part of 5 bank 
+            if(m_champ->isOn()==true)
+            {
+              m_champ->disable();
+              m_champ->updateLed();
+              if(checkChamp() == false)
+              {
+                //champ off
+                //reset champ
+                resetChampLeds();
+
+                //increase multiplier - to do
+
+              }
+
+            }
+            break;
+          }
+          case 19: //P - Inlane Right
+          {
+            //this is part of 5 bank 
+            if(p_champ->isOn()==true)
+            {
+              p_champ->disable();
+              p_champ->updateLed();
+              if(checkChamp() == false)
+              {
+                //champ off
+                //reset champ
+                resetChampLeds();
+
+                //increase multiplier - to do
+
+              }
+
+            }
+            break;
+          }
+
+        }
         //finally, mark switch as processed
         switchScored[col][row]=false;
       }
@@ -702,6 +848,7 @@ void switch_event_outhole(int switchId)
       ScoreboardBText = "End of ball P" + (String)thisPlayerNumber; //this message isnt going to display for long without a delay - perhaps we need some additional display states to handle this.
       ScoreboardTText = "Next....";
       //do other end of ball stuff - call additional functions here
+      
     }
     //need to get the coilNumber associated
     byte* coilNumber = switchCoilBindings[(byte)switchId].coilNumber; //get the coil number bound to the switch
@@ -870,4 +1017,106 @@ void turnOffAllLeds()
     thisLed->setFlashSpeed(0);
     thisLed->updateLed();
   }
+
+  setNewBallLEDs(true);
+}
+void setNewBallLEDs(bool dots)
+{
+
+  //if dats = true - we need 1-7 else 9-15
+  if(dots == true)
+  {
+    oneball_table->enable();
+    oneball_table->setFlashSpeed(0);
+    oneball_table->updateLed();
+    
+    twoball_table->enable();
+    twoball_table->setFlashSpeed(0);
+    twoball_table->updateLed();
+
+    threeball_table->enable();
+    threeball_table->setFlashSpeed(0);
+    threeball_table->updateLed();
+
+    fourball_table->enable();
+    fourball_table->setFlashSpeed(0);
+    fourball_table->updateLed();
+
+    fiveeball_table->enable();
+    fiveeball_table->setFlashSpeed(0);
+    fiveeball_table->updateLed();
+
+    sixball_table->enable();
+    sixball_table->setFlashSpeed(0);
+    sixball_table->updateLed();
+
+    sevenball_table->enable();
+    sevenball_table->setFlashSpeed(0);
+    sevenball_table->updateLed();
+
+
+  }else{
+    nineball_table->enable();
+    nineball_table->setFlashSpeed(0);
+    nineball_table->updateLed();
+    
+    tenball_table->enable();
+    tenball_table->setFlashSpeed(0);
+    tenball_table->updateLed();
+
+    elevenball_table->enable();
+    elevenball_table->setFlashSpeed(0);
+    elevenball_table->updateLed();
+
+    twelveball_table->enable();
+    twelveball_table->setFlashSpeed(0);
+    twelveball_table->updateLed();
+
+    thirteenball_table->enable();
+    thirteenball_table->setFlashSpeed(0);
+    thirteenball_table->updateLed();
+
+    fourteenball_table->enable();
+    fourteenball_table->setFlashSpeed(0);
+    fourteenball_table->updateLed();
+
+    fifteenball_table->enable();
+    fifteenball_table->setFlashSpeed(0);
+    fifteenball_table->updateLed();
+  }
+  resetChampLeds();
+
+}
+void resetChampLeds()
+{
+  c_champ->enable();
+  c_champ->setFlashSpeed(0);
+  c_champ->updateLed();
+
+  h_champ->enable();
+  h_champ->setFlashSpeed(0);
+  h_champ->updateLed();
+
+  a_champ->enable();
+  a_champ->setFlashSpeed(0);
+  a_champ->updateLed();
+
+  m_champ->enable();
+  m_champ->setFlashSpeed(0);
+  m_champ->updateLed();
+
+  p_champ->enable();
+  p_champ->setFlashSpeed(0);
+  p_champ->updateLed();
+}
+
+bool checkChamp()
+{
+  
+  if((c_champ->isOn() == false)&&(h_champ->isOn() == false)&&(a_champ->isOn() == false)&&(m_champ->isOn() == false) && (p_champ->isOn() == false))
+  {
+    return false;
+  }
+  return true;
+  
 }

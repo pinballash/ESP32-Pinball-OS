@@ -193,7 +193,7 @@ void setup() {
     timerAlarmEnable(Timer0_Cfg);
 
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
-    FastLED.setBrightness(16);
+    FastLED.setBrightness(8);
 
 
 }
