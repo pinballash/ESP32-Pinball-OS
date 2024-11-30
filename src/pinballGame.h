@@ -6,6 +6,7 @@
 class PinballGame
 {
   private:
+    bool _dropsReset = true;
     bool _gameActive = false;
     bool _ballSave = false;
     int _maxBalls = 3;
@@ -79,5 +80,7 @@ class PinballGame
   void setDMDTopLine(String DMDText);
   void setDMDBottomLine(String DMDText);
   void setDMDText(String DMDTopLine, String DMDBottomLine);
+  int checkDropReset();
+  void setDropStatus(bool status);
 };
 #endif

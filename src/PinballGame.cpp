@@ -16,14 +16,14 @@ PinballGame::PinballGame(String GameName)
     this->_gameActive = true;
     this->DMDTopLine = "New";
     this->DMDBottomLine = "Game";
-    delay(3000);
+    delay(500);
     this->_player1CurrentBall = 1; 
     this->DMDTopLine = "1 Player";
     this->DMDBottomLine = "Game";
     //this->resetAllPlayerData();
     //enable power to coils
     extern const int setting_hvrPin;
-    digitalWrite(setting_hvrPin, HIGH);
+    //digitalWrite(setting_hvrPin, HIGH);
   }
   void PinballGame::endGame()
   {
@@ -32,7 +32,7 @@ PinballGame::PinballGame(String GameName)
     this->DMDTopLine = "Game";
     this->DMDBottomLine = "Over";
     extern const int setting_hvrPin;
-    digitalWrite(setting_hvrPin, LOW);
+    //digitalWrite(setting_hvrPin, LOW);
   }
   void PinballGame::addPlayer()
   {
@@ -244,6 +244,7 @@ PinballGame::PinballGame(String GameName)
     if(_gameActive == true)
     {
       this->_ballSave = false;
+      this->_dropsReset = false;
 
       switch (playerNumber)
       {
@@ -339,3 +340,15 @@ PinballGame::PinballGame(String GameName)
     this->DMDTopLine = DMDTopLine;
     this->DMDBottomLine = DMDBottomLine;
   }
+
+  int PinballGame::checkDropReset()
+  {
+    return this->_dropsReset;
+  }
+
+void PinballGame::setDropStatus(bool status)
+  {
+    this->_dropsReset = status;
+
+  }
+

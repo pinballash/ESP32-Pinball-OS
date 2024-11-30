@@ -48,10 +48,13 @@ void switch_event_startbutton(int switchId);
 void switch_event_outhole(int switchId);
 
 void addScore(int switchID);
+bool ChimeRing(char coilNum);
+void turnOffAllLeds();
 void changeState(int newState);
 
 void DoubleTrigger();
 void Tune1Trigger();
+void resetDrops();
 
 hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
@@ -707,12 +710,13 @@ void switch_event_outhole(int switchId)
     Serial.println("[INFO][switch_event_outhole] Outhole switch triggered, game is active");
     if(g_myPinballGame.isGameActive()==true)
     {
+      resetDrops();
       if(coilNumberByte >0)
       {
         //Serial.println("[switch_event_outhole] Fire Outhole");
-        Serial.println("[INFO][switch_event_outhole] Outhole firing");
-        Serial.print("[INFO][switch_event_outhole] Coil choice is ");
-        Serial.println(coilNumberByte);
+        //Serial.println("[INFO][switch_event_outhole] Outhole firing");
+        //Serial.print("[INFO][switch_event_outhole] Coil choice is ");
+        //Serial.println(coilNumberByte);
         PinballCoil* switchCoil = coils[coilNumberByte].coilObject;
         if(switchCoil->fireCoil()){
           coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -720,7 +724,7 @@ void switch_event_outhole(int switchId)
           write_sr_coils(); //update shift register
         }
       }else{
-        Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
+        //Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
       }
       
     }else
@@ -729,14 +733,14 @@ void switch_event_outhole(int switchId)
   
       changeState(3); //moving to End of game
       digitalWrite(hvrPin, HIGH);
-      Serial.println("[INFO][switch_event_outhole] Thats the last ball, end of game");
+      //Serial.println("[INFO][switch_event_outhole] Thats the last ball, end of game");
 
       //need much more code here, but ok for now
     }
   }else
   {
     //Do nothing - ball should be here when game not on
-    Serial.println("[INFO][switch_event_outhole] Do nothing - the ball should be here");
+    //Serial.println("[INFO][switch_event_outhole] Do nothing - the ball should be here");
   }
 }
 /*void switch_event_saucer(int switchID)
@@ -763,6 +767,7 @@ void switch_event_startbutton(int switchId)
     //Serial.println("[switch_event_startbutton] Starting Game");
     //digitalWrite(hvrPin, LOW);
     //Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
+    turnOffAllLeds();
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players
     //Serial.println("[switch_event_startbutton] Add player");
@@ -772,6 +777,7 @@ void switch_event_startbutton(int switchId)
   {//new game
     //Serial.println("[switch_event_startbutton] Starting Another Game");
     changeState(2);
+    turnOffAllLeds();
   }
 }
 
@@ -781,12 +787,87 @@ void addScore(int switchID)
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
   int playerscore = g_myPinballGame.getPlayerScore(playerNumber) + score;
   g_myPinballGame.setPlayerScore(playerNumber,playerscore);
-  PinballCoil* switchCoil = coils[11].coilObject;
-  if(switchCoil->fireCoil()){
-    coilActive[11]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(switchCoil); //action the turning on
-    write_sr_coils(); //update shift register
+  //lets do a different chime for different levels of score
+  //<1001 high - coil 11
+  //>1000 medium and <3001- coil 12
+  //>3001 - coil 14
+  char coilid;
+  if(score < 1001)
+  {
+    coilid = 11;
+  }else if(score <3001)
+  {
+    coilid = 12;
+  }else{
+    coilid = 14;
   }
+  ChimeRing(coilid);
+
+  //PinballCoil* switchCoil = coils[coilid].coilObject;
+  //if(switchCoil->fireCoil()){
+  //  coilActive[coilid]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+  //  ProcessShifts(switchCoil); //action the turning on
+  //  write_sr_coils(); //update shift register
+  //}
   //ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
   //ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
+}
+
+void resetDrops()
+{
+  if(g_myPinballGame.checkDropReset() == false)
+  {
+        for(char x = 7;x < 11;x++){
+        PinballCoil* switchCoil = coils[x].coilObject;
+        if(switchCoil->fireCoil()){
+          coilActive[x]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+          ProcessShifts(switchCoil); //action the turning on
+          write_sr_coils(); //update shift register
+        }
+        vTaskDelay(300);
+    }
+    PinballCoil* switchCoil = coils[15].coilObject;
+    if(switchCoil->fireCoil()){
+      coilActive[15]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+      ProcessShifts(switchCoil); //action the turning on
+      write_sr_coils(); //update shift register
+    }
+    g_myPinballGame.setDropStatus(true);
+  }
+
+
+
+}
+
+bool ChimeRing(char coilNum)
+{
+  PinballCoil* ChimeCoil = coils[coilNum].coilObject;
+ 
+  if(ChimeCoil->fireCoil()){
+    coilActive[coilNum]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+    ProcessShifts(ChimeCoil); //action the turning on
+    write_sr_coils(); //update shift register
+    return true;
+  }
+  return false;
+}
+
+void turnOffAllLeds()
+{
+  cycleLedPottedBalls = false;
+  cycleLedEIGHTBALL = false;
+  cycleLedLeftSide = false;
+  cycleLedRightSide = false;
+  cycleLedCHAMP = false;
+
+
+  
+  for (byte id = 0; id < NUM_LEDS ; id++) 
+  {
+    //get the led object and read its state
+    PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
+    thisLed->disable();
+    thisLed->setFlashSpeed(0);
+    thisLed->updateLed();
+  }
 }

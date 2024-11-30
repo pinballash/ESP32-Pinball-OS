@@ -45,6 +45,7 @@ class PinballLED
   void enable();
   void disable();
   void flashOnce(int flashTime);
+  void setFlashSpeed(int speed);
   
   
 };

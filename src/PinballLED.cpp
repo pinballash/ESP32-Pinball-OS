@@ -148,6 +148,11 @@ void PinballLED::flashOnce(int flashTime)
   this->_flashOnce = true;
 }
 
+void PinballLED::setFlashSpeed(int speed)
+{
+  this->_flashSpeed = speed;
+}
+
 
 
 
