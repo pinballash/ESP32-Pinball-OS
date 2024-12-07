@@ -53,6 +53,7 @@ void turnOffAllLeds();
 void setNewBallLEDs(bool dots); //sets up playfield lights - dots true, 1-7, false 9-15
 void resetChampLeds();
 bool checkChamp();
+void increaseBonusMultiplier();
 void changeState(int newState);
 
 void DoubleTrigger();
@@ -102,6 +103,28 @@ PinballLED* thirteenball_pocket = LEDs[71].ledObject;
 PinballLED* fourteenball_pocket = LEDs[74].ledObject;
 PinballLED* fifteenball_pocket = LEDs[76].ledObject;
 
+//Table indicators
+PinballLED* shootagain = LEDs[92].ledObject;
+PinballLED* twox_bonus = LEDs[89].ledObject;
+PinballLED* threex_bonus = LEDs[88].ledObject;
+PinballLED* fivex_bonus = LEDs[87].ledObject;
+PinballLED* onehundredtwentythousand_bonus = LEDs[90].ledObject;
+PinballLED* twohundredfortythousand_bonus = LEDs[86].ledObject;
+PinballLED* double_playfield = LEDs[81].ledObject;
+PinballLED* triple_playfield = LEDs[79].ledObject;
+
+PinballLED* special_big = LEDs[80].ledObject;
+PinballLED* special_left_outlane = LEDs[83].ledObject;
+PinballLED* special_right_outlane = LEDs[77].ledObject;
+PinballLED* special_centre = LEDs[49].ledObject;
+PinballLED* special_left_rollover = LEDs[9].ledObject;
+PinballLED* special_right_rollover = LEDs[23].ledObject;
+
+
+
+PinballLED* onethousand_spinner = LEDs[15].ledObject;
+PinballLED* threethousand_spinner = LEDs[16].ledObject;
+PinballLED* fivethousand_spinner = LEDs[17].ledObject;
 
 hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
@@ -484,7 +507,8 @@ void processAllSwitches()
 
 
         }
-
+        //Game rules go here. As we pick up switch triggers we can initiate logic.
+        bool triggerBonusMultiplierIncrease = false; //we need to track this and execute once switches have finished processing
         switch(triggeredSwitchID)
         {
           case 23: //C - Inlane Left
@@ -501,13 +525,13 @@ void processAllSwitches()
                 resetChampLeds();
 
                 //increase multiplier - to do
+                triggerBonusMultiplierIncrease = true;
 
               }
 
             }
             break;
           }
-
           case 22: //H - Lane Left
           {
             //this is part of 5 bank 
@@ -522,6 +546,7 @@ void processAllSwitches()
                 resetChampLeds();
 
                 //increase multiplier - to do
+                triggerBonusMultiplierIncrease = true;
 
               }
 
@@ -542,6 +567,7 @@ void processAllSwitches()
                 resetChampLeds();
 
                 //increase multiplier - to do
+                triggerBonusMultiplierIncrease = true;
 
               }
 
@@ -562,6 +588,7 @@ void processAllSwitches()
                 resetChampLeds();
 
                 //increase multiplier - to do
+                triggerBonusMultiplierIncrease = true;
 
               }
 
@@ -582,6 +609,7 @@ void processAllSwitches()
                 resetChampLeds();
 
                 //increase multiplier - to do
+                triggerBonusMultiplierIncrease = true;
 
               }
 
@@ -592,6 +620,14 @@ void processAllSwitches()
         }
         //finally, mark switch as processed
         switchScored[col][row]=false;
+
+        //then pick up any logic that needs dealing with
+        if(triggerBonusMultiplierIncrease == true)
+        {
+          increaseBonusMultiplier();
+          //now we are done reset.
+          triggerBonusMultiplierIncrease = false;
+        }
       }
     }
   }
@@ -915,6 +951,7 @@ void switch_event_startbutton(int switchId)
     //digitalWrite(hvrPin, LOW);
     //Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
     turnOffAllLeds();
+    setNewBallLEDs(true);
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players
     //Serial.println("[switch_event_startbutton] Add player");
@@ -925,6 +962,7 @@ void switch_event_startbutton(int switchId)
     //Serial.println("[switch_event_startbutton] Starting Another Game");
     changeState(2);
     turnOffAllLeds();
+    setNewBallLEDs(true);
   }
 }
 
@@ -999,7 +1037,7 @@ bool ChimeRing(char coilNum)
   return false;
 }
 
-void turnOffAllLeds()
+void turnOffAllLeds() //literally turn every LED off
 {
   cycleLedPottedBalls = false;
   cycleLedEIGHTBALL = false;
@@ -1018,9 +1056,9 @@ void turnOffAllLeds()
     thisLed->updateLed();
   }
 
-  setNewBallLEDs(true);
+  
 }
-void setNewBallLEDs(bool dots)
+void setNewBallLEDs(bool dots) //turns on all table balls for dots or stripes.  If true argument its dots, if false, its stripes.
 {
 
   //if dats = true - we need 1-7 else 9-15
@@ -1110,7 +1148,8 @@ void resetChampLeds()
   p_champ->updateLed();
 }
 
-bool checkChamp()
+
+bool checkChamp() //returns true is any champ lights are still on.  Returns false if champ lights are all off.
 {
   
   if((c_champ->isOn() == false)&&(h_champ->isOn() == false)&&(a_champ->isOn() == false)&&(m_champ->isOn() == false) && (p_champ->isOn() == false))
@@ -1120,3 +1159,65 @@ bool checkChamp()
   return true;
   
 }
+
+void increaseBonusMultiplier() //setp the bonus multiplier up.
+{
+  
+  if(twox_bonus->isOn() == false)//turn on 2x and spinner value
+  {
+    twox_bonus->enable();
+    twox_bonus->setFlashSpeed(0);
+    twox_bonus->updateLed();
+
+    onethousand_spinner->enable();
+    onethousand_spinner->setFlashSpeed(0);
+    onethousand_spinner->updateLed();
+
+  }else if(threex_bonus->isOn() == false)//turn on 3x and spinner value
+  {
+    threex_bonus->enable();
+    threex_bonus->setFlashSpeed(0);
+    threex_bonus->updateLed();
+
+    threethousand_spinner->enable();
+    threethousand_spinner->setFlashSpeed(0);
+    threethousand_spinner->updateLed();
+
+  }else if(fivex_bonus->isOn() == false)//tune on 5x and spinner value
+  {
+    fivex_bonus->enable();
+    fivex_bonus->setFlashSpeed(0);
+    fivex_bonus->updateLed();
+
+    fivethousand_spinner->enable();
+    fivethousand_spinner->setFlashSpeed(0);
+    fivethousand_spinner->updateLed();    
+  }else{
+    //do nothing - bonus maxed out
+    if((special_left_outlane->isOn()==false)&&(special_right_outlane->isOn()==false))//turn on left special
+    {
+      special_left_outlane->enable();
+      special_left_outlane->setFlashSpeed(2);
+      special_left_outlane->updateLed(); 
+
+    }else if((special_left_outlane->isOn()==true)&&(special_right_outlane->isOn()==false))//turn of left and turn on right special
+    {
+      special_left_outlane->disable();
+      special_left_outlane->updateLed(); 
+
+      special_right_outlane->enable();
+      special_right_outlane->setFlashSpeed(2);
+      special_right_outlane->updateLed(); 
+
+    }else if((special_left_outlane->isOn()==false)&&(special_right_outlane->isOn()==true))//turn on both lane specials
+    {
+      special_left_outlane->enable();
+      special_left_outlane->setFlashSpeed(2);
+      special_left_outlane->updateLed(); 
+    }else{
+      //do nothing
+    }
+
+  }
+}
+

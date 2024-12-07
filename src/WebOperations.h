@@ -226,7 +226,8 @@ void WebOperationsFunction( void * pvParameters)
         server.sendHeader("Connection", "close");
         server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
         g_myPinballGame.setDMDTopLine("Updated");
-        g_myPinballGame.setDMDBottomLine("Rebooting");        
+        g_myPinballGame.setDMDBottomLine("Rebooting");   
+        turnOffAllLeds();     
         delay(5000); //give some time for web page to start reload
         ESP.restart();
     }, []() {
@@ -526,6 +527,7 @@ void web_handle_action_restart()
     server.send(200, "text/plain", "{'Status' : 'OK - restarting'}"); //Send ADC value only to client ajax request
     g_myPinballGame.setDMDTopLine("User Reboot Called");
     g_myPinballGame.setDMDBottomLine("Rebooting"); 
+    turnOffAllLeds();
     delay(2000);
     ESP.restart();
  
