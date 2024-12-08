@@ -585,7 +585,7 @@ char ledArrayCHAMPCount = 5;
 bool cycleLedCHAMP = true;
 
 char ledArray_EIGHTBALL[] = {
-  44,45,46,47,36,58,57,56,48
+  36,44,45,46,47,48,56,57,58
 };
 char ledArrayEIGHTBALLCount = 9;
 char ledArrayEIGHTBALLCounter = 0;
@@ -651,10 +651,9 @@ char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPe
   {
     thisCLed->flashOnce(flashesPerSecond); //cycle once a second second
   }
-  if(counter < LED_array_length)
+  counter++;
+  if(counter == LED_array_length)
   {
-    counter++;
-  }else{
     counter = 0;
   }
   return counter;

@@ -272,4 +272,21 @@ void createSwitchScoreObjects()
   }//end col processing
 }
 
+void loadDefaultScoresToGameObjects()
+{
+  for ( byte col = 0; col < setting_switchMatrixColumns ; col++) {
+    for (byte row = 0; row < setting_switchMatrixRows; row++) 
+    {    
+      int SwitchIDInteger = (col * 8)+row;
+      String SwitchID = (String)SwitchIDInteger;
+      byte SwitchByte = SwitchIDInteger;
+      PinballSwitch* thisSwitch = switches[SwitchByte].switchObject;
+      for(byte i = 0; i < 5; i++)
+      {
+        g_myPinballGame.setPlayerSwitchScore(SwitchByte,thisSwitch->getSwitchScore(),i);
+      }
+      
+    }
+  }
+}
 

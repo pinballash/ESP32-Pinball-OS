@@ -352,3 +352,74 @@ void PinballGame::setDropStatus(bool status)
 
   }
 
+  void PinballGame::setPlayerSwitchScore(char switchNumber, int score, int playerNumber) //if playerNumber is 0 then set base score
+  {
+    switch(playerNumber)
+    {
+      case 0:
+      {
+        this->_switchScoreArray[switchNumber] = score;
+        break;
+      }
+      case 1:
+      {
+        this->_switchScoreArray_p1[switchNumber] = score;
+        break;
+      }
+      case 2:
+      {
+        this->_switchScoreArray_p2[switchNumber] = score;
+        break;
+      }
+      case 3:
+      {
+        this->_switchScoreArray_p3[switchNumber] = score;
+        break;
+      }
+      case 4:
+      {
+        this->_switchScoreArray_p4[switchNumber] = score;
+        break;
+      }
+    }
+  }
+  int PinballGame::getPlayerSwitchScore(char switchNumber, int playerNumber) //if playerNumber is 0 then get base score
+  {
+    switch(playerNumber)
+    {
+      case 0:
+      {
+        return this->_switchScoreArray[switchNumber];
+      }
+      case 1:
+      {
+        return this->_switchScoreArray_p1[switchNumber];
+      }
+      case 2:
+      {
+        return this->_switchScoreArray_p2[switchNumber];
+      }
+      case 3:
+      {
+        return this->_switchScoreArray_p3[switchNumber];
+      }
+      case 4:
+      {
+        return this->_switchScoreArray_p4[switchNumber];
+      }
+    }
+    return 0;
+  } 
+
+  void PinballGame::resetPlayerSwitchScores(int playerNumber) 
+  {
+    for ( byte col = 0; col < 8 ; col++) {
+      for (byte row = 0; row < 8; row++) 
+      {    
+        int switchNumber = (col * 8)+row;
+        this->setPlayerSwitchScore(switchNumber,this->getPlayerSwitchScore(switchNumber,0),playerNumber);
+      }
+    
+    }
+  }
+

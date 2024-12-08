@@ -96,6 +96,7 @@ void setup() {
   setupFileSystem();
   createSwitchObjects();
   createSwitchScoreObjects();
+  loadDefaultScoresToGameObjects();
   createCoilObjects();
   createSwitchCoilBindings();
   createLedObjects();

@@ -50,15 +50,19 @@ void switch_event_outhole(int switchId);
 void addScore(int switchID);
 bool ChimeRing(char coilNum);
 void turnOffAllLeds();
+void turnOnAttractLEDs();
 void setNewBallLEDs(bool dots); //sets up playfield lights - dots true, 1-7, false 9-15
 void resetChampLeds();
 bool checkChamp();
 void increaseBonusMultiplier();
+void increaseSpinnerValue();
 void changeState(int newState);
 
 void DoubleTrigger();
 void Tune1Trigger();
 void resetDrops();
+void resetBonusLeds();
+void resetSpinnerLeds();
 
 
 //define LED named objects
@@ -509,6 +513,7 @@ void processAllSwitches()
         }
         //Game rules go here. As we pick up switch triggers we can initiate logic.
         bool triggerBonusMultiplierIncrease = false; //we need to track this and execute once switches have finished processing
+        bool triggerSpinnerValueIncrease = false;
         switch(triggeredSwitchID)
         {
           case 23: //C - Inlane Left
@@ -526,6 +531,7 @@ void processAllSwitches()
 
                 //increase multiplier - to do
                 triggerBonusMultiplierIncrease = true;
+                triggerSpinnerValueIncrease = true;
 
               }
 
@@ -547,6 +553,7 @@ void processAllSwitches()
 
                 //increase multiplier - to do
                 triggerBonusMultiplierIncrease = true;
+                triggerSpinnerValueIncrease = true;
 
               }
 
@@ -568,6 +575,7 @@ void processAllSwitches()
 
                 //increase multiplier - to do
                 triggerBonusMultiplierIncrease = true;
+                triggerSpinnerValueIncrease = true;
 
               }
 
@@ -589,6 +597,7 @@ void processAllSwitches()
 
                 //increase multiplier - to do
                 triggerBonusMultiplierIncrease = true;
+                triggerSpinnerValueIncrease = true;
 
               }
 
@@ -610,12 +619,19 @@ void processAllSwitches()
 
                 //increase multiplier - to do
                 triggerBonusMultiplierIncrease = true;
+                triggerSpinnerValueIncrease = true;
 
               }
 
             }
             break;
           }
+          case 24: //spinner
+          {
+            
+            //do spinner work
+            break;
+          }          
 
         }
         //finally, mark switch as processed
@@ -625,8 +641,10 @@ void processAllSwitches()
         if(triggerBonusMultiplierIncrease == true)
         {
           increaseBonusMultiplier();
+          increaseSpinnerValue();
           //now we are done reset.
           triggerBonusMultiplierIncrease = false;
+          triggerSpinnerValueIncrease = false;
         }
       }
     }
@@ -646,11 +664,13 @@ void processAllLeds()
   if (cycleLedPottedBalls == true)
   {
     ledArrayPottedBallsEven =  LED_display_oddsAndEvens(ledArray_PottedBalls, ledArrayPottedBallsCount, ledArrayPottedBallsEven, 2);
+
   }
     
   if (cycleLedEIGHTBALL == true)
   {
-    LED_display_flashBlock(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2);
+    //LED_display_flashBlock(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2);
+    ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 6, ledArrayEIGHTBALLCounter);
   }
   
   if (cycleLedLeftSide == true)
@@ -884,6 +904,10 @@ void switch_event_outhole(int switchId)
       ScoreboardBText = "End of ball P" + (String)thisPlayerNumber; //this message isnt going to display for long without a delay - perhaps we need some additional display states to handle this.
       ScoreboardTText = "Next....";
       //do other end of ball stuff - call additional functions here
+      g_myPinballGame.resetPlayerSwitchScores(thisPlayerNumber);
+      resetBonusLeds();
+      resetSpinnerLeds();
+      resetChampLeds();
       
     }
     //need to get the coilNumber associated
@@ -916,6 +940,8 @@ void switch_event_outhole(int switchId)
   
       changeState(3); //moving to End of game
       digitalWrite(hvrPin, HIGH);
+      turnOffAllLeds();
+      turnOnAttractLEDs();
       //Serial.println("[INFO][switch_event_outhole] Thats the last ball, end of game");
 
       //need much more code here, but ok for now
@@ -968,8 +994,9 @@ void switch_event_startbutton(int switchId)
 
 void addScore(int switchID)
 {
-  int score = (switches[switchID].switchObject->getSwitchScore()) * g_myPinballGame.getPlayfieldMultiplier();
+  
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
+  int score = g_myPinballGame.getPlayerSwitchScore(switchID,playerNumber) * g_myPinballGame.getPlayfieldMultiplier();
   int playerscore = g_myPinballGame.getPlayerScore(playerNumber) + score;
   g_myPinballGame.setPlayerScore(playerNumber,playerscore);
   //lets do a different chime for different levels of score
@@ -987,15 +1014,6 @@ void addScore(int switchID)
     coilid = 14;
   }
   ChimeRing(coilid);
-
-  //PinballCoil* switchCoil = coils[coilid].coilObject;
-  //if(switchCoil->fireCoil()){
-  //  coilActive[coilid]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-  //  ProcessShifts(switchCoil); //action the turning on
-  //  write_sr_coils(); //update shift register
-  //}
-  //ScoreboardBText = g_myPinballGame.getPlayerScore(playerNumber);
-  //ScoreboardTText = "P" + (String)playerNumber + " Ball " + (String)g_myPinballGame.getCurrentBallNumber(playerNumber);
 }
 
 void resetDrops()
@@ -1037,6 +1055,14 @@ bool ChimeRing(char coilNum)
   return false;
 }
 
+
+void turnOnAttractLEDs(){
+  cycleLedPottedBalls = true;
+  cycleLedEIGHTBALL = true;
+  cycleLedLeftSide = true;
+  cycleLedRightSide = true;
+  cycleLedCHAMP = true;
+}
 void turnOffAllLeds() //literally turn every LED off
 {
   cycleLedPottedBalls = false;
@@ -1169,29 +1195,18 @@ void increaseBonusMultiplier() //setp the bonus multiplier up.
     twox_bonus->setFlashSpeed(0);
     twox_bonus->updateLed();
 
-    onethousand_spinner->enable();
-    onethousand_spinner->setFlashSpeed(0);
-    onethousand_spinner->updateLed();
-
   }else if(threex_bonus->isOn() == false)//turn on 3x and spinner value
   {
     threex_bonus->enable();
     threex_bonus->setFlashSpeed(0);
     threex_bonus->updateLed();
 
-    threethousand_spinner->enable();
-    threethousand_spinner->setFlashSpeed(0);
-    threethousand_spinner->updateLed();
-
   }else if(fivex_bonus->isOn() == false)//tune on 5x and spinner value
   {
     fivex_bonus->enable();
     fivex_bonus->setFlashSpeed(0);
     fivex_bonus->updateLed();
-
-    fivethousand_spinner->enable();
-    fivethousand_spinner->setFlashSpeed(0);
-    fivethousand_spinner->updateLed();    
+  
   }else{
     //do nothing - bonus maxed out
     if((special_left_outlane->isOn()==false)&&(special_right_outlane->isOn()==false))//turn on left special
@@ -1221,3 +1236,52 @@ void increaseBonusMultiplier() //setp the bonus multiplier up.
   }
 }
 
+void increaseSpinnerValue()
+{
+  int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
+  if(onethousand_spinner->isOn() == false)//turn on 1000 spinner value
+  {
+    onethousand_spinner->enable();
+    onethousand_spinner->setFlashSpeed(0);
+    onethousand_spinner->updateLed();
+    g_myPinballGame.setPlayerSwitchScore(24,1000, playerNumber);
+  }else if(threethousand_spinner->isOn() == false)//turn on 3000 spinner value
+  {  
+    threethousand_spinner->enable();
+    threethousand_spinner->setFlashSpeed(0);
+    threethousand_spinner->updateLed();
+    g_myPinballGame.setPlayerSwitchScore(24,3000, playerNumber);
+  }else if(fivethousand_spinner->isOn() == false)//turn on 5000 spinner value
+  {
+    fivethousand_spinner->enable();
+    fivethousand_spinner->setFlashSpeed(0);
+    fivethousand_spinner->updateLed();
+    g_myPinballGame.setPlayerSwitchScore(24,5000, playerNumber);
+  }
+
+}
+
+void resetBonusLeds()
+{
+  twox_bonus->disable();
+  twox_bonus->updateLed();
+
+  threex_bonus->disable();
+  threex_bonus->updateLed();
+
+  fivex_bonus->disable();
+  fivex_bonus->updateLed();
+}
+
+void resetSpinnerLeds()
+{
+  onethousand_spinner->disable();
+  onethousand_spinner->updateLed();
+
+  threethousand_spinner->disable();
+  threethousand_spinner->updateLed();
+
+  fivethousand_spinner->disable();
+  fivethousand_spinner->updateLed();
+
+}
