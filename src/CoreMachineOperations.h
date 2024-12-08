@@ -672,6 +672,13 @@ void processAllLeds()
     //LED_display_flashBlock(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2);
     ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 6, ledArrayEIGHTBALLCounter);
   }
+
+  if (cycleledLowerRing == true)
+  {
+    //LED_display_flashBlock(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2);
+    ledArrayLowerRingCounter = LED_display_chase(ledArray_lowerrRing, ledArrayLowerRingCount, 6, ledArrayLowerRingCounter);
+  }
+  
   
   if (cycleLedLeftSide == true)
   {
@@ -1062,6 +1069,7 @@ void turnOnAttractLEDs(){
   cycleLedLeftSide = true;
   cycleLedRightSide = true;
   cycleLedCHAMP = true;
+  cycleledLowerRing = true;
 }
 void turnOffAllLeds() //literally turn every LED off
 {
@@ -1070,6 +1078,7 @@ void turnOffAllLeds() //literally turn every LED off
   cycleLedLeftSide = false;
   cycleLedRightSide = false;
   cycleLedCHAMP = false;
+  cycleledLowerRing = false;
 
 
   

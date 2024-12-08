@@ -573,6 +573,13 @@ void createLedObjects()
 }
 
 //define LED Groups 
+char ledArray_lowerrRing[] = {
+  83,90,89,88,87,86
+};
+char ledArrayLowerRingCount = 6;
+char ledArrayLowerRingCounter = 0;
+bool cycleledLowerRing = true;
+
 char ledArray_special[] = {
   9,23,49,77,80,83
 };
