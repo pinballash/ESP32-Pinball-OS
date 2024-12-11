@@ -574,7 +574,7 @@ void createLedObjects()
 
 //define LED Groups 
 char ledArray_lowerrRing[] = {
-  83,90,89,88,87,86
+  80,90,89,88,87,86
 };
 char ledArrayLowerRingCount = 6;
 char ledArrayLowerRingCounter = 0;
@@ -620,6 +620,45 @@ char ledArrayPottedBallsCounter = 0;
 bool cycleLedPottedBalls = true;
 bool ledArrayPottedBallsEven = true;
 
+
+int row0[] = {93};
+int row1[] = {88};
+int row3[] = {89,87};
+int row4[] = {90,86};
+int row5[] = {80};
+int row6[] = {81,79};
+int row7[] = {83,82,78,77};
+int row8[] = {68};
+int row9[] = {63,65,66,69,71,74,76};
+int row10[] = {63,64,67,70,72,73,75};
+
+int* playfieldRows[10] = {row0, row1, row3, row4, row5, row6, row7, row8, row9, row10};
+// Array to hold the size of each row 
+int pfArraySize[10] = {1,1,2,2,1,2,4,1,7,7}, k = 0; 
+int pfRowCounter = 0;
+int pfRowCount = 11;
+
+void LED_display_chase_pf()
+{
+  int* ptr = playfieldRows[pfRowCounter];
+  for(int i = 0; i < pfArraySize[pfRowCounter]; i++)
+  {
+    
+    PinballLED* thisCLed = LEDs[*ptr].ledObject;
+     if(thisCLed->isOn() == false)
+      {
+        thisCLed->flashOnce(1); //cycle once a second second
+      }
+    ptr++;
+  }
+  pfRowCounter++;
+  if(pfRowCounter == pfRowCount)
+  {
+    pfRowCounter = 0;
+  }
+}
+
+
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond)
 {
   bool isActioned = false;
@@ -654,10 +693,10 @@ bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool i
 char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter)
 {
   PinballLED* thisCLed = LEDs[LED_ID_array[counter]].ledObject;
-  if(thisCLed->isOn() == false)
-  {
+  //if(thisCLed->isOn() == false)
+  //{
     thisCLed->flashOnce(flashesPerSecond); //cycle once a second second
-  }
+  //}
   counter++;
   if(counter == LED_array_length)
   {

@@ -106,18 +106,27 @@ void setup() {
     "ProcessSwitchesAndRules",
     5000,
     NULL,
-    30,
+    24,
     &ProcessSwitchesAndRules,
-    1);
+    0);
+
+  /*xTaskCreatePinnedToCore(
+    ScanSwitchMatrixFunction,
+    "ScanSwitchMatrix",
+    20000,
+    NULL,
+    19,
+    &ScanSwitchMatrix,
+    1);*/
 
   xTaskCreatePinnedToCore(
     ProcessLedsFunction,
     "ProcessLeds",
     20000,
     NULL,
-    25,
+    20,
     &ProcessLeds,
-    0);
+    1);
 
   xTaskCreatePinnedToCore(
     WebOperationsFunction,
@@ -136,7 +145,7 @@ void setup() {
     NULL,
     32,
     &DisplayController,
-    1);
+    0);
 
     WiFi.begin(setting_SSID, setting_SSIDPassword);
     // Wait for connection
@@ -188,10 +197,11 @@ void setup() {
 
     changeState(1); 
 
-    Timer0_Cfg = timerBegin(0, 80, true);
-    timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
-    timerAlarmWrite(Timer0_Cfg, 1000, true);
-    timerAlarmEnable(Timer0_Cfg);
+    //need to run wled on core 1 - however this isnt compatible with interupts
+    //Timer0_Cfg = timerBegin(0, 80, true);
+    //timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
+    //timerAlarmWrite(Timer0_Cfg, 1000, true); //1000 times a second
+    //timerAlarmEnable(Timer0_Cfg);
 
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
     FastLED.setBrightness(8);
@@ -202,7 +212,7 @@ void setup() {
 void loop() {
   
 
-  if(tso_PinballGame != "")
+  /*if(tso_PinballGame != "")
   {
     Serial.println("[TSO_PG]"+tso_PinballGame);
     tso_PinballGame = "";
@@ -263,7 +273,7 @@ void loop() {
     //audios[0].AudioObject->fireAudio();
     //ProcessAudioShifts(audios[0].AudioObject); 
     //write_sr_audio();
-  }
+  }*/
   
 }
 

@@ -130,19 +130,20 @@ PinballLED* onethousand_spinner = LEDs[15].ledObject;
 PinballLED* threethousand_spinner = LEDs[16].ledObject;
 PinballLED* fivethousand_spinner = LEDs[17].ledObject;
 
-hw_timer_t *Timer0_Cfg = NULL;
+//retiring this interupt as it prevents leds from working on core 1.
+/*hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
 {
-    if(scanInProgress == false)
-    {
-      scanInProgress = true;
-      scanSwitchMatrix();
-      triggerSwitches();
-      manageCoils();
-      //manageAudio();
-      INTHz++;
-      scanInProgress = false;
-    }
+  if(scanInProgress == false)
+  {
+    scanInProgress = true;
+    scanSwitchMatrix();
+    triggerSwitches();
+    manageCoils();
+    //manageAudio();
+    INTHz++;
+    scanInProgress = false;
+  }
   if (millis() - lastMillisSwINT > 1000 )
   {
     reportedSwitchMatrixHz = INTHz;
@@ -150,9 +151,11 @@ void IRAM_ATTR Timer0_ISR()
     lastMillisSwINT = millis();
   }
     
-}
+}*/
+
 //setup a task to run on core 0;
 //TaskHandle_t MonitorSwitchesAndRegister;
+TaskHandle_t ScanSwitchMatrix;
 TaskHandle_t ProcessSwitchesAndRules;
 TaskHandle_t ProcessLeds;
 
@@ -232,6 +235,26 @@ unsigned long lastMillisTimerSw;
 int counterCoil;
 unsigned long lastMillisCoil;
 
+void ScanSwitchMatrixFunction( void * pvParameters)
+{
+  /*if((scanInProgress == false) && (millis() - lastMillisSwINT > 10))
+  {
+    scanInProgress = true;
+    scanSwitchMatrix();
+    triggerSwitches();
+    manageCoils();
+    //manageAudio();
+    INTHz++;
+    scanInProgress = false;
+  }
+  if (millis() - lastMillisSwINT > 1000 )
+  {
+    reportedSwitchMatrixHz = INTHz;
+    INTHz = 0;
+    lastMillisSwINT = millis();
+  }*/
+  vTaskDelay(1);
+}
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters)
 {
@@ -254,6 +277,7 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
     {
       
       //do processing
+      
       // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
       counterSw++;
       //static int tempSound=1;
@@ -268,7 +292,7 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
           Serial.println("Hz (full program cycles per second)");
           
         }
-        CMOHz = counterSw;
+        reportedSwitchMatrixHz = counterSw;
         counterSw = 0;
         lastMillisSw = millis();
         
@@ -276,6 +300,9 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
         
 
       measureMicro = micros();
+      scanSwitchMatrix();
+      triggerSwitches();
+      manageCoils();
       processAllSwitches();//Needs to be done on a separate thread on a timer.
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
@@ -339,13 +366,8 @@ void ProcessLedsFunction( void * pvParameters)
   
   Serial.print("ProcessLedsFunction running on core ");
   Serial.println(xPortGetCoreID());
-  //identifyFlippers();
-  /*ws2812b.clear();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
-  ws2812b.show();  // set all pixel colors to 'off'. It only takes effect if pixels.show() is called
-  int counterSw = 0;*/
   unsigned long lastMillisSw = 0;
   unsigned long lastMicrosLoopRan = 0;
-
   unsigned long scanMicro = 0;
   unsigned long flipperMicro = 0;
   unsigned long triggerSwitchMicro = 0;
@@ -354,19 +376,19 @@ void ProcessLedsFunction( void * pvParameters)
   unsigned long measureMicro = 0;
   for(;;)
   {
-    if((micros() - lastMicrosLoopRan >= UpdateLedsEveryMicroSeconds) && (runningLeds==false))//we must not let this loop run away with itself, rate limiter here
+    if((micros() - lastMicrosLoopRan >= UpdateLedsEveryMicroSeconds)) //&& (runningLeds==false))//we must not let this loop run away with itself, rate limiter here
     {
       
       runningLeds = true;
       //do processing
       //Serial.println("Processing LEDs");
       measureMicro = micros();
-      processAllLeds();//Needs to be done on a separate thread on a timer.
+      processAllLeds();
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
     }else{
       //release the CPU for processing other tasks
-      vTaskDelay(50); //yeild for a 20th of a second
+      vTaskDelay(pdMS_TO_TICKS(1)); //yeild
     }  
   }
 }
@@ -663,20 +685,21 @@ void processAllLeds()
   
   if (cycleLedPottedBalls == true)
   {
-    ledArrayPottedBallsEven =  LED_display_oddsAndEvens(ledArray_PottedBalls, ledArrayPottedBallsCount, ledArrayPottedBallsEven, 2);
+    //ledArrayPottedBallsEven =  LED_display_oddsAndEvens(ledArray_PottedBalls, ledArrayPottedBallsCount, ledArrayPottedBallsEven, 2);
+     ledArrayPottedBallsCounter = LED_display_chase(ledArray_PottedBalls, ledArrayPottedBallsCount, 1, ledArrayPottedBallsCounter);
 
   }
     
   if (cycleLedEIGHTBALL == true)
   {
     //LED_display_flashBlock(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2);
-    ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 6, ledArrayEIGHTBALLCounter);
+    ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 4, ledArrayEIGHTBALLCounter);
   }
 
   if (cycleledLowerRing == true)
   {
     //LED_display_flashBlock(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2);
-    ledArrayLowerRingCounter = LED_display_chase(ledArray_lowerrRing, ledArrayLowerRingCount, 6, ledArrayLowerRingCounter);
+    ledArrayLowerRingCounter = LED_display_chase(ledArray_lowerrRing, ledArrayLowerRingCount, 4, ledArrayLowerRingCounter);
   }
   
   
@@ -714,6 +737,7 @@ void processAllLeds()
         ledArray[id] = CRGB::Black; // it only takes effect if pixels.show() is called
         thisLed->setUpdate();
       }
+      //FastLED.show();
     }
   }
 
@@ -721,9 +745,8 @@ void processAllLeds()
   {
     FastLED.show();  // update to the WS2812B Led Strip
   }
-  //give 50ms for other processes (therefor max Hz of the LED is 1000/50 = 50Hz)
   runningLeds = false;
-  vTaskDelay(5);
+  //vTaskDelay(5);
 }
 
 /*
