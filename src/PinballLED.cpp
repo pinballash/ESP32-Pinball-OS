@@ -34,6 +34,7 @@ void PinballLED::changeColour(String colour)
 {
   this->_colour = colour;
   updateRGB();
+  resetCalculatedRGB();
 }
 
 void PinballLED::updateRGB()
@@ -47,6 +48,14 @@ void PinballLED::updateRGB()
     this->_red=(byte)(rgb>>16);
     this->_green=(byte)(rgb>>8);
     this->_blue=(byte)(rgb);
+
+}
+
+void PinballLED::resetCalculatedRGB()
+{
+    this->_calaculatedRed = this->_red;
+    this->_calaculatedBlue = this->_blue;
+    this->_calaculatedGreen = this->_green;
 }
 
 
@@ -65,19 +74,19 @@ String PinballLED::getColourHex()
 int PinballLED::getRed()
 {
   
-  return int(this->_red);
+  return int(this->_calaculatedRed);
 }
 
 int PinballLED::getGreen()
 {
   
-  return int(this->_green);
+  return int(this->_calaculatedGreen);
 }
 
 int PinballLED::getBlue()
 {
   
-  return int(this->_blue);
+  return int(this->_calaculatedBlue);
 }
   
 void PinballLED::updateLed()
@@ -117,15 +126,30 @@ void PinballLED::tick()
     unsigned long blinkInterval = (1000000/2)/this->_flashSpeed;
     if(micros() - this->_lastBlink >= blinkInterval) //we must not let this loop run away with itself, rate limiter here
     {
-      this->_isOn = !this->_isOn;
-      this->_needsUpdate = true;
-      this->_lastBlink = micros();
-      if((this->_flashOnce == true) && (this->_isOn == false))
+      if (this->_fadeOut == true)
       {
-        this->disable();
+        /* here we fade out */
+        if(this->_fadeLevel < 3)
+        {
+          this->_fadeLevel++;
+          dimLed();
+          this->_needsUpdate = true;
+        }
       }
-
-    }  
+      if((this->_fadeOut == false) || (this->_fadeLevel == 3))
+      {
+        this->_isOn = !this->_isOn;
+        this->_needsUpdate = true;
+        this->_lastBlink = micros();
+        resetCalculatedRGB();
+        this->_fadeLevel = 0;
+        if((this->_flashOnce == true) && (this->_isOn == false))
+        {
+          this->disable();
+          this->_needsUpdate = true;
+        }
+      }
+    }
  }
 }
 
@@ -153,6 +177,18 @@ void PinballLED::setFlashSpeed(int speed)
   this->_flashSpeed = speed;
 }
 
+void PinballLED::fadeOut()
+{
+  this->_fadeOut = true;
+}
+
+void PinballLED::dimLed()
+{
+  //half the led colour value
+  this->_calaculatedRed = this->_calaculatedRed >> 2;
+  this->_calaculatedGreen = this->_calaculatedGreen >> 2;
+  this->_calaculatedBlue = this->_calaculatedBlue >> 2;
+}
 
 
 

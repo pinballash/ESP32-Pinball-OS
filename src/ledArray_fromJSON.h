@@ -612,6 +612,13 @@ char ledArrayRightSideCount = 6;
 char ledArrayRightSideCounter = 0;
 bool cycleLedRightSide = true;
 
+char ledArray_TableBalls[] = {
+  39,37,34,32,30,42,54,2,40,14,33,31,29,43,51
+};
+char ledArrayTableBallsCount = 15;
+char ledArrayTableBallsCounter = 0;
+bool cycleLedTableBalls = true;
+
 char ledArray_PottedBalls[] = {
   62,64,67,70,72,73,75,68,63,65,66,69,71,74,76
 };

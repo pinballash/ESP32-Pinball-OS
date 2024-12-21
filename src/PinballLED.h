@@ -17,6 +17,12 @@ class PinballLED
         bool _needsUpdate = false;
         unsigned long _lastBlink = 0;
         bool _flashOnce = false;
+        bool _fadeOut = true;
+        int _fadeLevel = 0;
+        byte _calaculatedRed;
+        byte _calaculatedBlue;
+        byte _calaculatedGreen;
+
   public:
    
 
@@ -29,6 +35,7 @@ class PinballLED
   void setValues(String ledName, String colour, bool isOn, int flashSpeed);
   void changeColour(String colour);
   void updateRGB();
+  void resetCalculatedRGB();
   String getName();
   String getColour();
   String getColourHex();
@@ -46,6 +53,8 @@ class PinballLED
   void disable();
   void flashOnce(int flashTime);
   void setFlashSpeed(int speed);
+  void fadeOut();
+  void dimLed();
   
   
 };
