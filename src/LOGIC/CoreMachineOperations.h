@@ -1,10 +1,15 @@
 #include <Arduino.h>
+
 #include "CLASSES\PinballSwitch.h"
 #include "CLASSES\PinballCoil.h"
-//#include "CLASSES\PinballAudio.h"
 #include "CLASSES\PinballLED.h"
 #include "CLASSES\PinballGame.h"
+//not using audio in this pinball table - commented out
+//#include "CLASSES\PinballAudio.h"
 
+PinballGame g_myPinballGame(setting_MachineName);
+
+/* Global Variables Start*/
 bool switchDebug = false;
 bool coilDebug = false;
 bool loopDebug = false;
@@ -16,60 +21,6 @@ bool memoryStats = false;
 unsigned long processSwitchArrayEveryMicroSeconds = 10000; //this seems to be the value where we can operate at around 100 times per second
 unsigned long UpdateLedsEveryMicroSeconds = 100000; //10 times a second
 bool runningLeds = false;
-
-PinballGame g_myPinballGame(setting_MachineName);
-
-//#include "switchArray_def.h" -> removing static definition in favour of dynamic from JSON files stored in SPIFFS and edited via Web page
-#include "SETTINGS\JSON_switchArray.h"
-#include "SETTINGS\JSON_coilArray.h"
-#include "SETTINGS\flipperBindings_def.h"
-#include "SETTINGS\JSON_coilBindings.h"
-#include "SETTINGS\JSON_ledArray.h"
-//not using audio in this table - commented out
-//#include "SETTINGS\JSON_audioArray.h"
-
-void ProcessSwitchesAndRulesFunction( void * pvParameters);
-void ProcessLedsFunction( void * pvParameters);
-void scanSwitchMatrix();
-
-void triggerSwitches();
-void processAllSwitches();
-void processAllLeds();
-void ProcessShifts(PinballCoil* CoilObject);
-//void ProcessAudioShifts(PinballAudio* AudioObject);
-//void ResetAudioShifts();
-void manageCoils();
-//void manageAudio();
-void read_sr();
-void write_sr_matrix();
-//void write_sr_audio();
-void write_sr_coils();
-void switch_event_startbutton(int switchId);
-void switch_event_outhole(int switchId);
-
-void addScore(int switchID);
-bool ChimeRing(char coilNum); //from CHIMES\chimeEffects.h
-void turnOffAllLeds(); //from LIGHTING\ledHandlingFunctions.h
-void turnOnAttractLEDs(); //from LIGHTING\ledHandlingFunctions.h
-void setNewBallLEDs(bool dots); //sets up playfield lights - dots true, 1-7, false 9-15 //from LIGHTING\ledHandlingFunctions.h
-void resetChampLeds(); //from LIGHTING\ledHandlingFunctions.h
-bool checkChamp(); //from LOGIC\gameRules-BallyEightBallChamp.h
-void increaseBonusMultiplier(); //from LOGIC\gameRules-BallyEightBallChamp.h
-void increaseSpinnerValue(); //from LOGIC\gameRules-BallyEightBallChamp.h
-void changeState(int newState); //from LOGIC\machineState.h
-
-void DoubleTrigger(); //from CHIMES\chimeEffects.h
-void Tune1Trigger(); //from CHIMES\chimeEffects.h
-void resetDrops(); //from LOGIC\gameRules-BallyEightBallChamp.h
-void resetBonusLeds(); //from LIGHTING\ledHandlingFunctions.h
-void resetSpinnerLeds(); //from LIGHTING\ledHandlingFunctions.h
-
-#include "LOGIC\interupts.h" //here we regualarly (1000 times per second) scan the switch matrix, process the results and then manage the coils
-
-//setup a task handlers
-TaskHandle_t ScanSwitchMatrix;
-TaskHandle_t ProcessSwitchesAndRules;
-TaskHandle_t ProcessLeds;
 
 //setup array for storing switch active
 const int tableRows = 8;//(int8_t)setting_switchMatrixRows; // 0 to 7
@@ -147,8 +98,91 @@ unsigned long lastMillisTimerSw;
 int counterCoil;
 unsigned long lastMillisCoil;
 
-#include "LIGHTING\ledArrays-BallyEightBallChamp.h"
-#include "LOGIC\switchHandlingFunctions.h"
-#include "LIGHTING\ledHandlingFunctions.h"
-#include "SHIFT-REGISTERS\shiftRegisterFunctions.h"
+/* Global Variables End*/
+
+/* Global Variables From JSON Start*/
+
+#include "SETTINGS\JSON_switchArray.h"
+#include "SETTINGS\JSON_coilArray.h"
+#include "SETTINGS\flipperBindings_def.h"
+#include "SETTINGS\JSON_coilBindings.h"
+#include "SETTINGS\JSON_ledArray.h"
+//not using audio in this pinball table - commented out
+//#include "SETTINGS\JSON_audioArray.h"
+
+/* Global Variables From JSON End*/
+
+//START delcaration of functions within LOGIC\switchHandlingFunctions.h
+
+  void ProcessSwitchesAndRulesFunction( void * pvParameters);
+  void scanSwitchMatrix(); 
+  void triggerSwitches();
+  void processAllSwitches();
+
+//END delcaration of functions within LOGIC\switchHandlingFunctions.h
+
+//START delcaration of functions within SHIFT-REGISTERS\shiftRegisterFunctions.h
+
+  void ProcessShifts(PinballCoil* CoilObject); 
+  void read_sr(); 
+  void write_sr_matrix(); 
+  void write_sr_coils(); 
+  void manageCoils(); 
+  //not using audio in this pinball table - commented out
+  //void ProcessAudioShifts(PinballAudio* AudioObject); 
+  //void ResetAudioShifts(); 
+  //void manageAudio(); 
+  //void write_sr_audio(); 
+
+//END delcaration of functions within SHIFT-REGISTERS\shiftRegisterFunctions.h
+
+//START delcaration of functions within LOGIC\gameRules-BallyEightBallChamp.h
+
+  void switch_event_startbutton(int switchId); 
+  void switch_event_outhole(int switchId); 
+  void addScore(int switchID);
+  bool checkChamp(); 
+  void increaseBonusMultiplier(); 
+  void increaseSpinnerValue(); 
+  void resetDrops(); 
+
+  void processAllLeds();
+  void turnOffAllLeds(); 
+  void turnOnAttractLEDs();
+  void setNewBallLEDs(bool dots); //sets up playfield lights - dots true, 1-7, false 9-15 
+  void resetChampLeds(); 
+  void resetBonusLeds(); 
+  void resetSpinnerLeds(); 
+
+//END delcaration of functions within LOGIC\gameRules-BallyEightBallChamp.h
+
+//START delcaration of functions within LIGHTING\ledHandlingFunctions.h
+
+  void ProcessLedsFunction( void * pvParameters);
+
+//END delcaration of functions within LIGHTING\ledHandlingFunctions.h
+
+void changeState(int newState); //from LOGIC\machineState.h
+
+bool ChimeRing(char coilNum); //from CHIMES\chimeEffects.h
+void DoubleTrigger(); //from CHIMES\chimeEffects.h
+void Tune1Trigger(); //from CHIMES\chimeEffects.h
+
+
+
+#include "LOGIC\interupts.h" //here we regualarly (1000 times per second) scan the switch matrix, process the results and then manage the coils
+
+//setup a task handlers
+TaskHandle_t ScanSwitchMatrix;
+TaskHandle_t ProcessSwitchesAndRules;
+TaskHandle_t ProcessLeds;
+
+
 #include "LOGIC\gameRules-BallyEightBallChamp.h"
+
+#include "SHIFT-REGISTERS\shiftRegisterFunctions.h"
+
+#include "LIGHTING\ledHandlingFunctions.h"
+
+#include "LOGIC\switchHandlingFunctions.h"
+
