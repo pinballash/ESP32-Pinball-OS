@@ -10,15 +10,15 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include "wifi_functions.h"
+#include "WIFI\wifi_functions.h"
 //settings from a file on the spiffs file system
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
 #include "JSON\JSON_settings.h"
-#include "setupSPIFFS.h"
+#include "FILES\setupSPIFFS.h"
 
 
 //these files set up switches and colis - later it would be good to do this based on a config file - this means we can have a web ui that gives configuration away from code
-#include "userSettings.h"
+#include "WIFI\userSettings.h"
 
 int WEBHz = 0;
 int CMOHz = 0;
@@ -26,7 +26,6 @@ int DisplayControllerHz = 0;
 bool webOn = false;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
 
 unsigned long lastMillisSwINT = 0;
-
 unsigned long lastMillisFlip1 = 0;
 int INTHz = 0;
 int reportedSwitchMatrixHz = 0;
@@ -63,15 +62,14 @@ String tso_Webserver = "";
 
 unsigned long mainLoopMillis = 0;
 
-#include "ledLights.h"
-#include "CoreMachineOperations.h"
-//#include "DMDDisplay.h"
-#include "LCDDisplay.h"
-
-#include "InteractiveEffect.h"
+#include "LIGHTING\ledLights.h"
+#include "LOGIC\CoreMachineOperations.h"
+//#include "DISPLAY\DMDDisplay.h"
+#include "DISPLAY\LCDDisplay.h"
+#include "CHIMES\chimeEffects.h"
 #include "WEB\Web_operations.h"
-#include "machineState.h"
-#include "setupShifts.h"
+#include "LOGIC\machineState.h"
+#include "SHIFT-REGISTERS\setupShifts.h"
 
 void setup() {
   // Setup Serial Monitor
