@@ -13,7 +13,7 @@
 #include "WIFI\wifi_functions.h"
 //settings from a file on the spiffs file system
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
-#include "JSON\JSON_settings.h"
+#include "SETTINGS\JSON_settings.h"
 #include "FILES\setupSPIFFS.h"
 
 

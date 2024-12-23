@@ -20,13 +20,13 @@ bool runningLeds = false;
 PinballGame g_myPinballGame(setting_MachineName);
 
 //#include "switchArray_def.h" -> removing static definition in favour of dynamic from JSON files stored in SPIFFS and edited via Web page
-#include "JSON\JSON_switchArray.h"
-#include "JSON\JSON_coilArray.h"
-#include "flipperBindings_def.h"
-#include "JSON\JSON_coilBindings.h"
-#include "JSON\JSON_ledArray.h"
+#include "SETTINGS\JSON_switchArray.h"
+#include "SETTINGS\JSON_coilArray.h"
+#include "SETTINGS\flipperBindings_def.h"
+#include "SETTINGS\JSON_coilBindings.h"
+#include "SETTINGS\JSON_ledArray.h"
 //not using audio in this table - commented out
-//#include "JSON\JSON_audioArray.h"
+//#include "SETTINGS\JSON_audioArray.h"
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
 void ProcessLedsFunction( void * pvParameters);
