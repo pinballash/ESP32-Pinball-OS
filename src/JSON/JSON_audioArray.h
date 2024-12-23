@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h> 
 #include <Effortless_SPIFFS.h>
-#include "PinballAudio.h"
+#include "CLASSES\PinballAudio.h"
 
 //st up global coilObjects so they can be accessed later
 PinballAudio a_0(0);

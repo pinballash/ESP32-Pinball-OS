@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "PinballSwitch.h"
-#include "PinballCoil.h"
-//#include "PinballAudio.h"
-#include "PinballLED.h"
-#include "PinballGame.h"
+#include "CLASSES\PinballSwitch.h"
+#include "CLASSES\PinballCoil.h"
+//#include "CLASSES\PinballAudio.h"
+#include "CLASSES\PinballLED.h"
+#include "CLASSES\PinballGame.h"
 
 bool switchDebug = false;
 bool coilDebug = false;
@@ -13,20 +13,20 @@ bool srDebug = false;
 bool osrDebug = false;
 bool generalMODebug = false;
 bool memoryStats = false;
-unsigned long ScanSwitchMatrixEveryMicroSeconds = 100; //this seems to be the value where we can operate at around 1000 times per second
+unsigned long processSwitchArrayEveryMicroSeconds = 10000; //this seems to be the value where we can operate at around 100 times per second
 unsigned long UpdateLedsEveryMicroSeconds = 100000; //10 times a second
 bool runningLeds = false;
 
 PinballGame g_myPinballGame(setting_MachineName);
 
 //#include "switchArray_def.h" -> removing static definition in favour of dynamic from JSON files stored in SPIFFS and edited via Web page
-#include "switchArray_fromJSON.h"
-#include "coilArray_fromJSON.h"
+#include "JSON\JSON_switchArray.h"
+#include "JSON\JSON_coilArray.h"
 #include "flipperBindings_def.h"
-#include "coilBindings_fromJSON.h"
-#include "ledArray_fromJSON.h"
+#include "JSON\JSON_coilBindings.h"
+#include "JSON\JSON_ledArray.h"
 //not using audio in this table - commented out
-//#include "audioArray_fromJSON.h"
+//#include "JSON\JSON_audioArray.h"
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters);
 void ProcessLedsFunction( void * pvParameters);
@@ -131,7 +131,7 @@ PinballLED* threethousand_spinner = LEDs[16].ledObject;
 PinballLED* fivethousand_spinner = LEDs[17].ledObject;
 
 //retiring this interupt as it prevents leds from working on core 1.
-/*hw_timer_t *Timer0_Cfg = NULL;
+hw_timer_t *Timer0_Cfg = NULL;
 void IRAM_ATTR Timer0_ISR()
 {
   if(scanInProgress == false)
@@ -151,7 +151,7 @@ void IRAM_ATTR Timer0_ISR()
     lastMillisSwINT = millis();
   }
     
-}*/
+}
 
 //setup a task to run on core 0;
 //TaskHandle_t MonitorSwitchesAndRegister;
@@ -273,7 +273,7 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
   unsigned long measureMicro = 0;
   for(;;)
   {
-    if(micros() - lastMicrosLoopRan >= ScanSwitchMatrixEveryMicroSeconds) //we must not let this loop run away with itself, rate limiter here
+    if(micros() - lastMicrosLoopRan >= processSwitchArrayEveryMicroSeconds) //we must not let this loop run away with itself, rate limiter here
     {
       
       //do processing
@@ -300,9 +300,9 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
         
 
       measureMicro = micros();
-      scanSwitchMatrix();
-      triggerSwitches();
-      manageCoils();
+      //scanSwitchMatrix();
+      //triggerSwitches();
+      //manageCoils();
       processAllSwitches();//Needs to be done on a separate thread on a timer.
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
@@ -388,7 +388,7 @@ void ProcessLedsFunction( void * pvParameters)
       lastMicrosLoopRan = micros();
     }else{
       //release the CPU for processing other tasks
-      vTaskDelay(pdMS_TO_TICKS(1)); //yeild
+      vTaskDelay(pdMS_TO_TICKS(10)); //yeild
     }  
   }
 }

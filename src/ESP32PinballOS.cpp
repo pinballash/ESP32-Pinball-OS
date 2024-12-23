@@ -11,8 +11,9 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include "wifi_functions.h"
+//settings from a file on the spiffs file system
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
-#include "jsonSettings.h"
+#include "JSON\JSON_settings.h"
 #include "setupSPIFFS.h"
 
 
@@ -22,6 +23,7 @@
 int WEBHz = 0;
 int CMOHz = 0;
 int DisplayControllerHz = 0;
+bool webOn = false;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
 
 unsigned long lastMillisSwINT = 0;
 
@@ -67,7 +69,7 @@ unsigned long mainLoopMillis = 0;
 #include "LCDDisplay.h"
 
 #include "InteractiveEffect.h"
-#include "WebOperations.h"
+#include "WEB\Web_operations.h"
 #include "machineState.h"
 #include "setupShifts.h"
 
@@ -124,18 +126,21 @@ void setup() {
     "ProcessLeds",
     20000,
     NULL,
-    20,
+    24,
     &ProcessLeds,
-    1);
-
-  xTaskCreatePinnedToCore(
-    WebOperationsFunction,
-    "WebOperationsTask",
-    20000,
-    NULL,
-    50,
-    &WebOperationsTask,
     0);
+  if(webOn == true)
+  {
+    xTaskCreatePinnedToCore(
+      WebOperationsFunction,
+      "WebOperationsTask",
+      20000,
+      NULL,
+      50,
+      &WebOperationsTask,
+      0);
+  }
+
 
   // setup dot matrix display stuff
   xTaskCreatePinnedToCore(
@@ -146,62 +151,69 @@ void setup() {
     32,
     &DisplayController,
     0);
-
+  if(webOn == true)
+  {
     WiFi.begin(setting_SSID, setting_SSIDPassword);
-    // Wait for connection
+      // Wait for connection
 
-    int WifiWaitCounter = 0;
-    int MaxWait = 5;
- 
-    g_myPinballGame.setDMDTopLine("Wi-Fi Connecting");
-    while ((WiFi.status() != WL_CONNECTED) && (WifiWaitCounter < MaxWait)) 
-    {
-      delay(1000);
-      //Serial.print(".");
-      WifiWaitCounter++;
-    }
-       
-    if(WiFi.status() ==  WL_CONNECTED)
-    {
-      WifiConnected = true;
-      localIP = WiFi.localIP();
-      g_myPinballGame.setDMDTopLine("Connected           ");
-      
-      if (!MDNS.begin(host)) { //http://<host>.local
-        while (1) {
-          delay(1000);
-        }
-      }else{
-        g_myPinballGame.setDMDBottomLine(WiFi.localIP().toString());
+      int WifiWaitCounter = 0;
+      int MaxWait = 5;
+  
+      g_myPinballGame.setDMDTopLine("Wi-Fi Connecting");
+      while ((WiFi.status() != WL_CONNECTED) && (WifiWaitCounter < MaxWait)) 
+      {
+        delay(1000);
+        //Serial.print(".");
+        WifiWaitCounter++;
       }
-    }else
-    {
-      
-      startSoftAccessPoint(softAPssid, softAPpassword, softAPlocalIP, softAPgatewayIP);
-      setUpDNSServer(dnsServer, softAPlocalIP);
-      server.begin();
-      localIP = WiFi.softAPIP();
-      g_myPinballGame.setDMDBottomLine(WiFi.softAPIP().toString());
-      if (!MDNS.begin(host)) { //http://<host>.local
-        while (1) {
-          delay(1000);
+        
+      if(WiFi.status() ==  WL_CONNECTED)
+      {
+        WifiConnected = true;
+        localIP = WiFi.localIP();
+        g_myPinballGame.setDMDTopLine("Connected           ");
+        
+        if (!MDNS.begin(host)) { //http://<host>.local
+          while (1) {
+            delay(1000);
+          }
+        }else{
+          g_myPinballGame.setDMDBottomLine(WiFi.localIP().toString());
+        }
+      }else
+      {
+        
+        startSoftAccessPoint(softAPssid, softAPpassword, softAPlocalIP, softAPgatewayIP);
+        setUpDNSServer(dnsServer, softAPlocalIP);
+        server.begin();
+        localIP = WiFi.softAPIP();
+        g_myPinballGame.setDMDBottomLine(WiFi.softAPIP().toString());
+        if (!MDNS.begin(host)) { //http://<host>.local
+          while (1) {
+            delay(1000);
+          }
+          
         }
         
-      }
+        g_myPinballGame.setDMDTopLine((String)localIP);
+        delay(1000);
+        wifiSoftAPInUse = true;
+        g_myPinballGame.setDMDBottomLine("SOFT AP ONLINE");
+  }
       
-      g_myPinballGame.setDMDTopLine((String)localIP);
-      delay(1000);
-      wifiSoftAPInUse = true;
-      g_myPinballGame.setDMDBottomLine("SOFT AP ONLINE");
-    }
+      }
+      else
+      {
+        g_myPinballGame.setDMDBottomLine("Not using wifi");
+      }
 
     changeState(1); 
 
     //need to run wled on core 1 - however this isnt compatible with interupts
-    //Timer0_Cfg = timerBegin(0, 80, true);
-    //timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
-    //timerAlarmWrite(Timer0_Cfg, 1000, true); //1000 times a second
-    //timerAlarmEnable(Timer0_Cfg);
+    Timer0_Cfg = timerBegin(0, 80, true);
+    timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
+    timerAlarmWrite(Timer0_Cfg, 1000, true); //1000 times a second
+    timerAlarmEnable(Timer0_Cfg);
 
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
     FastLED.setBrightness(8);

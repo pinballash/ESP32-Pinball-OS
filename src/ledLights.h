@@ -13,6 +13,7 @@ int ledBrightness = 64; //out of 255 //64 is 1/4 power 1.25A for 100 LEDS
 //Adafruit_NeoPixel ws2812b(NUM_PIXELS, PIN_WS2812B, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel ws2812b(NUM_PIXELS, PIN_WS2812B, NEO_GRB + NEO_KHZ800);
 */
+#define FASTLED_ALLOW_INTERRUPTS 0
 #include <FastLED.h>
 
 #define DATA_PIN 16  // The ESP32 pin GPIO16 connected to WS2812B

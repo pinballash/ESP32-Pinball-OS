@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h> 
 #include <Effortless_SPIFFS.h>
-#include "PinballSwitch.h"
+#include "CLASSES\PinballSwitch.h"
 
 //set up global switchObjects so they can be accessed later
 PinballSwitch sw_0(0);
