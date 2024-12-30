@@ -84,9 +84,6 @@ void createConfigFiles()
     jobject["ledPin"] = setting_ledPin;
     jobject["leds"] = setting_leds;
     fileSystem.saveToFile(localConfigFile,jobject);
-    //Serial.print("JSON Document Created is: ");
-    //serializeJson(myJsonDocument, Serial);
-    //Serial.println();
     myJsonDocument.clear();
     jobject.clear();
 }
@@ -95,9 +92,6 @@ void openConfigFiles()
 {
     DynamicJsonDocument jsonDocument(1024);
     fileSystem.openFromFile(localConfigFile, jsonDocument);
-    //Serial.print("JSON Document Opened is: ");
-    //serializeJson(jsonDocument, Serial);
-    //Serial.println();
     //we need to set variables in the software from this json
     setting_MachineName = (const char*)jsonDocument["Name"];
     setting_MachineVersion = (const char*)jsonDocument["Version"];
@@ -128,8 +122,6 @@ void openConfigFiles()
 
 void updateConfigFiles()
 {
-
-    
     DynamicJsonDocument myJsonDocument(1024);
     JsonObject jobject = myJsonDocument.to<JsonObject>();
     jobject["Name"] = setting_MachineName;
@@ -157,9 +149,6 @@ void updateConfigFiles()
     jobject["ledPin"] = setting_ledPin;
     jobject["leds"] = setting_leds;
     fileSystem.saveToFile(localConfigFile,jobject);
-    //Serial.print("JSON Document Updates is: ");
-    //serializeJson(myJsonDocument, Serial);
-    //Serial.println();
     myJsonDocument.clear();
     jobject.clear();
 }

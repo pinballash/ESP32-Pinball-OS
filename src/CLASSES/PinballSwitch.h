@@ -17,6 +17,7 @@ class PinballSwitch
     bool _isOuthole = false;  
     bool _autoOn = false;
     int _pointsScore = 0;
+    bool _fired = false;
 
   public:
    
@@ -38,5 +39,8 @@ class PinballSwitch
   void turnOff();
   int getSwitchScore();
   void setSwitchScore(int pointsScore);
+  void reEnable();
+  bool isOn();
+  bool hasFired();
 };
 #endif

@@ -40,7 +40,7 @@ void changeState(int newState)
               digitalWrite(hvrPin, LOW);
               
               Tune1Trigger();
-              //resetStandups();
+              resetDrops();
             }else if (newState == 5)
             {
               //moving from End Game to Atract : OK
@@ -96,7 +96,7 @@ void changeState(int newState)
               Serial.println("[changeState] - Enable High Voltage");
               digitalWrite(hvrPin, LOW);
               Tune1Trigger();
-              //resetStandups();
+              resetDrops();
 
             }else if (newState == 1)
             {

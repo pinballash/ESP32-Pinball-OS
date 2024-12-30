@@ -78,6 +78,15 @@ PinballSwitch sw_61(61);
 PinballSwitch sw_62(62);
 PinballSwitch sw_63(63);
 
+PinballSwitch ssw_0(0);
+PinballSwitch ssw_1(1);
+PinballSwitch ssw_2(2);
+PinballSwitch ssw_3(3);
+PinballSwitch ssw_4(4);
+PinballSwitch ssw_5(5);
+PinballSwitch ssw_6(6);
+PinballSwitch ssw_7(7);
+
 typedef struct {
   byte swNum; // col * 8 + row
   PinballSwitch *switchObject;
@@ -154,8 +163,17 @@ SwitchList switches = {
   {63,&sw_63,0}
 };
 
-
-
+SwitchList secondSwitches = {
+  //no, PinballSwitch
+  {0,&ssw_0,0},
+  {1,&ssw_1,0},
+  {2,&ssw_2,0},
+  {3,&ssw_3,0},
+  {4,&ssw_4,0},
+  {5,&ssw_5,0},
+  {6,&ssw_6,0},
+  {7,&ssw_7,0}
+};
 
 void createSwitchObjects()
 {
@@ -228,6 +246,11 @@ void createSwitchObjects()
       //Serial.println("JSON Loaded, this switch object is now called " + thisSwitch->getName());
     }//end row processing
   }//end col processing
+
+  PinballSwitch* startButton = secondSwitches[0].switchObject;
+  startButton->setValues("Start Button",2000,false,true,false,false,true,true);
+  //PinballSwitch* wifiButton = secondSwitches[1].switchObject;
+  //wifiButton->setValues("WIFI OFF",1000,false,false,false,false,false,false);
 }
 
 void createSwitchScoreObjects()

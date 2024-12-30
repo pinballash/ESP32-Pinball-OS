@@ -18,7 +18,7 @@ bool srDebug = false;
 bool osrDebug = false;
 bool generalMODebug = false;
 bool memoryStats = false;
-unsigned long processSwitchArrayEveryMicroSeconds = 10000; //this seems to be the value where we can operate at around 100 times per second
+unsigned long processSwitchArrayEveryMicroSeconds = 1000; //this seems to be the value where we can operate at around 1000 times per second
 unsigned long UpdateLedsEveryMicroSeconds = 100000; //10 times a second
 bool runningLeds = false;
 
@@ -28,6 +28,7 @@ const int tableCols = 8;//(int8_t)setting_switchMatrixColumns; // 0 to 4
 const int switchCount = tableRows * tableCols;
 const int flipperButtons = 2;
 bool switchActive[tableCols][tableRows];
+bool secondarySwitchActive[8];
 bool switchScored[tableCols][tableRows];
 char colflipper[flipperButtons]; // flipper button cols
 char rowflipper[flipperButtons]; // flipper button rows
@@ -110,6 +111,8 @@ unsigned long lastMillisCoil;
 //not using audio in this pinball table - commented out
 //#include "SETTINGS\JSON_audioArray.h"
 
+
+
 /* Global Variables From JSON End*/
 
 //START delcaration of functions within LOGIC\switchHandlingFunctions.h
@@ -138,7 +141,7 @@ unsigned long lastMillisCoil;
 
 //START delcaration of functions within LOGIC\gameRules-BallyEightBallChamp.h
 
-  void switch_event_startbutton(int switchId); 
+  void switch_event_startbutton(); 
   void switch_event_outhole(int switchId); 
   void addScore(int switchID);
   bool checkChamp(); 

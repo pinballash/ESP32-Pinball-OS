@@ -44,7 +44,7 @@ bool PinballSwitch::triggerSwitch()
   if(this->_autoOn == true)
   {
     proceed = true; 
-  }else if(this->_isOn == false)
+  }else if((this->_isOn == false) && (this->_fired == false))
   {
     proceed = true;
   }
@@ -53,6 +53,7 @@ bool PinballSwitch::triggerSwitch()
     if((millis() - this->_lastMillis > this->_debounce) || this->_isFlipper)
     {
       this->_isOn = true; 
+      this->_fired = true;
       this->_lastMillis = millis();
       //switch triggered
       return true;
@@ -111,5 +112,22 @@ void PinballSwitch::setSwitchScore(int pointsScore)
   this->_pointsScore = pointsScore;
   //extern String tso_PinballSwitch;
   //tso_PinballSwitch = tso_PinballSwitch + "[CLASS] PinballSwitch: [setSwitchScore] Switch " + this->getName() + " " + String(pointsScore);
+}
+
+void PinballSwitch::reEnable()
+{
+  this->_isOn = false;
+  this->_fired = false;
+}
+
+bool PinballSwitch::isOn()
+{ 
+  
+  return this->_isOn;
+}
+bool PinballSwitch::hasFired()
+{ 
+  
+  return this->_fired;
 }
  

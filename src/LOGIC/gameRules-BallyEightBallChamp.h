@@ -72,23 +72,29 @@ void switch_event_outhole(int switchId)
     //Serial.println("[INFO][switch_event_outhole] Do nothing - the ball should be here");
   }
 }
-/*void switch_event_saucer(int switchID)
+void switch_event_saucer(int switchId)
 {
   //saucer code here
-  Serial.println("Fire Saucer");
-  ScoreboardTText = "Saucer";
-  byte coilNumber = 7;
-  PinballCoil* switchCoil = coils[coilNumber].coilObject;
-  //delay(2000); //hold in saucer for 2 secs
-  if(switchCoil->fireCoil()){
-    coilActive[coilNumber]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(switchCoil); //action the turning on
-    write_sr_coils(); //update shift register
+  //Serial.println("Fire Saucer");
+  //ScoreboardTText = "Saucer";
+  byte* coilNumber = switchCoilBindings[(byte)switchId].coilNumber; //get the coil number bound to the switch
+  byte coilNumberByte = *coilNumber;
+  PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
+  if(MachineState == 2) //only if game is active
+  {
+    vTaskDelay(2000);
+    if(switchCoil->fireCoil())
+    { //try and fire the coil
+      coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+      ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
+      write_sr_coils(); //update shift register
+      //todo: add score and other mode logic
+    }
   }
-  addScore(switchID);
-}*/
+  addScore(switchId);
+}
 
-void switch_event_startbutton(int switchId)
+void switch_event_startbutton()
 {
   if(MachineState == 1)
   {
@@ -136,24 +142,99 @@ void addScore(int switchID)
 }
 void resetDrops()
 {
+  bool complete = true;
   if(g_myPinballGame.checkDropReset() == false)
   {
-        for(char x = 7;x < 11;x++){
-        PinballCoil* switchCoil = coils[x].coilObject;
-        if(switchCoil->fireCoil()){
-          coilActive[x]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-          ProcessShifts(switchCoil); //action the turning on
-          write_sr_coils(); //update shift register
-        }
-        vTaskDelay(300);
+    //check E
+    if(switches[31].switchObject->hasFired()==true)
+    {
+      //switch has been triggered, reset and send up the drop
+      Serial.println("E Drop is on - need to reset");
+      PinballCoil* switchCoil = coils[7].coilObject;
+      if(switchCoil->fireCoil()){
+        coilActive[7]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+        ProcessShifts(switchCoil); //action the turning on
+        write_sr_coils(); //update shift register
+      }
+      vTaskDelay(100);
+      switches[31].switchObject->reEnable();
+      complete = false;
     }
-    PinballCoil* switchCoil = coils[15].coilObject;
-    if(switchCoil->fireCoil()){
-      coilActive[15]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-      ProcessShifts(switchCoil); //action the turning on
-      write_sr_coils(); //update shift register
+
+    //check I
+    if(switches[29].switchObject->hasFired()==true)
+    {
+      //switch has been triggered, reset and send up the drop
+      Serial.println("I Drop is on - need to reset");
+      PinballCoil* switchCoil = coils[8].coilObject;
+      if(switchCoil->fireCoil()){
+        coilActive[8]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+        ProcessShifts(switchCoil); //action the turning on
+        write_sr_coils(); //update shift register
+      }
+      vTaskDelay(500);
+      switches[29].switchObject->reEnable();
+      complete = false;
     }
-    g_myPinballGame.setDropStatus(true);
+
+    //check G
+    if(switches[28].switchObject->hasFired()==true)
+    {
+      //switch has been triggered, reset and send up the drop
+      Serial.println("G Drop is on - need to reset");
+      PinballCoil* switchCoil = coils[9].coilObject;
+      if(switchCoil->fireCoil()){
+        coilActive[9]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+        ProcessShifts(switchCoil); //action the turning on
+        write_sr_coils(); //update shift register
+      }
+      vTaskDelay(500);
+      switches[28].switchObject->reEnable();
+      complete = false;
+    }
+
+    //check H
+    if(switches[26].switchObject->hasFired()==true)
+    {
+      //switch has been triggered, reset and send up the drop
+      Serial.println("H Drop is on - need to reset");
+      PinballCoil* switchCoil = coils[10].coilObject;
+      if(switchCoil->fireCoil()){
+        coilActive[10]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+        ProcessShifts(switchCoil); //action the turning on
+        write_sr_coils(); //update shift register
+      }
+      vTaskDelay(500);
+      switches[26].switchObject->reEnable();
+      complete = false;
+    }
+
+    //check T
+    if(switches[25].switchObject->hasFired()==true)
+    {
+      //switch has been triggered, reset and send up the drop
+      Serial.println("T Drop is on - need to reset");
+      PinballCoil* switchCoil = coils[15].coilObject;
+      if(switchCoil->fireCoil()){
+        coilActive[15]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+        ProcessShifts(switchCoil); //action the turning on
+        write_sr_coils(); //update shift register
+      }
+      vTaskDelay(500);
+      switches[25].switchObject->reEnable();
+      complete = false;
+    }
+    
+    if(complete == true)
+    {
+      Serial.println("Drops reset");
+      g_myPinballGame.setDropStatus(true);
+    }else{
+      Serial.println("Drops needed reseting, reprocessing to check");
+      vTaskDelay(500);
+      resetDrops();
+    }
+    
   }
 
 
@@ -175,18 +256,21 @@ void increaseBonusMultiplier() //setp the bonus multiplier up.
   if(twox_bonus->isOn() == false)//turn on 2x and spinner value
   {
     twox_bonus->enable();
+    twox_bonus->resetCalculatedRGB();
     twox_bonus->setFlashSpeed(0);
     twox_bonus->updateLed();
 
   }else if(threex_bonus->isOn() == false)//turn on 3x and spinner value
   {
     threex_bonus->enable();
+    threex_bonus->resetCalculatedRGB();
     threex_bonus->setFlashSpeed(0);
     threex_bonus->updateLed();
 
   }else if(fivex_bonus->isOn() == false)//tune on 5x and spinner value
   {
     fivex_bonus->enable();
+    fivex_bonus->resetCalculatedRGB();
     fivex_bonus->setFlashSpeed(0);
     fivex_bonus->updateLed();
   
@@ -224,18 +308,21 @@ void increaseSpinnerValue()
   if(onethousand_spinner->isOn() == false)//turn on 1000 spinner value
   {
     onethousand_spinner->enable();
+    onethousand_spinner->resetCalculatedRGB();
     onethousand_spinner->setFlashSpeed(0);
     onethousand_spinner->updateLed();
     g_myPinballGame.setPlayerSwitchScore(24,1000, playerNumber);
   }else if(threethousand_spinner->isOn() == false)//turn on 3000 spinner value
   {  
     threethousand_spinner->enable();
+    threethousand_spinner->resetCalculatedRGB();
     threethousand_spinner->setFlashSpeed(0);
     threethousand_spinner->updateLed();
     g_myPinballGame.setPlayerSwitchScore(24,3000, playerNumber);
   }else if(fivethousand_spinner->isOn() == false)//turn on 5000 spinner value
   {
     fivethousand_spinner->enable();
+    fivethousand_spinner->resetCalculatedRGB();
     fivethousand_spinner->setFlashSpeed(0);
     fivethousand_spinner->updateLed();
     g_myPinballGame.setPlayerSwitchScore(24,5000, playerNumber);
@@ -348,6 +435,7 @@ void turnOffAllLeds() //literally turn every LED off
     //get the led object and read its state
     PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
     thisLed->disable();
+    thisLed->resetCalculatedRGB();
     thisLed->setFlashSpeed(0);
     thisLed->updateLed();
   }
@@ -361,60 +449,74 @@ void setNewBallLEDs(bool dots) //turns on all table balls for dots or stripes.  
   if(dots == true)
   {
     oneball_table->enable();
+    oneball_table->resetCalculatedRGB();
     oneball_table->setFlashSpeed(0);
     oneball_table->updateLed();
     
     twoball_table->enable();
+    twoball_table->resetCalculatedRGB();
     twoball_table->setFlashSpeed(0);
     twoball_table->updateLed();
 
     threeball_table->enable();
+    threeball_table->resetCalculatedRGB();
     threeball_table->setFlashSpeed(0);
     threeball_table->updateLed();
 
     fourball_table->enable();
+    fourball_table->resetCalculatedRGB();
     fourball_table->setFlashSpeed(0);
     fourball_table->updateLed();
 
     fiveeball_table->enable();
+    fiveeball_table->resetCalculatedRGB();
     fiveeball_table->setFlashSpeed(0);
     fiveeball_table->updateLed();
 
     sixball_table->enable();
+    sixball_table->resetCalculatedRGB();
     sixball_table->setFlashSpeed(0);
     sixball_table->updateLed();
 
     sevenball_table->enable();
+    sevenball_table->resetCalculatedRGB();
     sevenball_table->setFlashSpeed(0);
     sevenball_table->updateLed();
 
 
   }else{
     nineball_table->enable();
+    nineball_table->resetCalculatedRGB();
     nineball_table->setFlashSpeed(0);
     nineball_table->updateLed();
     
     tenball_table->enable();
+    tenball_table->resetCalculatedRGB();
     tenball_table->setFlashSpeed(0);
     tenball_table->updateLed();
 
     elevenball_table->enable();
+    elevenball_table->resetCalculatedRGB();
     elevenball_table->setFlashSpeed(0);
     elevenball_table->updateLed();
 
     twelveball_table->enable();
+    twelveball_table->resetCalculatedRGB();
     twelveball_table->setFlashSpeed(0);
     twelveball_table->updateLed();
 
     thirteenball_table->enable();
+    thirteenball_table->resetCalculatedRGB();
     thirteenball_table->setFlashSpeed(0);
     thirteenball_table->updateLed();
 
     fourteenball_table->enable();
+    fourball_table->resetCalculatedRGB();
     fourteenball_table->setFlashSpeed(0);
     fourteenball_table->updateLed();
 
     fifteenball_table->enable();
+    fifteenball_table->resetCalculatedRGB();
     fifteenball_table->setFlashSpeed(0);
     fifteenball_table->updateLed();
   }
@@ -424,22 +526,27 @@ void setNewBallLEDs(bool dots) //turns on all table balls for dots or stripes.  
 void resetChampLeds()
 {
   c_champ->enable();
+  c_champ->resetCalculatedRGB();
   c_champ->setFlashSpeed(0);
   c_champ->updateLed();
 
   h_champ->enable();
+  h_champ->resetCalculatedRGB();
   h_champ->setFlashSpeed(0);
   h_champ->updateLed();
 
   a_champ->enable();
+  a_champ->resetCalculatedRGB();
   a_champ->setFlashSpeed(0);
   a_champ->updateLed();
 
   m_champ->enable();
+  m_champ->resetCalculatedRGB();
   m_champ->setFlashSpeed(0);
   m_champ->updateLed();
 
   p_champ->enable();
+  p_champ->resetCalculatedRGB();
   p_champ->setFlashSpeed(0);
   p_champ->updateLed();
 }
@@ -448,24 +555,31 @@ void resetChampLeds()
 void resetBonusLeds()
 {
   twox_bonus->disable();
+  twox_bonus->resetCalculatedRGB();
   twox_bonus->updateLed();
 
   threex_bonus->disable();
+  threex_bonus->resetCalculatedRGB();
   threex_bonus->updateLed();
 
   fivex_bonus->disable();
+  fivex_bonus->resetCalculatedRGB();
   fivex_bonus->updateLed();
 }
 void resetSpinnerLeds()
 
 {
   onethousand_spinner->disable();
+  onethousand_spinner->resetCalculatedRGB();
   onethousand_spinner->updateLed();
 
   threethousand_spinner->disable();
+  threethousand_spinner->resetCalculatedRGB();
   threethousand_spinner->updateLed();
 
   fivethousand_spinner->disable();
+  fivethousand_spinner->resetCalculatedRGB();
   fivethousand_spinner->updateLed();
 
 }
+

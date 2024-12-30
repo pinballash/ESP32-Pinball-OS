@@ -135,7 +135,7 @@ class PinballGame
   void setDMDTopLine(String DMDText);
   void setDMDBottomLine(String DMDText);
   void setDMDText(String DMDTopLine, String DMDBottomLine);
-  int checkDropReset();
+  bool checkDropReset();
   void setDropStatus(bool status);
   void setPlayerSwitchScore(char switchNumber, int score, int playerNumber); //if playerNumber is 0 then set base score
   int getPlayerSwitchScore(char switchNumber, int playerNumber); //if playerNumber is 0 then get base score

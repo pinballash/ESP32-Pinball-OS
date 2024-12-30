@@ -111,7 +111,6 @@ void read_sr() {//Read input shift registers
   digitalWrite(isrclockEnablePin, LOW);
   incoming = shiftIn(isrdataIn, isrclockIn, LSBFIRST);
   incoming2 = shiftIn(isrdataIn, isrclockIn, LSBFIRST);
-  // read twice to simulate reading 2 165's
   digitalWrite(isrclockEnablePin, HIGH);
   if(srDebug){
     Serial.print("read_sr : incoming");

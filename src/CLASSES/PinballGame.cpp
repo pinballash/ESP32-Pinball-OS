@@ -341,12 +341,12 @@ PinballGame::PinballGame(String GameName)
     this->DMDBottomLine = DMDBottomLine;
   }
 
-  int PinballGame::checkDropReset()
+  bool PinballGame::checkDropReset()
   {
     return this->_dropsReset;
   }
 
-void PinballGame::setDropStatus(bool status)
+  void PinballGame::setDropStatus(bool status)
   {
     this->_dropsReset = status;
 

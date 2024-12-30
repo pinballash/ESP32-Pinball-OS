@@ -22,13 +22,10 @@ void ScanSwitchMatrixFunction( void * pvParameters)
 
 void ProcessSwitchesAndRulesFunction( void * pvParameters)
 {
-  //Serial.print("MonitorSwitches running on core ");
-  //Serial.println(xPortGetCoreID());
   //identifyFlippers();
   int counterSw = 0;
   unsigned long lastMillisSw = 0;
   unsigned long lastMicrosLoopRan = 0;
-
   unsigned long scanMicro = 0;
   unsigned long flipperMicro = 0;
   unsigned long triggerSwitchMicro = 0;
@@ -61,8 +58,6 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
         lastMillisSw = millis();
         
       }// End of debug stuff 
-        
-
       measureMicro = micros();
       //scanSwitchMatrix();
       //triggerSwitches();
@@ -70,28 +65,8 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
       processAllSwitches();//Needs to be done on a separate thread on a timer.
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);
       lastMicrosLoopRan = micros();
-
-
-      /*if(threadDebug)
-      {
-        unsigned long totalLoopProcessingTime = 0;
-
-        Serial.print("Process Switch Time (uS) : ");
-        Serial.println(processSwitchMicro);
-        totalLoopProcessingTime = totalLoopProcessingTime + processSwitchMicro;
-        processSwitchMicro = 0;
-
-        Serial.print("Total Task Processing time uS : ");
-        Serial.println(totalLoopProcessingTime);
-
-        Serial.println("_________________________________");
-      }*/
-
-
-
     }else{
       //release the CPU for processing other tasks
-      //Serial.println("Switch Scan Taking a breather");
       vTaskDelay(pdMS_TO_TICKS(1));
     }  
     
@@ -123,6 +98,18 @@ void scanSwitchMatrix()
     }
   }
  }
+ //Next we could read the values in the second input shift register.  
+ //This is not being handled by scanning the matrix, each of the 8 switches that can be connected here
+ //will be supplied by positive voltage constantly which will lead the input shift register to be high once pushed.
+  for (byte row = 0; row < 8; row++) 
+  {    
+    if (bitRead(incoming2,row)) 
+    {
+      secondarySwitchActive[row] = true; 
+    } else {
+      //switchActive[col][row] = false; //default to not active (off)
+    }
+  }
 } 
 /*
 * Function triggerSwitches
@@ -160,19 +147,24 @@ void triggerSwitches()
                 Serial.print("Switch triggered with coil binding and Instant Trigger. Switch ID ");
                 Serial.println(triggeredSwitchID);      
               } 
-              byte* coilNumber = switchCoilBindings[(byte)triggeredSwitchID].coilNumber; //get the coil number bound to the switch
-              byte coilNumberByte = *coilNumber;
-              PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
-              if(MachineState == 2) //only if game is active
+              //manual hack - we get interference on col 0 row 3 where left pop fires when saucer switch is active - so we will only fire if the saucer is not active
+              if(switchScored[0][3]==false)
               {
-                if(switchCoil->fireCoil())
-                { //try and fire the coil
-                  coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-                  ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
-                  write_sr_coils(); //update shift register
-                  //todo: add score and other mode logic
+                byte* coilNumber = switchCoilBindings[(byte)triggeredSwitchID].coilNumber; //get the coil number bound to the switch
+                byte coilNumberByte = *coilNumber;
+                PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
+                if(MachineState == 2) //only if game is active
+                {
+                  if(switchCoil->fireCoil())
+                  { //try and fire the coil
+                    coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+                    ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
+                    write_sr_coils(); //update shift register
+                  }
                 }
               }
+
+              
             }else{
               if(generalMODebug)
               {
@@ -191,9 +183,10 @@ void triggerSwitches()
           }
           
         }//end triggered switch processing  
-      }//end switch processing
+      }
+      //end switch processing
     }//end row processing
-  }//end col processing
+  }//end col processing 
 }
 /*
 * Function processAllSwitches
@@ -203,6 +196,34 @@ void triggerSwitches()
 */
 void processAllSwitches()
 {
+  //quickly handle directly wired switches - these dont trigger anything 
+  for (byte row = 0; row < 8; row++) 
+  {    
+    if(secondarySwitchActive[row]==true) 
+    {//switch needs processing
+      secondarySwitchActive[row]=false;
+      if(secondSwitches[row].switchObject->triggerSwitch()==true)//this will return false if debounce period still active
+      {
+        //do work
+        Serial.print("Secondary Switch Processing - ");
+        Serial.print(row);
+        Serial.print(" - ");
+        Serial.print(secondSwitches[row].switchObject->getName());
+        secondarySwitchActive[row]=false;
+        if(secondSwitches[row].switchObject->isStart()==true)
+        {
+          switch_event_startbutton();
+        }
+      }else{
+        //Serial.print("Secondary Switch Processing - ");
+        //Serial.print(secondSwitches[row].switchObject->getName());
+        //Serial.println(" - Not ok to trigger");
+       
+      }//end triggered switch processing  
+      
+    }//end switch processing
+  }
+
   for ( byte col = 0; col < setting_switchMatrixColumns ; col++) 
   {
     for (byte row = 0; row < setting_switchMatrixRows; row++) 
@@ -223,7 +244,7 @@ void processAllSwitches()
         }
         if(switches[triggeredSwitchID].switchObject->isStart()==true)
         {
-          switch_event_startbutton(triggeredSwitchID);
+          switch_event_startbutton();
         }else if(switches[triggeredSwitchID].switchObject->isOuthole()==true)
         {
           //Serial.println("[processAllSwitches] Outhole Fired");
@@ -383,7 +404,122 @@ void processAllSwitches()
             
             //do spinner work
             break;
-          }          
+          }
+          case 3: //Saucer
+          {
+            
+            switch_event_saucer(3);
+            break;
+          }
+          case 31: //E - Drop
+          {
+            //check each tabled ball in turn, 
+            //if on, turn off, add to pocketed, reset drop and break
+            if(sixball_table->isOn())
+            {
+              sixball_table->disable();
+              sixball_table->updateLed();
+              
+              sixball_pocket->enable();
+              sixball_pocket->resetCalculatedRGB();
+              sixball_pocket->setFlashSpeed(0);
+              sixball_pocket->updateLed();
+
+              //no more balls to pot - dont reset drop
+              break;
+            }else if(fourteenball_table->isOn())
+            {
+              fourteenball_table->disable();
+              fourteenball_table->updateLed();
+              
+              fourteenball_pocket->enable();
+              fourteenball_pocket->resetCalculatedRGB();
+              fourteenball_pocket->setFlashSpeed(0);
+              fourteenball_pocket->updateLed();
+              break;
+            }
+            break;
+          }  
+          case 29: //I - Drop
+          {
+            //check each tabled ball in turn, 
+            //if on, turn off, add to pocketed, reset drop and break
+            if(oneball_table->isOn())
+            {
+              oneball_table->disable();
+              oneball_table->updateLed();
+              
+              oneball_pocket->enable();
+              oneball_pocket->resetCalculatedRGB();
+              oneball_pocket->setFlashSpeed(0);
+              oneball_pocket->updateLed();
+
+              //reset drop
+              PinballCoil* switchCoil = coils[8].coilObject;
+              if(switchCoil->fireCoil()){
+                coilActive[8]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+                ProcessShifts(switchCoil); //action the turning on
+                write_sr_coils(); //update shift register
+              }
+              break;
+            }else if(twoball_table->isOn())
+            {
+              twoball_table->disable();
+              twoball_table->updateLed();
+              
+              twoball_pocket->enable();
+              twoball_pocket->resetCalculatedRGB();
+              twoball_pocket->setFlashSpeed(0);
+              twoball_pocket->updateLed();
+
+              //no more balls to pot - dont reset drop
+              break;
+            }else if(nineball_table->isOn())
+            {
+              nineball_table->disable();
+              nineball_table->updateLed();
+              
+              nineball_pocket->enable();
+              nineball_pocket->resetCalculatedRGB();
+              nineball_pocket->setFlashSpeed(0);
+              nineball_pocket->updateLed();
+
+              //reset drop
+              PinballCoil* switchCoil = coils[8].coilObject;
+              if(switchCoil->fireCoil()){
+                coilActive[8]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+                ProcessShifts(switchCoil); //action the turning on
+                write_sr_coils(); //update shift register
+              }
+              break;
+            }else if(tenball_table->isOn())
+            {
+              tenball_table->disable();
+              tenball_table->updateLed();
+              
+              tenball_pocket->enable();
+              tenball_pocket->resetCalculatedRGB();
+              tenball_pocket->setFlashSpeed(0);
+              tenball_pocket->updateLed();
+
+              //no more balls to pot - dont reset drop
+              break;
+            }else 
+            break;
+          }   
+          case 28: //G - Drop
+          {
+            break;
+          }  
+          case 26: //H - Drop
+          {
+            break;
+          } 
+          case 25: //E - Drop
+          {
+            break;
+          }  
+           
 
         }
         //finally, mark switch as processed
@@ -402,4 +538,5 @@ void processAllSwitches()
     }
   }
   //need individual switch logic - things need to happen, different modes mean different outcomes - for later
+
 }

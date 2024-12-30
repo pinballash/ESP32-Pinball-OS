@@ -19,9 +19,7 @@
 
 //these files set up switches and colis - later it would be good to do this based on a config file - this means we can have a web ui that gives configuration away from code
 #include "WIFI\userSettings.h"
-
 #include "SETTINGS\globalVariables.h"
-
 #include "LIGHTING\ledLights.h"
 #include "LOGIC\CoreMachineOperations.h"
 //#include "DISPLAY\DMDDisplay.h"
@@ -44,8 +42,8 @@ void setup() {
 	lcd.print("Booting");
 	lcd.setCursor(0,3);
 	lcd.print("Please wait...");
+  
   //Need to set up LEDs, flippers, high power relay
-
   pinMode(flipper1Pin, INPUT);
   pinMode(flipper2Pin, INPUT);
   pinMode(hvrPin, OUTPUT);
@@ -61,6 +59,14 @@ void setup() {
   createSwitchCoilBindings();
   createLedObjects();
 
+  //set up timer and interupts for scaning switch matric on core 1
+  Timer0_Cfg = timerBegin(0, 80, true);
+  timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
+  timerAlarmWrite(Timer0_Cfg, 1000, true); //1000 times a second
+  timerAlarmEnable(Timer0_Cfg);
+
+  //set up the processess that will function as separate threads
+  //set up loop handling rules
   xTaskCreatePinnedToCore(
     ProcessSwitchesAndRulesFunction,
     "ProcessSwitchesAndRules",
@@ -70,15 +76,7 @@ void setup() {
     &ProcessSwitchesAndRules,
     0);
 
-  /*xTaskCreatePinnedToCore(
-    ScanSwitchMatrixFunction,
-    "ScanSwitchMatrix",
-    20000,
-    NULL,
-    19,
-    &ScanSwitchMatrix,
-    1);*/
-
+  //set up led handling loop
   xTaskCreatePinnedToCore(
     ProcessLedsFunction,
     "ProcessLeds",
@@ -87,20 +85,8 @@ void setup() {
     24,
     &ProcessLeds,
     0);
-  if(webOn == true)
-  {
-    xTaskCreatePinnedToCore(
-      WebOperationsFunction,
-      "WebOperationsTask",
-      20000,
-      NULL,
-      50,
-      &WebOperationsTask,
-      0);
-  }
-
-
-  // setup dot matrix display stuff
+  
+  //set up display handling
   xTaskCreatePinnedToCore(
     DisplayControllerFunction,
     "DisplayController",
@@ -109,6 +95,19 @@ void setup() {
     32,
     &DisplayController,
     0);
+  
+  
+  //set up web operations
+  xTaskCreatePinnedToCore(
+    WebOperationsFunction,
+    "WebOperationsTask",
+    20000,
+    NULL,
+    50,
+    &WebOperationsTask,
+    0);
+ 
+
   if(webOn == true)
   {
     WiFi.begin(setting_SSID, setting_SSIDPassword);
@@ -166,12 +165,6 @@ void setup() {
       }
 
     changeState(1); 
-
-    //need to run wled on core 1 - however this isnt compatible with interupts
-    Timer0_Cfg = timerBegin(0, 80, true);
-    timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
-    timerAlarmWrite(Timer0_Cfg, 1000, true); //1000 times a second
-    timerAlarmEnable(Timer0_Cfg);
 
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
     FastLED.setBrightness(8);
