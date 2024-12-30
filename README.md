@@ -28,6 +28,53 @@ To drive solenoids, you will need
 
 4 x DollaTek 4 Channels 4 Route MOSFET Button IRF540 V2.0 for Arduino <a href="https://www.amazon.co.uk/DollaTek-Channels-MOSFET-Button-Arduino/dp/B07MPB52GC/ref=sr_1_15?crid=2H95ZT40UJE51&keywords=mosfet+board&qid=1699020505&sprefix=mosfet+board%2Caps%2C93&sr=8-15">Here</a><br />
 
+<h2>Theory of operation</h2>
+<p>The ESP32 has two cores.  Core 1 is commonly used for the main loop, however we ignore this loop within this project as we will be operating on both cores and utilising interupts on Core 1.</p>
+
+<h3>Core 1</h3>
+<ul>
+  <li>Interupt every 1 milisecond (1000 times a second).
+    <ul>
+      <li>Scan the switch matrix for closed switches.</li>
+      <li>Add any closed switches to a switch array.</li>
+      <li>Check for any energised solenoids that need to be powered off.</li>
+    </ul>
+  </li>
+</ul>
+<h3>Core 0</h3>
+<li>Thread running a loop checking for leds in the ws2812b strip that need to be acted on.</li>
+<li>Thread running a loop checking for closed switches in the switch array that can then be acted on.</li>
+<li>Thread running a loop checking for updates to the LCD display that need to be acted on.</li>
+<li>Thread running the web server processes. Please note, the operation of a webserver on the same core as the leds causes minor LED issues.  It is expected that once the game is fully configured, web server will be disabled freeing up resources for game operation.</li>
+
+<h3>Classes</h3>
+<p>There are several classes that handle some of the foundational functionality of elements of the pinball</p>
+<ul>
+  <li>Pinball Switch</li>
+  <li>Pinball Coil</li>
+  <li>Pinball LED</li>
+  <li>Pinball Game</li>
+  <li>Pinball Audio</li>
+</ul>
+<p>These classes are instantiated during machine startup based on JSON files loaded from the SPIFFS.</p>
+
+<h3>JSON Settings</h3>
+<ul>
+  <li>General Settings</li>
+  <li>Audio</li>
+  <li>Coils</li>
+  <li>Switches</li>
+  <li>Switch to Coil Bindings</li>
+  <li>LEDs</li>
+</ul>
+<h3>WIFI</h3>
+<p>The first time the ESP32 loads up, if it cannot connect to WIFI, it starts its own access point.  Connect to this access point with any device and a captive portal will load and redirect the device browser to http://4.3.2.1 and a web page that allows for your local WIFI to be connected to.</p>
+<p>The web server will then be accessible from http://esppos.local.</p>
+<p>The web server allows for configuration and testing of your pinball machine, but should not be used once design and testing is complete, this frees resources on the ESP32 for smoother operation of LEDs, Displays and rules.</p>
+
+
+
+
 
 
 
