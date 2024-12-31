@@ -268,10 +268,6 @@ void processAllSwitches()
            * for now we will be working just on default
           */
           addScore(triggeredSwitchID);
-          
-
-
-          
           /*if((audios[triggeredSwitchID].AudioObject->fireAudio()))
           { //try and play sound
             audioActive[triggeredSwitchID]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -287,240 +283,353 @@ void processAllSwitches()
         //Game rules go here. As we pick up switch triggers we can initiate logic.
         bool triggerBonusMultiplierIncrease = false; //we need to track this and execute once switches have finished processing
         bool triggerSpinnerValueIncrease = false;
-        switch(triggeredSwitchID)
+        if(MachineState == 2)//only process these switches if game is active
         {
-          case 23: //C - Inlane Left
+          switch(triggeredSwitchID)
           {
-            //this is part of 5 bank 
-            if(c_champ->isOn()==true)
+            case 23: //C - Inlane Left
             {
-              c_champ->disable();
-              c_champ->updateLed();
-              if(checkChamp() == false)
+              //this is part of 5 bank 
+              if(c_champ->isOn()==true)
               {
-                //champ off
-                //reset champ
-                resetChampLeds();
+                c_champ->disable();
+                c_champ->updateLed();
+                if(checkChamp() == false)
+                {
+                  //champ off
+                  //reset champ
+                  resetChampLeds();
 
-                //increase multiplier - to do
-                triggerBonusMultiplierIncrease = true;
-                triggerSpinnerValueIncrease = true;
+                  //increase multiplier - to do
+                  triggerBonusMultiplierIncrease = true;
+                  triggerSpinnerValueIncrease = true;
+
+                }
 
               }
-
+              break;
             }
-            break;
-          }
-          case 22: //H - Lane Left
-          {
-            //this is part of 5 bank 
-            if(h_champ->isOn()==true)
+            case 22: //H - Lane Left
             {
-              h_champ->disable();
-              h_champ->updateLed();
-              if(checkChamp() == false)
+              //this is part of 5 bank 
+              if(h_champ->isOn()==true)
               {
-                //champ off
-                //reset champ
-                resetChampLeds();
+                h_champ->disable();
+                h_champ->updateLed();
+                if(checkChamp() == false)
+                {
+                  //champ off
+                  //reset champ
+                  resetChampLeds();
 
-                //increase multiplier - to do
-                triggerBonusMultiplierIncrease = true;
-                triggerSpinnerValueIncrease = true;
+                  //increase multiplier - to do
+                  triggerBonusMultiplierIncrease = true;
+                  triggerSpinnerValueIncrease = true;
+
+                }
 
               }
-
+              break;
             }
-            break;
-          }
-          case 21: //A - Inlane middle
-          {
-            //this is part of 5 bank 
-            if(a_champ->isOn()==true)
+            case 21: //A - Inlane middle
             {
-              a_champ->disable();
-              a_champ->updateLed();
-              if(checkChamp() == false)
+              //this is part of 5 bank 
+              if(a_champ->isOn()==true)
               {
-                //champ off
-                //reset champ
-                resetChampLeds();
+                a_champ->disable();
+                a_champ->updateLed();
+                if(checkChamp() == false)
+                {
+                  //champ off
+                  //reset champ
+                  resetChampLeds();
 
-                //increase multiplier - to do
-                triggerBonusMultiplierIncrease = true;
-                triggerSpinnerValueIncrease = true;
+                  //increase multiplier - to do
+                  triggerBonusMultiplierIncrease = true;
+                  triggerSpinnerValueIncrease = true;
+
+                }
 
               }
-
+              break;
             }
-            break;
-          }
-          case 20: //M - Lane Right
-          {
-            //this is part of 5 bank 
-            if(m_champ->isOn()==true)
+            case 20: //M - Lane Right
             {
-              m_champ->disable();
-              m_champ->updateLed();
-              if(checkChamp() == false)
+              //this is part of 5 bank 
+              if(m_champ->isOn()==true)
               {
-                //champ off
-                //reset champ
-                resetChampLeds();
+                m_champ->disable();
+                m_champ->updateLed();
+                if(checkChamp() == false)
+                {
+                  //champ off
+                  //reset champ
+                  resetChampLeds();
 
-                //increase multiplier - to do
-                triggerBonusMultiplierIncrease = true;
-                triggerSpinnerValueIncrease = true;
+                  //increase multiplier - to do
+                  triggerBonusMultiplierIncrease = true;
+                  triggerSpinnerValueIncrease = true;
+
+                }
 
               }
-
+              break;
             }
-            break;
-          }
-          case 19: //P - Inlane Right
-          {
-            //this is part of 5 bank 
-            if(p_champ->isOn()==true)
+            case 19: //P - Inlane Right
             {
-              p_champ->disable();
-              p_champ->updateLed();
-              if(checkChamp() == false)
+              //this is part of 5 bank 
+              if(p_champ->isOn()==true)
               {
-                //champ off
-                //reset champ
-                resetChampLeds();
+                p_champ->disable();
+                p_champ->updateLed();
+                if(checkChamp() == false)
+                {
+                  //champ off
+                  //reset champ
+                  resetChampLeds();
 
-                //increase multiplier - to do
-                triggerBonusMultiplierIncrease = true;
-                triggerSpinnerValueIncrease = true;
+                  //increase multiplier - to do
+                  triggerBonusMultiplierIncrease = true;
+                  triggerSpinnerValueIncrease = true;
+
+                }
 
               }
-
+              break;
             }
-            break;
-          }
-          case 24: //spinner
-          {
+            case 24: //spinner
+            {
+              
+              //do spinner work
+              break;
+            }
+            case 3: //Saucer
+            {
+              
+              switch_event_saucer(3);
+              break;
+            }
+            case 31: //I - Drop
+            {
+              Serial.println("Switch 31 Drop");
+              //if on, turn off, add to pocketed, reset drop and break
+              if(oneball_table->isOn())
+              {
+                oneball_table->disable();
+                oneball_table->updateLed();
+                
+                oneball_pocket->enable();
+                oneball_pocket->resetCalculatedRGB();
+                oneball_pocket->setFlashSpeed(0);
+                oneball_pocket->updateLed();
+
+                //reset drop
+                resetDrop(7, 31);
+                checkEightBall();
+                break;
+              }else if(twoball_table->isOn())
+              {
+                twoball_table->disable();
+                twoball_table->updateLed();
+                
+                twoball_pocket->enable();
+                twoball_pocket->resetCalculatedRGB();
+                twoball_pocket->setFlashSpeed(0);
+                twoball_pocket->updateLed();
+
+                //no more balls to pot - dont reset drop
+                checkEightBall();
+                break;
+              }else if(nineball_table->isOn())
+              {
+                nineball_table->disable();
+                nineball_table->updateLed();
+                
+                nineball_pocket->enable();
+                nineball_pocket->resetCalculatedRGB();
+                nineball_pocket->setFlashSpeed(0);
+                nineball_pocket->updateLed();
+
+                //reset drop
+                resetDrop(7, 31);
+                checkEightBall();
+                break;
+              }else if(tenball_table->isOn())
+              {
+                tenball_table->disable();
+                tenball_table->updateLed();
+                
+                tenball_pocket->enable();
+                tenball_pocket->resetCalculatedRGB();
+                tenball_pocket->setFlashSpeed(0);
+                tenball_pocket->updateLed();
+
+                //no more balls to pot - dont reset drop
+                checkEightBall();
+                break;
+              }
+              break;
+            }  
+            case 28: //H - Drop
+            {
+              Serial.println("Switch 28 Drop");
+              //check each tabled ball in turn, 
+              //if on, turn off, add to pocketed, reset drop and break
+              if(fourball_table->isOn())
+              {
+                fourball_table->disable();
+                fourball_table->updateLed();
+                
+                fourball_pocket->enable();
+                fourball_pocket->resetCalculatedRGB();
+                fourball_pocket->setFlashSpeed(0);
+                fourball_pocket->updateLed();
+
+                //reset drop
+                resetDrop(9, 28);
+                checkEightBall();
+                break;
+              }else if(fiveeball_table->isOn())
+              {
+                fiveeball_table->disable();
+                fiveeball_table->updateLed();
+                
+                fiveeball_pocket->enable();
+                fiveeball_pocket->resetCalculatedRGB();
+                fiveeball_pocket->setFlashSpeed(0);
+                fiveeball_pocket->updateLed();
+
+                //no more balls to pot - dont reset drop
+                checkEightBall();
+                break;
+              }else if(twelveball_table->isOn())
+              {
+                twelveball_table->disable();
+                twelveball_table->updateLed();
+                
+                twelveball_pocket->enable();
+                twelveball_pocket->resetCalculatedRGB();
+                twelveball_pocket->setFlashSpeed(0);
+                twelveball_pocket->updateLed();
+
+                //reset drop
+                resetDrop(9, 28);
+                checkEightBall();
+                break;
+              }else if(thirteenball_table->isOn())
+              {
+                thirteenball_table->disable();
+                thirteenball_table->updateLed();
+                
+                thirteenball_pocket->enable();
+                thirteenball_pocket->resetCalculatedRGB();
+                thirteenball_pocket->setFlashSpeed(0);
+                thirteenball_pocket->updateLed();
+
+                //no more balls to pot - dont reset drop
+                checkEightBall();
+                break;
+              }
+              break;
+            }   
+            case 29: //G - Drop
+            {
+              Serial.println("Switch 28 Drop");
+              //if on, turn off, add to pocketed, reset drop and break
+              if(threeball_table->isOn())
+              {
+                threeball_table->disable();
+                threeball_table->updateLed();
+                
+                threeball_pocket->enable();
+                threeball_pocket->resetCalculatedRGB();
+                threeball_pocket->setFlashSpeed(0);
+                threeball_pocket->updateLed();
+
+                //no more balls to pot - dont reset drop
+                checkEightBall();
+                break;
+              }else if(elevenball_table->isOn())
+              {
+                elevenball_table->disable();
+                elevenball_table->updateLed();
+                
+                elevenball_pocket->enable();
+                elevenball_pocket->resetCalculatedRGB();
+                elevenball_pocket->setFlashSpeed(0);
+                elevenball_pocket->updateLed();
+                checkEightBall();
+                break;
+              }
+              break;
+            }  
+            case 26: //E - Drop
+            {
+              Serial.println("Switch 26 Drop");
+              //check each tabled ball in turn, 
+              //if on, turn off, add to pocketed, reset drop and break
+              if(sixball_table->isOn())
+              {
+                sixball_table->disable();
+                sixball_table->updateLed();
+                
+                sixball_pocket->enable();
+                sixball_pocket->resetCalculatedRGB();
+                sixball_pocket->setFlashSpeed(0);
+                sixball_pocket->updateLed();
+
+                //no more balls to pot - dont reset drop
+                checkEightBall();
+                break;
+              }else if(fourteenball_table->isOn())
+              {
+                fourteenball_table->disable();
+                fourteenball_table->updateLed();
+                
+                fourteenball_pocket->enable();
+                fourteenball_pocket->resetCalculatedRGB();
+                fourteenball_pocket->setFlashSpeed(0);
+                fourteenball_pocket->updateLed();
+                checkEightBall();
+                break;
+              }
+              break;
+            } 
+            case 25: //T - Drop
+            {
+              Serial.println("Switch 25 Drop");
+              //if on, turn off, add to pocketed, reset drop and break
+              if(sevenball_table->isOn())
+              {
+                sevenball_table->disable();
+                sevenball_table->updateLed();
+                
+                sevenball_pocket->enable();
+                sevenball_pocket->resetCalculatedRGB();
+                sevenball_pocket->setFlashSpeed(0);
+                sevenball_pocket->updateLed();
+
+                //no more balls to pot - dont reset drop
+                checkEightBall();
+                break;
+              }else if(fifteenball_table->isOn())
+              {
+                fifteenball_table->disable();
+                fifteenball_table->updateLed();
+                
+                fifteenball_pocket->enable();
+                fifteenball_pocket->resetCalculatedRGB();
+                fifteenball_pocket->setFlashSpeed(0);
+                fifteenball_pocket->updateLed();
+                checkEightBall();
+                break;
+              }
+              break;
+            }  
             
-            //do spinner work
-            break;
+
           }
-          case 3: //Saucer
-          {
-            
-            switch_event_saucer(3);
-            break;
-          }
-          case 31: //E - Drop
-          {
-            //check each tabled ball in turn, 
-            //if on, turn off, add to pocketed, reset drop and break
-            if(sixball_table->isOn())
-            {
-              sixball_table->disable();
-              sixball_table->updateLed();
-              
-              sixball_pocket->enable();
-              sixball_pocket->resetCalculatedRGB();
-              sixball_pocket->setFlashSpeed(0);
-              sixball_pocket->updateLed();
-
-              //no more balls to pot - dont reset drop
-              break;
-            }else if(fourteenball_table->isOn())
-            {
-              fourteenball_table->disable();
-              fourteenball_table->updateLed();
-              
-              fourteenball_pocket->enable();
-              fourteenball_pocket->resetCalculatedRGB();
-              fourteenball_pocket->setFlashSpeed(0);
-              fourteenball_pocket->updateLed();
-              break;
-            }
-            break;
-          }  
-          case 29: //I - Drop
-          {
-            //check each tabled ball in turn, 
-            //if on, turn off, add to pocketed, reset drop and break
-            if(oneball_table->isOn())
-            {
-              oneball_table->disable();
-              oneball_table->updateLed();
-              
-              oneball_pocket->enable();
-              oneball_pocket->resetCalculatedRGB();
-              oneball_pocket->setFlashSpeed(0);
-              oneball_pocket->updateLed();
-
-              //reset drop
-              PinballCoil* switchCoil = coils[8].coilObject;
-              if(switchCoil->fireCoil()){
-                coilActive[8]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-                ProcessShifts(switchCoil); //action the turning on
-                write_sr_coils(); //update shift register
-              }
-              break;
-            }else if(twoball_table->isOn())
-            {
-              twoball_table->disable();
-              twoball_table->updateLed();
-              
-              twoball_pocket->enable();
-              twoball_pocket->resetCalculatedRGB();
-              twoball_pocket->setFlashSpeed(0);
-              twoball_pocket->updateLed();
-
-              //no more balls to pot - dont reset drop
-              break;
-            }else if(nineball_table->isOn())
-            {
-              nineball_table->disable();
-              nineball_table->updateLed();
-              
-              nineball_pocket->enable();
-              nineball_pocket->resetCalculatedRGB();
-              nineball_pocket->setFlashSpeed(0);
-              nineball_pocket->updateLed();
-
-              //reset drop
-              PinballCoil* switchCoil = coils[8].coilObject;
-              if(switchCoil->fireCoil()){
-                coilActive[8]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-                ProcessShifts(switchCoil); //action the turning on
-                write_sr_coils(); //update shift register
-              }
-              break;
-            }else if(tenball_table->isOn())
-            {
-              tenball_table->disable();
-              tenball_table->updateLed();
-              
-              tenball_pocket->enable();
-              tenball_pocket->resetCalculatedRGB();
-              tenball_pocket->setFlashSpeed(0);
-              tenball_pocket->updateLed();
-
-              //no more balls to pot - dont reset drop
-              break;
-            }else 
-            break;
-          }   
-          case 28: //G - Drop
-          {
-            break;
-          }  
-          case 26: //H - Drop
-          {
-            break;
-          } 
-          case 25: //E - Drop
-          {
-            break;
-          }  
-           
-
+      
         }
         //finally, mark switch as processed
         switchScored[col][row]=false;

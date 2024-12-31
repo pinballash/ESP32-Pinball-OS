@@ -248,7 +248,7 @@ void createSwitchObjects()
   }//end col processing
 
   PinballSwitch* startButton = secondSwitches[0].switchObject;
-  startButton->setValues("Start Button",2000,false,true,false,false,true,true);
+  startButton->setValues("Start Button",3000,false,true,false,false,true,true);
   //PinballSwitch* wifiButton = secondSwitches[1].switchObject;
   //wifiButton->setValues("WIFI OFF",1000,false,false,false,false,false,false);
 }

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "LIGHTING\ledArrays-BallyEightBallChamp.h"
-
+void resetBallLEDs();
 /*
  * Function switch_event_outhole(int switchId) is a function that manages the logic behing the ball entering teh outhole
  * If the game is active then..
@@ -28,6 +28,8 @@ void switch_event_outhole(int switchId)
       resetBonusLeds();
       resetSpinnerLeds();
       resetChampLeds();
+      //calculatebonus();
+         
       
     }
     //need to get the coilNumber associated
@@ -38,6 +40,13 @@ void switch_event_outhole(int switchId)
     if(g_myPinballGame.isGameActive()==true)
     {
       resetDrops();
+      turnOffAllLeds();
+      if((g_myPinballGame.getCurrentPlayerNumber() == 1)||(g_myPinballGame.getCurrentPlayerNumber() == 3))
+      {
+        setNewBallLEDs(true);
+      }else{
+        setNewBallLEDs(false);
+      }  
       if(coilNumberByte >0)
       {
         //Serial.println("[switch_event_outhole] Fire Outhole");
@@ -76,13 +85,46 @@ void switch_event_saucer(int switchId)
 {
   //saucer code here
   //Serial.println("Fire Saucer");
+
   //ScoreboardTText = "Saucer";
   byte* coilNumber = switchCoilBindings[(byte)switchId].coilNumber; //get the coil number bound to the switch
   byte coilNumberByte = *coilNumber;
   PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
   if(MachineState == 2) //only if game is active
   {
-    vTaskDelay(2000);
+    if(eightball_table->isOn()==true)
+    {
+      eightball_table->disable();
+      eightball_table->updateLed(); 
+      eightball_pocket->disable();
+      eightball_pocket->updateLed();
+
+      Tune1Trigger();
+      resetDrops();
+
+      if(onehundredtwentythousand_bonus->isOn() == false)
+      {
+        onehundredtwentythousand_bonus->enable();
+        onehundredtwentythousand_bonus->resetCalculatedRGB();
+        onehundredtwentythousand_bonus->setFlashSpeed(0);
+        onehundredtwentythousand_bonus->updateLed(); 
+
+      }else if(twohundredfortythousand_bonus->isOn() == false)
+      {
+        twohundredfortythousand_bonus->enable();
+        twohundredfortythousand_bonus->resetCalculatedRGB();
+        twohundredfortythousand_bonus->setFlashSpeed(0);
+        twohundredfortythousand_bonus->updateLed(); 
+
+      }else if(special_big->isOn() == false)
+      {
+        special_big->enable();
+        special_big->resetCalculatedRGB();
+        special_big->setFlashSpeed(0);
+        special_big->updateLed();
+      }
+    }
+    vTaskDelay(4000);
     if(switchCoil->fireCoil())
     { //try and fire the coil
       coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -90,8 +132,18 @@ void switch_event_saucer(int switchId)
       write_sr_coils(); //update shift register
       //todo: add score and other mode logic
     }
+
+    addScore(switchId);
+    if((g_myPinballGame.getCurrentPlayerNumber()==1)||(g_myPinballGame.getCurrentPlayerNumber()==3))
+    {
+      setNewBallLEDs(true);
+    }else{
+      setNewBallLEDs(false);
+    }
+    resetBallLEDs();
+
   }
-  addScore(switchId);
+  
 }
 
 void switch_event_startbutton()
@@ -149,14 +201,14 @@ void resetDrops()
     if(switches[31].switchObject->hasFired()==true)
     {
       //switch has been triggered, reset and send up the drop
-      Serial.println("E Drop is on - need to reset");
+      Serial.println("I Drop is on - need to reset");
       PinballCoil* switchCoil = coils[7].coilObject;
       if(switchCoil->fireCoil()){
         coilActive[7]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
         ProcessShifts(switchCoil); //action the turning on
         write_sr_coils(); //update shift register
       }
-      vTaskDelay(100);
+      vTaskDelay(250);
       switches[31].switchObject->reEnable();
       complete = false;
     }
@@ -165,14 +217,14 @@ void resetDrops()
     if(switches[29].switchObject->hasFired()==true)
     {
       //switch has been triggered, reset and send up the drop
-      Serial.println("I Drop is on - need to reset");
+      Serial.println("G Drop is on - need to reset");
       PinballCoil* switchCoil = coils[8].coilObject;
       if(switchCoil->fireCoil()){
         coilActive[8]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
         ProcessShifts(switchCoil); //action the turning on
         write_sr_coils(); //update shift register
       }
-      vTaskDelay(500);
+      vTaskDelay(250);
       switches[29].switchObject->reEnable();
       complete = false;
     }
@@ -181,14 +233,14 @@ void resetDrops()
     if(switches[28].switchObject->hasFired()==true)
     {
       //switch has been triggered, reset and send up the drop
-      Serial.println("G Drop is on - need to reset");
+      Serial.println("H Drop is on - need to reset");
       PinballCoil* switchCoil = coils[9].coilObject;
       if(switchCoil->fireCoil()){
         coilActive[9]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
         ProcessShifts(switchCoil); //action the turning on
         write_sr_coils(); //update shift register
       }
-      vTaskDelay(500);
+      vTaskDelay(250);
       switches[28].switchObject->reEnable();
       complete = false;
     }
@@ -197,14 +249,14 @@ void resetDrops()
     if(switches[26].switchObject->hasFired()==true)
     {
       //switch has been triggered, reset and send up the drop
-      Serial.println("H Drop is on - need to reset");
+      Serial.println("E Drop is on - need to reset");
       PinballCoil* switchCoil = coils[10].coilObject;
       if(switchCoil->fireCoil()){
         coilActive[10]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
         ProcessShifts(switchCoil); //action the turning on
         write_sr_coils(); //update shift register
       }
-      vTaskDelay(500);
+      vTaskDelay(250);
       switches[26].switchObject->reEnable();
       complete = false;
     }
@@ -220,7 +272,7 @@ void resetDrops()
         ProcessShifts(switchCoil); //action the turning on
         write_sr_coils(); //update shift register
       }
-      vTaskDelay(500);
+      vTaskDelay(250);
       switches[25].switchObject->reEnable();
       complete = false;
     }
@@ -240,6 +292,37 @@ void resetDrops()
 
 
 }
+
+bool resetDrop(int coilId, int switchId)
+{
+  bool complete = true;
+  
+    if(switches[switchId].switchObject->hasFired()==true)
+    {
+      //switch has been triggered, reset and send up the drop
+      Serial.println("Drop is on - need to reset");
+      PinballCoil* switchCoil = coils[coilId].coilObject;
+      if(switchCoil->fireCoil()){
+        coilActive[coilId]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+        ProcessShifts(switchCoil); //action the turning on
+        write_sr_coils(); //update shift register
+      }
+      vTaskDelay(250);
+      switches[switchId].switchObject->reEnable();
+      complete = false;
+    }
+    if(complete == true)
+    {
+      Serial.println("Drop reset");
+      return true;
+    }else{
+      Serial.println("Drop needed reseting, reprocessing to check");
+      vTaskDelay(250);
+      resetDrop(coilId, switchId);
+    }
+    return true;
+
+}
 bool checkChamp() //returns true is any champ lights are still on.  Returns false if champ lights are all off.
 {
   
@@ -250,6 +333,59 @@ bool checkChamp() //returns true is any champ lights are still on.  Returns fals
   return true;
   
 }
+
+void checkEightBall() 
+{
+  
+  if(eightball_pocket->isOn() == false)
+  {
+    if(((g_myPinballGame.getCurrentPlayerNumber()==1)||(g_myPinballGame.getCurrentPlayerNumber()==3))&&
+        (oneball_pocket->isOn()==true)&&
+        (twoball_pocket->isOn()==true)&&
+        (threeball_pocket->isOn()==true)&&
+        (fourball_pocket->isOn()==true)&&
+        (fiveeball_pocket->isOn()==true)&&
+        (sixball_pocket->isOn()==true)&&
+        (sevenball_pocket->isOn()==true)
+    )
+    {
+      //player 1 or 3 with all balls potted and EightBall is not on
+      eightball_table->enable();
+      eightball_table->resetCalculatedRGB();
+      eightball_table->setFlashSpeed(0);
+      eightball_table->updateLed(); 
+
+      eightball_pocket->enable();
+      eightball_pocket->resetCalculatedRGB();
+      eightball_pocket->setFlashSpeed(3);
+      eightball_pocket->updateLed(); 
+    }else
+      if(((g_myPinballGame.getCurrentPlayerNumber()==2)||(g_myPinballGame.getCurrentPlayerNumber()==4))&&
+        (nineball_pocket->isOn()==true)&&
+        (tenball_pocket->isOn()==true)&&
+        (elevenball_pocket->isOn()==true)&&
+        (twelveball_pocket->isOn()==true)&&
+        (thirteenball_pocket->isOn()==true)&&
+        (fourteenball_pocket->isOn()==true)&&
+        (fifteenball_pocket->isOn()==true)
+    )
+    {
+      //player 1 or 3 with all balls potted and EightBall is not on
+      eightball_table->enable();
+      eightball_table->resetCalculatedRGB();
+      eightball_table->setFlashSpeed(0);
+      eightball_table->updateLed(); 
+
+      eightball_pocket->enable();
+      eightball_pocket->resetCalculatedRGB();
+      eightball_pocket->setFlashSpeed(3);
+      eightball_pocket->updateLed(); 
+    }
+
+  }
+  
+}
+
 void increaseBonusMultiplier() //setp the bonus multiplier up.
 {
   
@@ -581,5 +717,68 @@ void resetSpinnerLeds()
   fivethousand_spinner->resetCalculatedRGB();
   fivethousand_spinner->updateLed();
 
+}
+
+void resetBallLEDs()
+{
+  oneball_pocket->disable();
+  oneball_pocket->resetCalculatedRGB();
+  oneball_pocket->updateLed();
+
+  twoball_pocket->disable();
+  twoball_pocket->resetCalculatedRGB();
+  twoball_pocket->updateLed();
+
+  threeball_pocket->disable();
+  threeball_pocket->resetCalculatedRGB();
+  threeball_pocket->updateLed();
+
+  fourball_pocket->disable();
+  fourball_pocket->resetCalculatedRGB();
+  fourball_pocket->updateLed();
+
+  fiveeball_pocket->disable();
+  fiveeball_pocket->resetCalculatedRGB();
+  fiveeball_pocket->updateLed();
+
+  sixball_pocket->disable();
+  sixball_pocket->resetCalculatedRGB();
+  sixball_pocket->updateLed();
+
+  sevenball_pocket->disable();
+  sevenball_pocket->resetCalculatedRGB();
+  sevenball_pocket->updateLed();
+
+  eightball_pocket->disable();
+  eightball_pocket->resetCalculatedRGB();
+  eightball_pocket->updateLed();
+
+  nineball_pocket->disable();
+  nineball_pocket->resetCalculatedRGB();
+  nineball_pocket->updateLed();
+
+  tenball_pocket->disable();
+  tenball_pocket->resetCalculatedRGB();
+  tenball_pocket->updateLed();
+
+  elevenball_pocket->disable();
+  elevenball_pocket->resetCalculatedRGB();
+  elevenball_pocket->updateLed();
+
+  twelveball_pocket->disable();
+  twelveball_pocket->resetCalculatedRGB();
+  twelveball_pocket->updateLed();
+
+  thirteenball_pocket->disable();
+  thirteenball_pocket->resetCalculatedRGB();
+  thirteenball_pocket->updateLed();
+
+  fourteenball_pocket->disable();
+  fourteenball_pocket->resetCalculatedRGB();
+  fourball_pocket->updateLed();
+
+  fifteenball_pocket->disable();
+  fifteenball_pocket->resetCalculatedRGB();
+  fifteenball_pocket->updateLed();
 }
 
