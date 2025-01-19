@@ -3,7 +3,7 @@
 int WEBHz = 0;
 int CMOHz = 0;
 int DisplayControllerHz = 0;
-bool webOn = true;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
+bool webOn = false;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
 
 unsigned long lastMillisSwINT = 0;
 unsigned long lastMillisFlip1 = 0;

@@ -30,8 +30,8 @@ void changeState(int newState)
             {
               //moving from Bootup to Atract : OK
               Serial.println("[changeState] - Attract->Game");
-              ScoreboardTText = "Lets, Play,";
-              ScoreboardBText = "Pool!";
+              ScoreboardTText = "                    ";
+              ScoreboardBText = "                    ";
               MachineState = 2;
               lastMachineState = 1;
               forceDisplayUpdate = true;
@@ -89,8 +89,8 @@ void changeState(int newState)
             {
               //moving from End Game to Game : OK
               Serial.println("[changeState] - End Game->Game");
-              ScoreboardTText = "Lets, Play,";
-              ScoreboardBText = "Pool!";
+              ScoreboardTText = "                    ";
+              ScoreboardBText = "                    ";
               MachineState = 2;
               lastMachineState = 3;
               forceDisplayUpdate = true;

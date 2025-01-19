@@ -91,6 +91,14 @@ class PinballGame
     String DMDTopLine = "";
     String DMDBottomLine = "";
 
+    String _scoreDisplay1 ="0000000";
+    String _scoreDisplay2 ="0000000";
+    String _scoreDisplay3 ="0000000";
+    String _scoreDisplay4 ="0000000";
+
+    String _playerDisplay ="00";
+    String _ballDisplay ="00";
+
     /*
     Variables from AlanJ - these used to exist in params.h in a gameParams Struct
     int ballsPerGame;
@@ -132,6 +140,15 @@ class PinballGame
   void setBonusMultiplier(int multiplier);
   String getDMDTopLine();
   String getDMDBottomLine();
+
+  String getScoreDisplay(int displayId);
+  String getPlayerDisplay();  
+  String getBallDisplay();  
+
+  void setScoreDisplay(int displayId, String DMDText);
+  void setPlayerDisplay(String DMDText);  
+  void setBallDisplay(String DMDText); 
+
   void setDMDTopLine(String DMDText);
   void setDMDBottomLine(String DMDText);
   void setDMDText(String DMDTopLine, String DMDBottomLine);

@@ -31,32 +31,57 @@ void DisplayControllerFunction(void * pvParameters)
 {
   resetDisplay();  
   for(;;){
-    String DMDTopText = g_myPinballGame.getDMDTopLine();
-    String DMDBottomText = g_myPinballGame.getDMDBottomLine();
-    ScoreboardTText = DMDTopText;
-    ScoreboardBText = DMDBottomText; 
-    lcd.setCursor(0,0);
-	if(ScoreboardTText.length() < 20)
+    if(g_myPinballGame.isGameActive() == true)
 	{
-		//we need to pad
-		int initialLen = ScoreboardTText.length();
-		for(int n = initialLen; n <= 20; n++)
+
+		lcd.setCursor(0,1);
+		lcd.print(g_myPinballGame.getScoreDisplay(1));
+
+		lcd.setCursor(0,3);
+		lcd.print(g_myPinballGame.getScoreDisplay(3));
+
+		lcd.setCursor(13,1);
+		lcd.print(g_myPinballGame.getScoreDisplay(2));
+
+		lcd.setCursor(13,3);
+		lcd.print(g_myPinballGame.getScoreDisplay(4));
+
+		lcd.setCursor(7,2);
+		lcd.print(g_myPinballGame.getPlayerDisplay());
+
+		lcd.setCursor(11,2);
+		lcd.print(g_myPinballGame.getBallDisplay());
+	
+	}else{
+		String DMDTopText = g_myPinballGame.getDMDTopLine();
+		String DMDBottomText = g_myPinballGame.getDMDBottomLine();
+
+		ScoreboardTText = DMDTopText;
+		ScoreboardBText = DMDBottomText; 
+		lcd.setCursor(0,0);
+		if(ScoreboardTText.length() < 20)
 		{
-			ScoreboardTText = ScoreboardTText + " ";
+			//we need to pad
+			int initialLen = ScoreboardTText.length();
+			for(int n = initialLen; n <= 20; n++)
+			{
+				ScoreboardTText = ScoreboardTText + " ";
+			}
 		}
-	}
-	if(ScoreboardBText.length() < 20)
-	{
-		//we need to pad
-		int initialLen = ScoreboardBText.length();
-		for(int n = initialLen; n <= 20; n++)
+		if(ScoreboardBText.length() < 20)
 		{
-			ScoreboardBText = ScoreboardBText + " ";
+			//we need to pad
+			int initialLen = ScoreboardBText.length();
+			for(int n = initialLen; n <= 20; n++)
+			{
+				ScoreboardBText = ScoreboardBText + " ";
+			}
 		}
+		lcd.print(ScoreboardTText);
+		lcd.setCursor(0,2);
+		lcd.print(ScoreboardBText);
 	}
-	lcd.print(ScoreboardTText);
-	lcd.setCursor(0,2);
-	lcd.print(ScoreboardBText);
+	
     vTaskDelay(50);       
   }
 
