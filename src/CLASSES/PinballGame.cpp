@@ -45,21 +45,18 @@ PinballGame::PinballGame(String GameName)
         case 2:
             {
               this->_player2CurrentBall = this->_player2CurrentBall +1;
-              this->DMDTopLine = "2 Player";
-              this->DMDBottomLine = "Game";
+              this->setScoreDisplay(2,"0000000");
               break;
             }
         case 3:
             {
               this->_player3CurrentBall = this->_player3CurrentBall +1;
-              this->DMDTopLine = "3 Player";
-              this->DMDBottomLine = "Game";
+              this->setScoreDisplay(3,"0000000");
               break;
             }
         case 4:
             {
-              this->DMDTopLine = "4 Player";
-              this->DMDBottomLine = "Game";
+              this->setScoreDisplay(4,"0000000");
               this->_player4CurrentBall = this->_player4CurrentBall +1;
               break;
             }
@@ -297,9 +294,9 @@ PinballGame::PinballGame(String GameName)
     this->_playerCount = 0; 
     this->_currentPlayer = 1;
     this->setScoreDisplay(1,"0000000");
-    this->setScoreDisplay(2,"0000000");
-    this->setScoreDisplay(3,"0000000");
-    this->setScoreDisplay(4,"0000000");
+    this->setScoreDisplay(2,"       ");
+    this->setScoreDisplay(3,"       ");
+    this->setScoreDisplay(4,"       ");
     this->setBallDisplay(String(this->getCurrentBallNumber(_currentPlayer)));
     this->setPlayerDisplay(String(_currentPlayer));
 
@@ -393,7 +390,7 @@ PinballGame::PinballGame(String GameName)
 			//we need to pad
       
 			int initialLen = DMDText.length();
-			for(int n = initialLen; n <= 7; n++)
+			for(int n = initialLen; n < 7; n++)
 			{
 				padding = padding + "0";
 			}
