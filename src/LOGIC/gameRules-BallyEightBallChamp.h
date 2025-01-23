@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include "LIGHTING\ledArrays-BallyEightBallChamp.h"
 void resetBallLEDs();
+void bonusCountdown();
+void addBonus(int scoreValue);
+void fireBonusLed(PinballLED* LED, int score);
 /*
  * Function switch_event_outhole(int switchId) is a function that manages the logic behing the ball entering teh outhole
  * If the game is active then..
@@ -19,6 +22,7 @@ void switch_event_outhole(int switchId)
     if(g_myPinballGame.isBallSave()==false)
     {
       //ball save dont end ball
+      bonusCountdown();
       int thisPlayerNumber = g_myPinballGame.getCurrentPlayerNumber();
       g_myPinballGame.endOfBall(g_myPinballGame.getCurrentPlayerNumber());
       ScoreboardBText = "End of ball P" + (String)thisPlayerNumber; //this message isnt going to display for long without a delay - perhaps we need some additional display states to handle this.
@@ -200,6 +204,32 @@ void addScore(int switchID)
   }
   ChimeRing(coilid);
 }
+void addBonus(int scoreValue)
+{
+  int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
+  int playerscore = g_myPinballGame.getPlayerScore(playerNumber) + scoreValue;
+  g_myPinballGame.setPlayerScore(playerNumber,playerscore);
+  //lets do a different chime for different levels of score
+  //<1001 high - coil 11
+  //>1000 medium and <3001- coil 12
+  //>3001 - coil 14
+  char coilid;
+  if(scoreValue < 5001)
+  {
+    coilid = 11;
+  }else if(scoreValue <120001)
+  {
+    coilid = 12;
+  }else{
+    coilid = 14;
+  }
+  ChimeRing(coilid);
+  vTaskDelay(200);
+  ChimeRing(coilid);
+  vTaskDelay(200);
+  ChimeRing(coilid);
+  vTaskDelay(600);
+}
 void resetDrops()
 {
   bool complete = true;
@@ -352,7 +382,7 @@ void checkEightBall()
         (twoball_pocket->isOn()==true)&&
         (threeball_pocket->isOn()==true)&&
         (fourball_pocket->isOn()==true)&&
-        (fiveeball_pocket->isOn()==true)&&
+        (fiveball_pocket->isOn()==true)&&
         (sixball_pocket->isOn()==true)&&
         (sevenball_pocket->isOn()==true)
     )
@@ -612,10 +642,10 @@ void setNewBallLEDs(bool dots, bool resetChamp) //turns on all table balls for d
     fourball_table->setFlashSpeed(0);
     fourball_table->updateLed();
 
-    fiveeball_table->enable();
-    fiveeball_table->resetCalculatedRGB();
-    fiveeball_table->setFlashSpeed(0);
-    fiveeball_table->updateLed();
+    fiveball_table->enable();
+    fiveball_table->resetCalculatedRGB();
+    fiveball_table->setFlashSpeed(0);
+    fiveball_table->updateLed();
 
     sixball_table->enable();
     sixball_table->resetCalculatedRGB();
@@ -749,9 +779,9 @@ void resetBallLEDs()
   fourball_pocket->resetCalculatedRGB();
   fourball_pocket->updateLed();
 
-  fiveeball_pocket->disable();
-  fiveeball_pocket->resetCalculatedRGB();
-  fiveeball_pocket->updateLed();
+  fiveball_pocket->disable();
+  fiveball_pocket->resetCalculatedRGB();
+  fiveball_pocket->updateLed();
 
   sixball_pocket->disable();
   sixball_pocket->resetCalculatedRGB();
@@ -792,5 +822,112 @@ void resetBallLEDs()
   fifteenball_pocket->disable();
   fifteenball_pocket->resetCalculatedRGB();
   fifteenball_pocket->updateLed();
+}
+
+void bonusCountdown()
+{
+  //identify if multiplier is in play
+  int multiplier = 1; //set as one for now
+
+  if(fivex_bonus->isOn()==true)
+  {
+    multiplier = 5;
+  }else if(threex_bonus->isOn()==true)
+  {
+    multiplier = 3;
+  }else if(twox_bonus->isOn()==true)
+  {
+    multiplier = 2;
+  }
+
+  for(int i=0; i < multiplier; i++)
+  {
+    //step through each bonus qualifying led
+    //single potted balls first
+    //Pocket Balls
+    if (oneball_pocket->isOn()==true)
+    {
+      fireBonusLed(oneball_pocket, 5000);
+    }
+    if (twoball_pocket->isOn()==true)
+    {
+      fireBonusLed(twoball_pocket, 5000);
+    }
+    if (threeball_pocket->isOn()==true)
+    {
+      fireBonusLed(threeball_pocket, 5000);
+    }
+    if (fourball_pocket->isOn()==true)
+    {
+      fireBonusLed(fourball_pocket, 5000);
+    }
+    if (fiveball_pocket->isOn()==true)
+    {
+      fireBonusLed(fiveball_pocket, 5000);
+    }
+    if (sixball_pocket->isOn()==true)
+    {
+      fireBonusLed(sixball_pocket, 5000);
+    }
+    if (sevenball_pocket->isOn()==true)
+    {
+      fireBonusLed(sevenball_pocket, 5000);
+    }
+
+    if (nineball_pocket->isOn()==true)
+    {
+      fireBonusLed(nineball_pocket, 5000);
+    }
+    if (tenball_pocket->isOn()==true)
+    {
+      fireBonusLed(tenball_pocket, 5000);
+    }
+    if (elevenball_pocket->isOn()==true)
+    {
+      fireBonusLed(elevenball_pocket, 5000);
+    }
+    if (twelveball_pocket->isOn()==true)
+    {
+      fireBonusLed(twelveball_pocket, 5000);
+    }
+    if (thirteenball_pocket->isOn()==true)
+    {
+      fireBonusLed(thirteenball_pocket, 5000);
+    }
+    if (fourteenball_pocket->isOn()==true)
+    {
+      fireBonusLed(fourteenball_pocket, 5000);
+    }
+    if (fifteenball_pocket->isOn()==true)
+    {
+      fireBonusLed(fifteenball_pocket, 5000);
+    }
+    //lower ring awards next
+    if(onehundredtwentythousand_bonus->isOn()==true)
+    {
+      fireBonusLed(onehundredtwentythousand_bonus, 120000);
+    }
+
+    if(twohundredfortythousand_bonus->isOn()==true)
+    {
+      fireBonusLed(twohundredfortythousand_bonus, 240000);
+    }
+
+  }
+  
+}
+
+void fireBonusLed(PinballLED* LED, int score)
+{
+  //flash LED, add score, play chimes, turn off led
+    
+    LED->setFlashSpeed(2);
+    LED->updateLed();
+    addBonus(score);
+    vTaskDelay(1000);
+    LED->disable();
+    LED->resetCalculatedRGB();
+    LED->setFlashSpeed(0);
+    LED->updateLed();
 }
 

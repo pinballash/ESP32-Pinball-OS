@@ -489,15 +489,15 @@ void processAllSwitches()
                 resetDrop(9, 28);
                 checkEightBall();
                 break;
-              }else if(fiveeball_table->isOn())
+              }else if(fiveball_table->isOn())
               {
-                fiveeball_table->disable();
-                fiveeball_table->updateLed();
+                fiveball_table->disable();
+                fiveball_table->updateLed();
                 
-                fiveeball_pocket->enable();
-                fiveeball_pocket->resetCalculatedRGB();
-                fiveeball_pocket->setFlashSpeed(0);
-                fiveeball_pocket->updateLed();
+                fiveball_pocket->enable();
+                fiveball_pocket->resetCalculatedRGB();
+                fiveball_pocket->setFlashSpeed(0);
+                fiveball_pocket->updateLed();
 
                 //no more balls to pot - dont reset drop
                 checkEightBall();
