@@ -161,7 +161,7 @@ void setup() {
       }
       else
       {
-        g_myPinballGame.setDMDBottomLine("Not using wifi");
+        g_myPinballGame.setDMDBottomLine("                    ");
       }
 
     changeState(1); 

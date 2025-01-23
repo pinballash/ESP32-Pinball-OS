@@ -43,9 +43,9 @@ void switch_event_outhole(int switchId)
       turnOffAllLeds();
       if((g_myPinballGame.getCurrentPlayerNumber() == 1)||(g_myPinballGame.getCurrentPlayerNumber() == 3))
       {
-        setNewBallLEDs(true);
+        setNewBallLEDs(true, true);
       }else{
-        setNewBallLEDs(false);
+        setNewBallLEDs(false, true);
       }  
       if(coilNumberByte >0)
       {
@@ -92,8 +92,10 @@ void switch_event_saucer(int switchId)
   PinballCoil* switchCoil = coils[coilNumberByte].coilObject; //get the PinballCoil instance associated
   if(MachineState == 2) //only if game is active
   {
+    Serial.println("Saucer");
     if(eightball_table->isOn()==true)
     {
+      Serial.println("8 Ball was lit");
       eightball_table->disable();
       eightball_table->updateLed(); 
       eightball_pocket->disable();
@@ -123,8 +125,20 @@ void switch_event_saucer(int switchId)
         special_big->setFlashSpeed(0);
         special_big->updateLed();
       }
+      if((g_myPinballGame.getCurrentPlayerNumber()==1)||(g_myPinballGame.getCurrentPlayerNumber()==3))
+      {
+        setNewBallLEDs(true, false);
+      }else{
+        setNewBallLEDs(false, false);
+      }
+      resetBallLEDs();
+      vTaskDelay(4000);
     }
-    vTaskDelay(4000);
+    else{
+      Serial.println("8 Ball was not lit");
+      vTaskDelay(1000);
+    }
+    
     if(switchCoil->fireCoil())
     { //try and fire the coil
       coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
@@ -134,13 +148,7 @@ void switch_event_saucer(int switchId)
     }
 
     addScore(switchId);
-    if((g_myPinballGame.getCurrentPlayerNumber()==1)||(g_myPinballGame.getCurrentPlayerNumber()==3))
-    {
-      setNewBallLEDs(true);
-    }else{
-      setNewBallLEDs(false);
-    }
-    resetBallLEDs();
+
 
   }
   
@@ -155,7 +163,7 @@ void switch_event_startbutton()
     //digitalWrite(hvrPin, LOW);
     //Serial.println("[switch_event_startbutton] Enabling High Voltage Relay");
     turnOffAllLeds();
-    setNewBallLEDs(true);
+    setNewBallLEDs(true, true);
   } else if(MachineState == 2)
   {//if player1 is still on first ball, add more players
     //Serial.println("[switch_event_startbutton] Add player");
@@ -166,7 +174,7 @@ void switch_event_startbutton()
     //Serial.println("[switch_event_startbutton] Starting Another Game");
     changeState(2);
     turnOffAllLeds();
-    setNewBallLEDs(true);
+    setNewBallLEDs(true, true);
   }
 }
 void addScore(int switchID)
@@ -578,7 +586,7 @@ void turnOffAllLeds() //literally turn every LED off
 
   
 }
-void setNewBallLEDs(bool dots) //turns on all table balls for dots or stripes.  If true argument its dots, if false, its stripes.
+void setNewBallLEDs(bool dots, bool resetChamp) //turns on all table balls for dots or stripes.  If true argument its dots, if false, its stripes.
 {
 
   //if dats = true - we need 1-7 else 9-15
@@ -656,7 +664,11 @@ void setNewBallLEDs(bool dots) //turns on all table balls for dots or stripes.  
     fifteenball_table->setFlashSpeed(0);
     fifteenball_table->updateLed();
   }
-  resetChampLeds();
+  if(resetChamp==true)
+  {
+    resetChampLeds();
+  }
+  
 
 }
 void resetChampLeds()

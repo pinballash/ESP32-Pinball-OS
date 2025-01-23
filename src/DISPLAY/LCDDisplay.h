@@ -34,6 +34,9 @@ void DisplayControllerFunction(void * pvParameters)
     if(g_myPinballGame.isGameActive() == true)
 	{
 
+		lcd.setCursor(0,0);
+		lcd.print("                    ");
+		
 		lcd.setCursor(0,1);
 		lcd.print(g_myPinballGame.getScoreDisplay(1));
 
@@ -46,11 +49,11 @@ void DisplayControllerFunction(void * pvParameters)
 		lcd.setCursor(13,3);
 		lcd.print(g_myPinballGame.getScoreDisplay(4));
 
-		lcd.setCursor(7,2);
-		lcd.print(g_myPinballGame.getPlayerDisplay());
+		lcd.setCursor(0,2);
+		lcd.print("Player "+g_myPinballGame.getPlayerDisplay());
 
 		lcd.setCursor(11,2);
-		lcd.print(g_myPinballGame.getBallDisplay());
+		lcd.print(g_myPinballGame.getBallDisplay()+" Ball");
 	
 	}else{
 		String DMDTopText = g_myPinballGame.getDMDTopLine();
@@ -58,7 +61,7 @@ void DisplayControllerFunction(void * pvParameters)
 
 		ScoreboardTText = DMDTopText;
 		ScoreboardBText = DMDBottomText; 
-		lcd.setCursor(0,0);
+		
 		if(ScoreboardTText.length() < 20)
 		{
 			//we need to pad
@@ -77,6 +80,7 @@ void DisplayControllerFunction(void * pvParameters)
 				ScoreboardBText = ScoreboardBText + " ";
 			}
 		}
+		lcd.setCursor(0,0);
 		lcd.print(ScoreboardTText);
 		lcd.setCursor(0,2);
 		lcd.print(ScoreboardBText);

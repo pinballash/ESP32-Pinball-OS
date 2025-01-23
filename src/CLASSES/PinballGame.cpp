@@ -29,8 +29,8 @@ PinballGame::PinballGame(String GameName)
   {
     this->_gameActive = false;
     this->_currentPlayer = 1;
-    this->DMDTopLine = "Game";
-    this->DMDBottomLine = "Over";
+    this->DMDTopLine = "     Game Over      ";
+    this->DMDBottomLine = "                    ";
     extern const int setting_hvrPin;
     //digitalWrite(setting_hvrPin, LOW);
   }
