@@ -281,8 +281,7 @@ void processAllSwitches()
 
         }
         //Game rules go here. As we pick up switch triggers we can initiate logic.
-        bool triggerBonusMultiplierIncrease = false; //we need to track this and execute once switches have finished processing
-        bool triggerSpinnerValueIncrease = false;
+
         if(MachineState == 2)//only process these switches if game is active
         {
           switch(triggeredSwitchID)
@@ -301,7 +300,7 @@ void processAllSwitches()
                   resetChampLeds();
 
                   //increase multiplier - to do
-                  triggerBonusMultiplierIncrease = true;
+                  triggerPlayfieldMultiplierIncrease = true;
                   triggerSpinnerValueIncrease = true;
 
                 }
@@ -323,7 +322,7 @@ void processAllSwitches()
                   resetChampLeds();
 
                   //increase multiplier - to do
-                  triggerBonusMultiplierIncrease = true;
+                  triggerPlayfieldMultiplierIncrease = true;
                   triggerSpinnerValueIncrease = true;
 
                 }
@@ -345,7 +344,7 @@ void processAllSwitches()
                   resetChampLeds();
 
                   //increase multiplier - to do
-                  triggerBonusMultiplierIncrease = true;
+                  triggerPlayfieldMultiplierIncrease = true;
                   triggerSpinnerValueIncrease = true;
 
                 }
@@ -367,7 +366,7 @@ void processAllSwitches()
                   resetChampLeds();
 
                   //increase multiplier - to do
-                  triggerBonusMultiplierIncrease = true;
+                  triggerPlayfieldMultiplierIncrease = true;
                   triggerSpinnerValueIncrease = true;
 
                 }
@@ -389,7 +388,7 @@ void processAllSwitches()
                   resetChampLeds();
 
                   //increase multiplier - to do
-                  triggerBonusMultiplierIncrease = true;
+                  triggerPlayfieldMultiplierIncrease = true;
                   triggerSpinnerValueIncrease = true;
 
                 }
@@ -638,10 +637,20 @@ void processAllSwitches()
         if(triggerBonusMultiplierIncrease == true)
         {
           increaseBonusMultiplier();
-          increaseSpinnerValue();
+          
           //now we are done reset.
           triggerBonusMultiplierIncrease = false;
+          
+        }
+        if(triggerSpinnerValueIncrease == true)
+        {
+          increaseSpinnerValue();
           triggerSpinnerValueIncrease = false;
+        }
+        if(triggerPlayfieldMultiplierIncrease == true)
+        {
+          increasePlayfieldMultiplier();
+          triggerPlayfieldMultiplierIncrease = false;
         }
       }
     }
