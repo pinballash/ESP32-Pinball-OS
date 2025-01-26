@@ -109,6 +109,11 @@ bool PinballLED::isOn()
   return this->_isOn;
 }
 
+bool PinballLED::isEnabled()
+{
+  return this->_enabled;
+}
+
 void PinballLED::turnOn()
 {
   this->_isOn = true;
@@ -121,34 +126,44 @@ void PinballLED::turnOff()
 
 void PinballLED::tick()
 {
+  unsigned ledPeriod = (1000000*this->_flashPeriodLength)/this->_flashSpeed;
+  unsigned long halfLife = ledPeriod/2;  //blink interval is half flashPeriod length in miliseconds divided by flashSpeed
  if((this->_flashSpeed > 0) && (this->_enabled == true))
  {
-    unsigned long blinkInterval = (1000000/2)/this->_flashSpeed;
-    if(micros() - this->_lastBlink >= blinkInterval) //we must not let this loop run away with itself, rate limiter here
+
+    //so here we need to think about the whole period.  We need to be on for half the period and off for hals the period
+    
+
+    unsigned long timerMicros = micros();
+    if((timerMicros - this->_lastBlink >= halfLife) && (this->isEnabled() == true))
     {
-      if (this->_fadeOut == true)
+      
+      if(this->_isOn == true) //so we have be on for the half life
       {
-        /* here we fade out */
-        if(this->_fadeLevel < 3)
+        //turn off
+        this->_isOn = false;
+        this->resetCalculatedRGB();
+        //Serial.println("[LED]"+this->_LEDName+",off,"+timerMicros+","+(timerMicros - this->_lastBlink)+","+halfLife);
+        this->updateLed();
+      }else{ //so we have be off for the half life
+        
+        if(this->_flashOnce == true)
         {
-          this->_fadeLevel++;
-          dimLed();
-          this->_needsUpdate = true;
+          
+          //Serial.println("[LED]"+this->_LEDName+",disable,"+timerMicros+","+(timerMicros - this->_lastBlink)+","+halfLife);
+          
+          this->_enabled = false;
+          this->resetCalculatedRGB();
+          this->_needsUpdate == true;
+
+        }else
+        {
+          this->_isOn = true;
+          this->_needsUpdate == true;
         }
       }
-      if((this->_fadeOut == false) || (this->_fadeLevel == 3))
-      {
-        this->_isOn = !this->_isOn;
-        this->_needsUpdate = true;
-        this->_lastBlink = micros();
-        resetCalculatedRGB();
-        this->_fadeLevel = 0;
-        if((this->_flashOnce == true) && (this->_isOn == false))
-        {
-          this->disable();
-          this->_needsUpdate = true;
-        }
-      }
+      this->_lastBlink = micros();
+      
     }
  }
 }
@@ -165,11 +180,25 @@ void PinballLED::disable()
   this->_enabled = false;
 }
 
-void PinballLED::flashOnce(int flashTime)
+bool PinballLED::flashOnce(int flashTime)
 {
-  this->_flashSpeed = flashTime;
-  this->_enabled = true;
-  this->_flashOnce = true;
+    //this->_lastBlink = 0;
+    if(this->isEnabled() == false)
+    {
+      this->_lastBlink = micros();
+      this->_flashSpeed = flashTime;
+      this->_flashOnce = true;
+      this->_enabled = true;
+      this->_isOn = true;
+      this->resetCalculatedRGB();
+      this->_needsUpdate = true;
+      //Serial.println("[LED]"+this->_LEDName+",on,"+this->_lastBlink);
+      //Serial.println("[LED]"+this->_LEDName+",on,"+this->_lastBlink+", , ");
+      return true;
+    }else{
+      return false;
+    }
+
 }
 
 void PinballLED::setFlashSpeed(int speed)

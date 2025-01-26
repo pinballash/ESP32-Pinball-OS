@@ -72,9 +72,9 @@ void setup() {
     "ProcessSwitchesAndRules",
     5000,
     NULL,
-    24,
+    RULES_CPU_Task_Priority,
     &ProcessSwitchesAndRules,
-    0);
+    RULES_CPU_Core_Selection);
 
   //set up led handling loop
   xTaskCreatePinnedToCore(
@@ -82,9 +82,9 @@ void setup() {
     "ProcessLeds",
     20000,
     NULL,
-    24,
+    LED_CPU_Task_Priority,
     &ProcessLeds,
-    0);
+    LED_CPU_Core_Selection);
   
   //set up display handling
   xTaskCreatePinnedToCore(
@@ -92,9 +92,9 @@ void setup() {
     "DisplayController",
     5000,
     NULL,
-    32,
+    DISPLAY_CPU_Task_Priority,
     &DisplayController,
-    0);
+    DISPLAY_CPU_Core_Selection);
   
   
   //set up web operations
@@ -103,9 +103,9 @@ void setup() {
     "WebOperationsTask",
     20000,
     NULL,
-    50,
+    WEB_CPU_Task_Priority,
     &WebOperationsTask,
-    0);
+    WEB_CPU_Core_Selection);
  
 
   if(webOn == true)

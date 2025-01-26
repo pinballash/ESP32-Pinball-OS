@@ -620,13 +620,20 @@ char ledArrayTableBallsCounter = 0;
 bool cycleLedTableBalls = true;
 
 char ledArray_PottedBalls[] = {
-  62,64,67,70,72,73,75,68,63,65,66,69,71,74,76
+  62,64,67,70,72,73,75,63,65,66,69,71,74,76//,68
 };
 char ledArrayPottedBallsCount = 15;
 char ledArrayPottedBallsCounter = 0;
 bool cycleLedPottedBalls = true;
 bool ledArrayPottedBallsEven = true;
 
+char ledArray_TestBalls[] = {
+  62,64//,68
+};
+char ledArrayTestBallsCount = 2;
+char ledArrayTestBallsCounter = 0;
+bool cycleLedTestBalls = true;
+bool ledArrayTestBallsEven = true;
 
 int row0[] = {93};
 int row1[] = {88};
@@ -645,81 +652,3 @@ int pfArraySize[10] = {1,1,2,2,1,2,4,1,7,7}, k = 0;
 int pfRowCounter = 0;
 int pfRowCount = 11;
 
-void LED_display_chase_pf()
-{
-  int* ptr = playfieldRows[pfRowCounter];
-  for(int i = 0; i < pfArraySize[pfRowCounter]; i++)
-  {
-    
-    PinballLED* thisCLed = LEDs[*ptr].ledObject;
-     if(thisCLed->isOn() == false)
-      {
-        thisCLed->flashOnce(1); //cycle once a second second
-      }
-    ptr++;
-  }
-  pfRowCounter++;
-  if(pfRowCounter == pfRowCount)
-  {
-    pfRowCounter = 0;
-  }
-}
-
-
-bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond)
-{
-  bool isActioned = false;
-  for(char ledId = 0; ledId < LED_array_length; ledId++)
-    {
-      if ((isEven == true) && (ledId % 2) == 0) //if number is even and we are workinh with even
-      {
-        PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
-        if(thisCLed->isOn() == false)
-        {
-          thisCLed->flashOnce(flashesPerSecond); 
-          isActioned = true;
-        }
-      }else if ((isEven == false) && ((ledId % 2) != 0))//its an odd number and we are working with odd
-      {
-        
-        PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
-        if(thisCLed->isOn() == false)
-        {
-          thisCLed->flashOnce(flashesPerSecond); 
-          isActioned = true;
-        }
-      }
-    }
-    if(isActioned == true)
-    {
-      isEven = !isEven;
-    }
-    return isEven;
-}
-
-char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter)
-{
-  PinballLED* thisCLed = LEDs[LED_ID_array[counter]].ledObject;
-  //if(thisCLed->isOn() == false)
-  //{
-    thisCLed->flashOnce(flashesPerSecond); //cycle once a second second
-  //}
-  counter++;
-  if(counter == LED_array_length)
-  {
-    counter = 0;
-  }
-  return counter;
-}
-
-void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond)
-{
-  for(char ledId = 0; ledId < LED_array_length; ledId++)
-    {
-      PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
-      if(thisCLed->isOn() == false)
-      {
-        thisCLed->flashOnce(flashesPerSecond); 
-      }
-    }
-}

@@ -18,8 +18,9 @@ bool srDebug = false;
 bool osrDebug = false;
 bool generalMODebug = false;
 bool memoryStats = false;
-unsigned long processSwitchArrayEveryMicroSeconds = 1000; //this seems to be the value where we can operate at around 1000 times per second
-unsigned long UpdateLedsEveryMicroSeconds = 100000; //10 times a second
+unsigned long processSwitchArrayEveryMicroSeconds = (1000000/1000); //1000 times per second
+int ledUpdateFrequency = 100;
+unsigned long UpdateLedsEveryMicroSeconds = (1000000/ledUpdateFrequency); 
 bool runningLeds = false;
 
 //setup array for storing switch active

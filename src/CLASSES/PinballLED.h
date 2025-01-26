@@ -10,7 +10,9 @@ class PinballLED
         String _LEDName = "Name not set";
         bool _enabled = false;
         bool _isOn = true;
-        int _flashSpeed = 0;
+        int _flashSpeed = 0; //flashes per period
+        int _flashPeriodLength = 2; //in seconds
+        bool _blinkOn = true;
         byte _red;
         byte _green;
         byte _blue;
@@ -46,16 +48,16 @@ class PinballLED
   bool getUpdate();
   void setUpdate();
   bool isOn();
+  bool isEnabled();
   void turnOn();
   void turnOff();
   void tick();
   void enable();
   void disable();
-  void flashOnce(int flashTime);
+  bool flashOnce(int flashTime);
   void setFlashSpeed(int speed);
   void fadeOut();
   void dimLed();
-  
   
 };
 #endif

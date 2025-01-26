@@ -625,7 +625,73 @@ void processAllSwitches()
               }
               break;
             }  
-            
+            case 39: //E Standup
+            {
+              Serial.println("Switch 39");
+              if(E_led->isEnabled()==false)
+              {
+                E_led->enable();
+                E_led->resetCalculatedRGB();
+                E_led->setFlashSpeed(0);
+                E_led->updateLed();
+                checkEightWord();
+              }
+              
+              break;
+            } 
+            case 38: //I Standup
+            {
+              Serial.println("Switch 38");
+              if(I_led->isEnabled()==false)
+              {
+                I_led->enable();
+                I_led->resetCalculatedRGB();
+                I_led->setFlashSpeed(0);
+                I_led->updateLed();
+                checkEightWord();
+              }
+              break;
+            } 
+            case 37: //G Standup
+            {
+              Serial.println("Switch 37");
+              if(G_led->isEnabled()==false)
+              {
+                G_led->enable();
+                G_led->resetCalculatedRGB();
+                G_led->setFlashSpeed(0);
+                G_led->updateLed();
+                checkEightWord();
+              }
+              break;
+            } 
+            case 36: //H Standup
+            {
+              Serial.println("Switch 36");
+              if(H_led->isEnabled()==false)
+              {
+                H_led->enable();
+                H_led->resetCalculatedRGB();
+                H_led->setFlashSpeed(0);
+                H_led->updateLed();
+                checkEightWord();
+              }
+              break;
+            } 
+            case 35: //T Standup
+            {
+              Serial.println("Switch 35");
+              if(T_led->isEnabled()==false)
+              {
+                T_led->enable();
+                T_led->resetCalculatedRGB();
+                T_led->setFlashSpeed(0);
+                T_led->updateLed();
+                checkEightWord();
+              }
+              break;
+            } 
+             
 
           }
       

@@ -10,14 +10,18 @@ void Tune1TriggerFunction(void * pvParameters);
 
 bool ChimeRing(char coilNum)
 {
-  PinballCoil* ChimeCoil = coils[coilNum].coilObject;
- 
-  if(ChimeCoil->fireCoil()){
-    coilActive[coilNum]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-    ProcessShifts(ChimeCoil); //action the turning on
-    write_sr_coils(); //update shift register
-    return true;
+  if(chimesOn==true)
+  {
+    PinballCoil* ChimeCoil = coils[coilNum].coilObject;
+  
+    if(ChimeCoil->fireCoil()){
+      coilActive[coilNum]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+      ProcessShifts(ChimeCoil); //action the turning on
+      write_sr_coils(); //update shift register
+      return true;
+    }
   }
+
   return false;
 }
 

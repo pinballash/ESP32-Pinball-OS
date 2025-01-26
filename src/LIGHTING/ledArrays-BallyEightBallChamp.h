@@ -63,3 +63,15 @@ PinballLED* special_right_rollover = LEDs[23].ledObject;
 PinballLED* onethousand_spinner = LEDs[15].ledObject;
 PinballLED* threethousand_spinner = LEDs[16].ledObject;
 PinballLED* fivethousand_spinner = LEDs[17].ledObject;
+
+
+PinballLED* E_led = LEDs[36].ledObject;
+PinballLED* I_led = LEDs[44].ledObject;
+PinballLED* G_led = LEDs[45].ledObject;
+PinballLED* H_led = LEDs[46].ledObject;
+PinballLED* T_led = LEDs[47].ledObject;
+
+PinballLED* Ball_led = LEDs[58].ledObject;
+PinballLED* bAll_led = LEDs[57].ledObject;
+PinballLED* baLl_led = LEDs[56].ledObject;
+PinballLED* balL_led = LEDs[48].ledObject;
