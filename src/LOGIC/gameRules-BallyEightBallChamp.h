@@ -52,7 +52,7 @@ void switch_event_outhole(int switchId)
     byte* coilNumber = switchCoilBindings[(byte)switchId].coilNumber; //get the coil number bound to the switch
     byte coilNumberByte = *coilNumber;
     //only fire if in a game
-    Serial.println("[INFO][switch_event_outhole] Outhole switch triggered, game is active");
+    //Serial.println("[INFO][switch_event_outhole] Outhole switch triggered, game is active");
     if(g_myPinballGame.isGameActive()==true)
     {
       resetDrops();
@@ -628,7 +628,7 @@ void processAllLeds()
 
     if (cycleLedEIGHTBALL == true)
     {
-      ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 2, ledArrayEIGHTBALLCounter);
+      ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 4, ledArrayEIGHTBALLCounter);
     }
     if (cycleledLowerRing == true)
     {
@@ -660,7 +660,7 @@ void processAllLeds()
     //get the led object and read its state
     PinballLED* thisLed = LEDs[id].ledObject; 
     thisLed->tick();
-    if((thisLed->getUpdate() == true) && (thisLed->isEnabled() == true))
+    if((thisLed->getUpdate() == true));// && (thisLed->isEnabled() == true))
     { 
       //Serial.println("[LED class] Update "+ (String)thisLed->getUpdate() + " enabled "+thisLed->isEnabled());
       needsReload = true;
@@ -696,14 +696,15 @@ void turnOnAttractLEDs(){
 }
 void turnOffAllLeds() //literally turn every LED off
 {
+  //pause led processing
+  vTaskSuspend(ProcessLeds);
+  
   cycleLedPottedBalls = false;
   cycleLedEIGHTBALL = false;
   cycleLedLeftSide = false;
   cycleLedRightSide = false;
   cycleLedCHAMP = false;
   cycleledLowerRing = false;
-
-
   
   for (byte id = 0; id < NUM_LEDS ; id++) 
   {
@@ -713,7 +714,12 @@ void turnOffAllLeds() //literally turn every LED off
     thisLed->resetCalculatedRGB();
     thisLed->setFlashSpeed(0);
     thisLed->updateLed();
+
+    ledArray[id] = CRGB::Black;    
+
   }
+  FastLED.show();
+  vTaskResume(ProcessLeds);
 
   
 }
