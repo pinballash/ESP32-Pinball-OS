@@ -624,7 +624,12 @@ void processAllLeds()
     if (cycleLedPottedBalls == true)
     {
       ledArrayPottedBallsCounter = LED_display_chase(ledArray_PottedBalls, ledArrayPottedBallsCount, 3, ledArrayPottedBallsCounter);
-    }  
+    } 
+
+    if (cycleLedTableBalls == true)
+    {
+      ledArrayTableBallsCounter = LED_display_chase(ledArray_TableBalls, ledArrayTableBallsCount, 1, ledArrayTableBallsCounter);
+    } 
 
     if (cycleLedEIGHTBALL == true)
     {
@@ -644,12 +649,31 @@ void processAllLeds()
     {
       ledArrayRightSideCounter = LED_display_chase(ledArray_RightSide, ledArrayRightSideCount, 4, ledArrayRightSideCounter);
     }
+    
+    if (cycleLedSpinner== true)
+    {
+      ledArraySpinnerCounter = LED_display_chase(ledArray_Spinner, ledArraySpinnerCount, 6, ledArraySpinnerCounter);
+    }
+
+    
+    if (cycleLedTopLane== true)
+    {
+      ledArrayTopLaneCounter = LED_display_chase(ledArray_TopLane, ledArrayTopLaneCount, 6, ledArrayTopLaneCounter);
+    }
 
     if (cycleLedCHAMP == true)
     {
       LED_display_flashBlock(ledArray_CHAMP, ledArrayCHAMPCount, 2);
     }
+
+    if (cycleLedFiveThou == true)
+    {
+      LED_display_flashBlock(ledArray_FiveThou, ledArrayFiveThouCount, 4);
+    }
+
     ledUpdateMicros = micros();
+
+
     
   } 
   //ledArrayTestBallsCounter = LED_display_chase(ledArray_TestBalls, ledArrayTestBallsCount, 1, ledArrayTestBallsCounter);
@@ -693,6 +717,10 @@ void turnOnAttractLEDs(){
   cycleLedRightSide = true;
   cycleLedCHAMP = true;
   cycleledLowerRing = true;
+  cycleLedTableBalls = true;
+  cycleLedSpinner = true;
+  cycleLedFiveThou = true;
+  cycleLedTopLane = true;
 }
 void turnOffAllLeds() //literally turn every LED off
 {
@@ -705,6 +733,10 @@ void turnOffAllLeds() //literally turn every LED off
   cycleLedRightSide = false;
   cycleLedCHAMP = false;
   cycleledLowerRing = false;
+  cycleLedTableBalls = false;
+  cycleLedSpinner = false;
+  cycleLedFiveThou = false;
+  cycleLedTopLane = false;
   
   for (byte id = 0; id < NUM_LEDS ; id++) 
   {

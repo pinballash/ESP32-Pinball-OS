@@ -613,9 +613,9 @@ char ledArrayRightSideCounter = 0;
 bool cycleLedRightSide = true;
 
 char ledArray_TableBalls[] = {
-  39,37,34,32,30,42,54,2,40,14,33,31,29,43,51
+  39,37,34,32,30,42,54,40,14,33,31,29,43,51
 };
-char ledArrayTableBallsCount = 15;
+char ledArrayTableBallsCount = 14;
 char ledArrayTableBallsCounter = 0;
 bool cycleLedTableBalls = true;
 
@@ -634,6 +634,30 @@ char ledArrayTestBallsCount = 2;
 char ledArrayTestBallsCounter = 0;
 bool cycleLedTestBalls = true;
 bool ledArrayTestBallsEven = true;
+
+char ledArray_Spinner[] = {
+  15,16,17,16
+};
+char ledArraySpinnerCount = 4;
+char ledArraySpinnerCounter = 0;
+bool cycleLedSpinner = true;
+bool ledArraySpinnerEven = true;
+
+char ledArray_FiveThou[] = {
+  28,35,38,41,52
+};
+char ledArrayFiveThouCount = 5;
+char ledArrayFiveThouCounter = 0;
+bool cycleLedFiveThou = true;
+bool ledArrayFiveThouEven = true;
+
+char ledArray_TopLane[] = {
+  6,5,4,3,2,3,4,5
+};
+char ledArrayTopLaneCount = 8;
+char ledArrayTopLaneCounter = 0;
+bool cycleLedTopLane = true;
+bool ledArrayTopLaneEven = true;
 
 int row0[] = {93};
 int row1[] = {88};
