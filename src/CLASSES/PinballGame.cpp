@@ -242,6 +242,7 @@ PinballGame::PinballGame(String GameName)
     
     if(_gameActive == true)
     {
+      //this is very harsh - perhaps turn ball save off after a period of time, a cieling score or even after certain switches have been fired?
       this->_ballSave = false;
       this->_dropsReset = false;
 
@@ -521,5 +522,20 @@ PinballGame::PinballGame(String GameName)
       }
     
     }
+  }
+  void PinballGame::setLastSwitchTriggered(int switchId, unsigned long timer)
+  {
+    this->_lastSwitchTriggered = switchId;
+    this->_lastSwitchTriggeredTimer = timer;
+
+  }
+  int PinballGame::lastSwitchTriggered()
+  {
+    return this->_lastSwitchTriggered;
+  }
+
+  unsigned long PinballGame::lastSwitchTriggeredTime() 
+  {
+    return this->_lastSwitchTriggeredTimer;
   }
 

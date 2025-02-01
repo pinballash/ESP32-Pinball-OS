@@ -130,4 +130,9 @@ bool PinballSwitch::hasFired()
   
   return this->_fired;
 }
+
+int PinballSwitch::getDebounce()
+{
+  return this->_debounce;
+}
  

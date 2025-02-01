@@ -42,5 +42,6 @@ class PinballSwitch
   void reEnable();
   bool isOn();
   bool hasFired();
+  int getDebounce();
 };
 #endif

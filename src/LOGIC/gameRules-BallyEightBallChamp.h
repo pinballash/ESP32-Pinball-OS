@@ -27,74 +27,83 @@ void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flas
 void switch_event_outhole(int switchId)
 {
   
+  bool serveBall = false;
+  unsigned long triggerTimer = millis();
   bool isGameActive = g_myPinballGame.isGameActive();
   if(isGameActive == true)
   {
-    //To Do: need additional check here to ensure its not a phantom trigger, so double check switch activated  
-    if(g_myPinballGame.isBallSave()==false)
-    {
-      //ball save dont end ball
-      bonusCountdown();
-      int thisPlayerNumber = g_myPinballGame.getCurrentPlayerNumber();
-      g_myPinballGame.endOfBall(g_myPinballGame.getCurrentPlayerNumber());
-      //do other end of ball stuff - call additional functions here
-      g_myPinballGame.resetPlayerSwitchScores(thisPlayerNumber);
-      g_myPinballGame.setPlayfieldMultiplier(1);
-      resetBonusLeds();
-      resetSpinnerLeds();
-      resetChampLeds();
-      resetPlayfieldMultiplierLeds();
-      //calculatebonus();
-         
-      
-    }
-    //need to get the coilNumber associated
-    byte* coilNumber = switchCoilBindings[(byte)switchId].coilNumber; //get the coil number bound to the switch
-    byte coilNumberByte = *coilNumber;
-    //only fire if in a game
-    //Serial.println("[INFO][switch_event_outhole] Outhole switch triggered, game is active");
-    if(g_myPinballGame.isGameActive()==true)
-    {
-      resetDrops();
-      turnOffAllLeds();
-      if((g_myPinballGame.getCurrentPlayerNumber() == 1)||(g_myPinballGame.getCurrentPlayerNumber() == 3))
-      {
-        setNewBallLEDs(true, true);
-      }else{
-        setNewBallLEDs(false, true);
-      }  
-      if(coilNumberByte >0)
-      {
-        //Serial.println("[switch_event_outhole] Fire Outhole");
-        //Serial.println("[INFO][switch_event_outhole] Outhole firing");
-        //Serial.print("[INFO][switch_event_outhole] Coil choice is ");
-        //Serial.println(coilNumberByte);
-        PinballCoil* switchCoil = coils[coilNumberByte].coilObject;
-        if(switchCoil->fireCoil()){
-          coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
-          ProcessShifts(switchCoil); //action the turning on
-          write_sr_coils(); //update shift register
-        }
-      }else{
-        //Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
-      }
-      
+    //To Do: need additional check here to ensure its not a phantom trigger, so double check switch activated 
+    if(g_myPinballGame.lastSwitchTriggered() != switchId){
+      g_myPinballGame.setLastSwitchTriggered(switchId, triggerTimer);
+      Serial.println("Outhole trigger - wont deliver ball - we need another positive trigger before that happens");
+
     }else
     {
-      //ok so game was active, now its not, game over calls need to be made
-  
-      changeState(3); //moving to End of game
-      digitalWrite(hvrPin, HIGH);
-      turnOffAllLeds();
-      turnOnAttractLEDs();
-      //Serial.println("[INFO][switch_event_outhole] Thats the last ball, end of game");
+      if(g_myPinballGame.isBallSave()==false)
+      {
 
-      //need much more code here, but ok for now
+        
+        bonusCountdown();
+        int thisPlayerNumber = g_myPinballGame.getCurrentPlayerNumber();
+        g_myPinballGame.endOfBall(g_myPinballGame.getCurrentPlayerNumber());
+        //do other end of ball stuff - call additional functions here
+        g_myPinballGame.resetPlayerSwitchScores(thisPlayerNumber);
+        g_myPinballGame.setPlayfieldMultiplier(1);
+        resetBonusLeds();
+        resetSpinnerLeds();
+        resetChampLeds();
+        resetPlayfieldMultiplierLeds();
+        //calculatebonus();
+          
+        
+      }
+      Serial.println("Outhole trigger - Ok, this is the second time we have triggered - lets move on");
+      serveBall = true;
+      g_myPinballGame.setLastSwitchTriggered(-1, 0);
+      //need to get the coilNumber associated
+      byte* coilNumber = switchCoilBindings[(byte)switchId].coilNumber; //get the coil number bound to the switch
+      byte coilNumberByte = *coilNumber;
+      //only fire if in a game
+      //Serial.println("[INFO][switch_event_outhole] Outhole switch triggered, game is active");
+      if(serveBall == true)
+      {
+        if((g_myPinballGame.isGameActive()==true) && (serveBall == true))
+        {
+          resetDrops();
+          turnOffAllLeds();
+          if((g_myPinballGame.getCurrentPlayerNumber() == 1)||(g_myPinballGame.getCurrentPlayerNumber() == 3))
+          {
+            setNewBallLEDs(true, true);
+          }else{
+            setNewBallLEDs(false, true);
+          }  
+          if(coilNumberByte >0)
+          {
+            PinballCoil* switchCoil = coils[coilNumberByte].coilObject;
+            if(switchCoil->fireCoil()){
+              coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
+              ProcessShifts(switchCoil); //action the turning on
+              write_sr_coils(); //update shift register
+            }
+          }else{
+            //Serial.println("[WARNING][switch_event_outhole] Outhole switch must be bound to a coil, please do this in the web gui");
+          }
+          
+        }else
+        {
+          //ok so game was active, now its not, game over calls need to be made
+      
+          changeState(3); //moving to End of game
+          digitalWrite(hvrPin, HIGH);
+          turnOffAllLeds();
+          turnOnAttractLEDs();
+          //Serial.println("[INFO][switch_event_outhole] Thats the last ball, end of game");
+
+          //need much more code here, but ok for now
+        }
+      }
+      
     }
-  }else
-  {
-    //Do nothing - ball should be here when game not on
-    //Serial.println("[INFO][switch_event_outhole] Do nothing - the ball should be here");
   }
 }
 void switch_event_saucer(int switchId)
@@ -867,7 +876,6 @@ void resetChampLeds()
   p_champ->setFlashSpeed(0);
   p_champ->updateLed();
 }
-
 void resetPlayfieldMultiplierLeds()
 {
   double_playfield->disable();
@@ -908,7 +916,6 @@ void resetSpinnerLeds()
   fivethousand_spinner->updateLed();
 
 }
-
 void resetBallLEDs()
 {
   oneball_pocket->disable();
@@ -1142,7 +1149,6 @@ void LED_display_chase_pf()
     pfRowCounter = 0;
   }
 }
-
 
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond)
 {

@@ -12,6 +12,8 @@ class PinballGame
     int _maxBalls = 3;
     int _playfieldMultiplier =1;
     int _bonusMultiplier = 1;
+    int _lastSwitchTriggered = -1;
+    unsigned long _lastSwitchTriggeredTimer = 0;
 
     int _playerCount = 0;
     String _gameName = "not set";
@@ -157,5 +159,8 @@ class PinballGame
   void setPlayerSwitchScore(char switchNumber, int score, int playerNumber); //if playerNumber is 0 then set base score
   int getPlayerSwitchScore(char switchNumber, int playerNumber); //if playerNumber is 0 then get base score
   void resetPlayerSwitchScores(int playerNumber);
+  void setLastSwitchTriggered(int switchId, unsigned long timer);
+  int lastSwitchTriggered();
+  unsigned long lastSwitchTriggeredTime();
 };
 #endif

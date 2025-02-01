@@ -636,9 +636,9 @@ bool cycleLedTestBalls = true;
 bool ledArrayTestBallsEven = true;
 
 char ledArray_Spinner[] = {
-  15,16,17,16
+  15,16,17,17,16,15
 };
-char ledArraySpinnerCount = 4;
+char ledArraySpinnerCount = 6;
 char ledArraySpinnerCounter = 0;
 bool cycleLedSpinner = true;
 bool ledArraySpinnerEven = true;
@@ -652,9 +652,9 @@ bool cycleLedFiveThou = true;
 bool ledArrayFiveThouEven = true;
 
 char ledArray_TopLane[] = {
-  6,5,4,3,2,3,4,5
+  6,5,4,3,2,2,3,4,5,6
 };
-char ledArrayTopLaneCount = 8;
+char ledArrayTopLaneCount = 10;
 char ledArrayTopLaneCounter = 0;
 bool cycleLedTopLane = true;
 bool ledArrayTopLaneEven = true;
