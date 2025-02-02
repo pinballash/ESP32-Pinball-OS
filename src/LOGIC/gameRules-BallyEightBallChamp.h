@@ -127,7 +127,7 @@ void switch_event_saucer(int switchId)
       eightball_pocket->disable();
       eightball_pocket->updateLed();
 
-      Tune1Trigger();
+      Tune3Trigger();
       resetDrops();
 
       if(onehundredtwentythousand_bonus->isEnabled() == false)
@@ -1207,4 +1207,85 @@ void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flas
         thisCLed->flashOnce(flashesPerPeriod); 
       }
     }
+}
+
+void stepLanesLeft()
+{
+  bool champArray[] = {
+    c_champ->isEnabled(),
+    h_champ->isEnabled(),
+    a_champ->isEnabled(),
+    m_champ->isEnabled(),
+    p_champ->isEnabled()
+  };
+
+  //shifting left so c become p
+  if(champArray[0] == true) //c
+  {
+    p_champ->enable();
+    p_champ->resetCalculatedRGB();
+    p_champ->setFlashSpeed(0);
+    p_champ->updateLed();
+  }else{
+    p_champ->disable();
+    p_champ->resetCalculatedRGB();
+    p_champ->setFlashSpeed(0);
+    p_champ->updateLed();
+  }
+
+  //shifting left so h become c 
+  if(champArray[1] == true) //h
+  {
+    c_champ->enable();
+    c_champ->resetCalculatedRGB();
+    c_champ->setFlashSpeed(0);
+    c_champ->updateLed();
+  }else{
+    c_champ->disable();
+    c_champ->resetCalculatedRGB();
+    c_champ->setFlashSpeed(0);
+    c_champ->updateLed();
+  }
+
+  //shifting left so a become h
+  if(champArray[2] == true) //a
+  {
+    h_champ->enable();
+    h_champ->resetCalculatedRGB();
+    h_champ->setFlashSpeed(0);
+    h_champ->updateLed();
+  }else{
+    h_champ->disable();
+    h_champ->resetCalculatedRGB();
+    h_champ->setFlashSpeed(0);
+    h_champ->updateLed();
+  }
+
+  //shifting left so m become a
+  if(champArray[3] == true) //m
+  {
+    a_champ->enable();
+    a_champ->resetCalculatedRGB();
+    a_champ->setFlashSpeed(0);
+    a_champ->updateLed();
+  }else{
+    a_champ->disable();
+    a_champ->resetCalculatedRGB();
+    a_champ->setFlashSpeed(0);
+    a_champ->updateLed();
+  }
+
+  //shifting left so p become m
+  if(champArray[4] == true) //p
+  {
+    m_champ->enable();
+    m_champ->resetCalculatedRGB();
+    m_champ->setFlashSpeed(0);
+    m_champ->updateLed();
+  }else{
+    m_champ->disable();
+    m_champ->resetCalculatedRGB();
+    m_champ->setFlashSpeed(0);
+    m_champ->updateLed();
+  }
 }

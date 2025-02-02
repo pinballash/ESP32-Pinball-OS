@@ -41,7 +41,7 @@ void changeState(int newState)
               vTaskDelay(100);
               g_myPinballGame.setDropStatus(false);
               resetDrops();
-              Tune1Trigger();
+              Tune2Trigger();
               
             }else if (newState == 5)
             {
@@ -70,6 +70,9 @@ void changeState(int newState)
               //disable power to coils
               Serial.println("[changeState] - Disable High Voltage");
               digitalWrite(hvrPin, HIGH);
+              //burn up the store enegy in the caps
+              resetDrops();
+              Tune2Trigger();
 
             }else if (newState == 5)
             {
@@ -100,7 +103,7 @@ void changeState(int newState)
               vTaskDelay(100);
               g_myPinballGame.setDropStatus(false);
               resetDrops();
-              Tune1Trigger();
+              Tune2Trigger();
 
             }else if (newState == 1)
             {

@@ -160,7 +160,9 @@ void triggerSwitches()
                     coilActive[coilNumberByte]=true;//leave a flag to processing the turning off of the coil - this gets done in managecoils()
                     ProcessShifts(switchCoil); //set shift register bytes to turn on solenoid
                     write_sr_coils(); //update shift register
+                    stepLanesLeft();
                   }
+                  
                 }
               }
 

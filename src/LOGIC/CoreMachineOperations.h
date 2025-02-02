@@ -19,7 +19,7 @@ bool osrDebug = false;
 bool generalMODebug = false;
 bool memoryStats = false;
 unsigned long processSwitchArrayEveryMicroSeconds = (1000000/1000); //1000 times per second
-int ledUpdateFrequency = 100;
+int ledUpdateFrequency = 12;
 unsigned long UpdateLedsEveryMicroSeconds = (1000000/ledUpdateFrequency); 
 bool runningLeds = false;
 
@@ -171,6 +171,9 @@ void changeState(int newState); //from LOGIC\machineState.h
 bool ChimeRing(char coilNum); //from CHIMES\chimeEffects.h
 void DoubleTrigger(); //from CHIMES\chimeEffects.h
 void Tune1Trigger(); //from CHIMES\chimeEffects.h
+void Tune2Trigger(); //from CHIMES\chimeEffects.h
+void Tune3Trigger(); //from CHIMES\chimeEffects.h
+
 
 
 
