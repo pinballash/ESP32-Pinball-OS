@@ -11,7 +11,8 @@ void addBonus(int scoreValue, int multipler);
 void fireBonusLed(PinballLED* LED, int score, int multiplier);
 void resetPlayfieldMultiplierLeds();
 
-void LED_display_chase_pf();
+int LED_display_chase_pf(int rowCounter, int maxRows);
+int LED_display_chase_pf_down(int rowCounter, int maxRows);
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond);
 char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter);
 void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond);
@@ -628,62 +629,64 @@ void processAllLeds()
  
   //led patterns that will fire less frequently than this function does
   
-  if((micros() - ledUpdateMicros >= (1000000/10))) //10 times a second
+  if((micros() - ledUpdateMicros >= (1000000/attractUpdatesPerSecond))) 
   {
-    if (cycleLedPottedBalls == true)
+    if(MachineState == 1)
     {
-      ledArrayPottedBallsCounter = LED_display_chase(ledArray_PottedBalls, ledArrayPottedBallsCount, 3, ledArrayPottedBallsCounter);
+      attractCount++;
+      if(attractCount > attractSwitchCount)
+      {
+        for (byte id = 0; id < NUM_LEDS ; id++) 
+        {
+          //get the led object and read its state
+          PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
+          thisLed->disable();
+          thisLed->resetCalculatedRGB();
+          thisLed->setFlashSpeed(0);
+          thisLed->updateLed();
+
+          ledArray[id] = CRGB::Black;    
+
+        }
+        FastLED.show();
+        attractCount = 0;
+        if(attactStage == 0)
+        {
+          attactStage = 1;
+          pfRowCounter = 0;
+          attractUpdatesPerSecond = 25;
+        }else if(attactStage == 1){
+          attactStage = 2;
+          attractUpdatesPerSecond = 25;
+          pfRowCounter = pfRowCount-1;
+        }else if(attactStage == 2){
+          attactStage = 0;
+          attractUpdatesPerSecond = 10;
+        }
+      }
+      if(attactStage == 0)
+      {
+        
+        ledArrayPottedBallsCounter = LED_display_chase(ledArray_PottedBalls, ledArrayPottedBallsCount, 3, ledArrayPottedBallsCounter);
+        ledArrayTableBallsCounter = LED_display_chase(ledArray_TableBalls, ledArrayTableBallsCount, 1, ledArrayTableBallsCounter);
+        ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 4, ledArrayEIGHTBALLCounter);
+        ledArrayLowerRingCounter = LED_display_chase(ledArray_lowerrRing, ledArrayLowerRingCount, 4, ledArrayLowerRingCounter);
+        ledArrayLeftSideCounter = LED_display_chase(ledArray_LeftSide, ledArrayLeftSideCount, 4, ledArrayLeftSideCounter);
+        ledArrayRightSideCounter = LED_display_chase(ledArray_RightSide, ledArrayRightSideCount, 4, ledArrayRightSideCounter);
+        ledArraySpinnerCounter = LED_display_chase(ledArray_Spinner, ledArraySpinnerCount, 6, ledArraySpinnerCounter);
+        ledArrayTopLaneCounter = LED_display_chase(ledArray_TopLane, ledArrayTopLaneCount, 6, ledArrayTopLaneCounter);
+        LED_display_flashBlock(ledArray_CHAMP, ledArrayCHAMPCount, 2);
+        LED_display_flashBlock(ledArray_FiveThou, ledArrayFiveThouCount, 4);
+      }else if(attactStage == 1)
+      {
+        pfRowCounter = LED_display_chase_pf(pfRowCounter, pfRowCount);
+      }else if(attactStage == 2)
+      {
+        pfRowCounter = LED_display_chase_pf_down(pfRowCounter, pfRowCount);
+      }
+      
+      ledUpdateMicros = micros();
     } 
-
-    if (cycleLedTableBalls == true)
-    {
-      ledArrayTableBallsCounter = LED_display_chase(ledArray_TableBalls, ledArrayTableBallsCount, 1, ledArrayTableBallsCounter);
-    } 
-
-    if (cycleLedEIGHTBALL == true)
-    {
-      ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 4, ledArrayEIGHTBALLCounter);
-    }
-    if (cycleledLowerRing == true)
-    {
-      ledArrayLowerRingCounter = LED_display_chase(ledArray_lowerrRing, ledArrayLowerRingCount, 4, ledArrayLowerRingCounter);
-    }
-    
-    if (cycleLedLeftSide == true)
-    {
-      ledArrayLeftSideCounter = LED_display_chase(ledArray_LeftSide, ledArrayLeftSideCount, 4, ledArrayLeftSideCounter);
-    }
-
-    if (cycleLedRightSide == true)
-    {
-      ledArrayRightSideCounter = LED_display_chase(ledArray_RightSide, ledArrayRightSideCount, 4, ledArrayRightSideCounter);
-    }
-    
-    if (cycleLedSpinner== true)
-    {
-      ledArraySpinnerCounter = LED_display_chase(ledArray_Spinner, ledArraySpinnerCount, 6, ledArraySpinnerCounter);
-    }
-
-    
-    if (cycleLedTopLane== true)
-    {
-      ledArrayTopLaneCounter = LED_display_chase(ledArray_TopLane, ledArrayTopLaneCount, 6, ledArrayTopLaneCounter);
-    }
-
-    if (cycleLedCHAMP == true)
-    {
-      LED_display_flashBlock(ledArray_CHAMP, ledArrayCHAMPCount, 2);
-    }
-
-    if (cycleLedFiveThou == true)
-    {
-      LED_display_flashBlock(ledArray_FiveThou, ledArrayFiveThouCount, 4);
-    }
-
-    ledUpdateMicros = micros();
-
-
-    
   } 
   //ledArrayTestBallsCounter = LED_display_chase(ledArray_TestBalls, ledArrayTestBallsCount, 1, ledArrayTestBallsCounter);
   
@@ -720,7 +723,7 @@ void processAllLeds()
 
 
 void turnOnAttractLEDs(){
-  cycleLedPottedBalls = true;
+  /*cycleLedPottedBalls = true;
   cycleLedEIGHTBALL = true;
   cycleLedLeftSide = true;
   cycleLedRightSide = true;
@@ -729,14 +732,14 @@ void turnOnAttractLEDs(){
   cycleLedTableBalls = true;
   cycleLedSpinner = true;
   cycleLedFiveThou = true;
-  cycleLedTopLane = true;
+  cycleLedTopLane = true;*/
 }
 void turnOffAllLeds() //literally turn every LED off
 {
   //pause led processing
   vTaskSuspend(ProcessLeds);
   
-  cycleLedPottedBalls = false;
+  /*cycleLedPottedBalls = false;
   cycleLedEIGHTBALL = false;
   cycleLedLeftSide = false;
   cycleLedRightSide = false;
@@ -745,7 +748,7 @@ void turnOffAllLeds() //literally turn every LED off
   cycleLedTableBalls = false;
   cycleLedSpinner = false;
   cycleLedFiveThou = false;
-  cycleLedTopLane = false;
+  cycleLedTopLane = false;*/
   
   for (byte id = 0; id < NUM_LEDS ; id++) 
   {
@@ -1130,24 +1133,76 @@ void fireBonusLed(PinballLED* LED, int score, int multiplier)
     LED->updateLed();
 }
 
-void LED_display_chase_pf()
+int LED_display_chase_pf(int rowCounter, int maxRows) //return pfRowCounter
 {
-  int* ptr = playfieldRows[pfRowCounter];
-  for(int i = 0; i < pfArraySize[pfRowCounter]; i++)
+  //Serial.print("Start: rowCounter = ");
+  //Serial.println(rowCounter);
+  int* pfLEDArray = playfieldRows[rowCounter];
+  for(int i = 0; i < pfArraySize[rowCounter]; i++)
   {
     
-    PinballLED* thisCLed = LEDs[*ptr].ledObject;
-     if(thisCLed->isEnabled() == false)
-      {
-        thisCLed->flashOnce(1); //cycle once a second second
-      }
-    ptr++;
+    int ledId = pfLEDArray[i];
+    PinballLED* thisCLed = LEDs[ledId].ledObject;
+    if(thisCLed->isEnabled() == false)
+    {
+      //thisCLed->flashOnce(4);
+      thisCLed->enable();
+      thisCLed->setFlashSpeed(0);
+      thisCLed->resetCalculatedRGB();
+      thisCLed->updateLed();
+    }else{
+      thisCLed->disable();
+      thisCLed->resetCalculatedRGB();
+      thisCLed->updateLed();      
+    }
   }
-  pfRowCounter++;
-  if(pfRowCounter == pfRowCount)
+  rowCounter++;
+  if(rowCounter < maxRows)
   {
-    pfRowCounter = 0;
+    //do nothing
+  }else{
+    rowCounter=0;
   }
+  //Serial.print("End: rowCounter = ");
+  //Serial.println(rowCounter);
+  return rowCounter;
+}
+
+int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
+{
+  //Serial.print("Start: rowCounter = ");
+  //Serial.println(rowCounter);
+  int* pfLEDArray = playfieldRows[rowCounter];
+  for(int i = 0; i < pfArraySize[rowCounter]; i++)
+  {
+    
+    int ledId = pfLEDArray[i];
+    PinballLED* thisCLed = LEDs[ledId].ledObject;
+    if(thisCLed->isEnabled() == false)
+    {
+      //thisCLed->flashOnce(4);
+      thisCLed->enable();
+      thisCLed->setFlashSpeed(0);
+      thisCLed->resetCalculatedRGB();
+      thisCLed->updateLed();
+    }else{
+      thisCLed->disable();
+      thisCLed->resetCalculatedRGB();
+      thisCLed->updateLed();      
+    }
+  }
+  
+  if(rowCounter > 0)
+  {
+    rowCounter--;
+    
+  }else{
+    rowCounter=maxRows-1;
+    //rowCounter=maxRows;
+  }
+  //Serial.print("End: rowCounter = ");
+  //Serial.println(rowCounter);
+  return rowCounter;
 }
 
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond)

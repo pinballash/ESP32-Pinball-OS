@@ -51,3 +51,8 @@ String tso_Webserver = "";
 
 unsigned long mainLoopMillis = 0;
 unsigned long ledUpdateMicros = 0;
+
+int attactStage = 0;
+int attractCount = 0;
+int attractSwitchCount = 300; //30 seconds
+int attractUpdatesPerSecond = 10;
