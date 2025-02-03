@@ -654,14 +654,17 @@ void processAllLeds()
         {
           attactStage = 1;
           pfRowCounter = 0;
-          attractUpdatesPerSecond = 25;
+          attractUpdatesPerSecond = 50;
+          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 1){
           attactStage = 2;
-          attractUpdatesPerSecond = 25;
+          attractUpdatesPerSecond = 50;
           pfRowCounter = pfRowCount-1;
+          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 2){
           attactStage = 0;
-          attractUpdatesPerSecond = 10;
+          attractUpdatesPerSecond = 12;
+          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }
       }
       if(attactStage == 0)
@@ -1138,24 +1141,27 @@ int LED_display_chase_pf(int rowCounter, int maxRows) //return pfRowCounter
   //Serial.print("Start: rowCounter = ");
   //Serial.println(rowCounter);
   int* pfLEDArray = playfieldRows[rowCounter];
-  for(int i = 0; i < pfArraySize[rowCounter]; i++)
+  for(int i = 0; i < pfColCount; i++)
   {
     
     int ledId = pfLEDArray[i];
-    PinballLED* thisCLed = LEDs[ledId].ledObject;
-    if(thisCLed->isEnabled() == false)
-    {
-      //thisCLed->flashOnce(4);
-      thisCLed->enable();
-      thisCLed->setFlashSpeed(0);
-      thisCLed->resetCalculatedRGB();
-      thisCLed->updateLed();
-    }else{
-      thisCLed->disable();
-      thisCLed->resetCalculatedRGB();
-      thisCLed->updateLed();      
+    if(ledId >-1){
+        PinballLED* thisCLed = LEDs[ledId].ledObject;
+      if(thisCLed->isEnabled() == false)
+      {
+        //thisCLed->flashOnce(4);
+        thisCLed->enable();
+        thisCLed->setFlashSpeed(0);
+        thisCLed->resetCalculatedRGB();
+        thisCLed->updateLed();
+      }else{
+        thisCLed->disable();
+        thisCLed->resetCalculatedRGB();
+        thisCLed->updateLed();      
+      }
     }
   }
+    
   rowCounter++;
   if(rowCounter < maxRows)
   {
@@ -1173,23 +1179,27 @@ int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
   //Serial.print("Start: rowCounter = ");
   //Serial.println(rowCounter);
   int* pfLEDArray = playfieldRows[rowCounter];
-  for(int i = 0; i < pfArraySize[rowCounter]; i++)
+  for(int i = 0; i < pfColCount; i++)
   {
     
     int ledId = pfLEDArray[i];
-    PinballLED* thisCLed = LEDs[ledId].ledObject;
-    if(thisCLed->isEnabled() == false)
+    if(ledId >-1)
     {
-      //thisCLed->flashOnce(4);
-      thisCLed->enable();
-      thisCLed->setFlashSpeed(0);
-      thisCLed->resetCalculatedRGB();
-      thisCLed->updateLed();
-    }else{
-      thisCLed->disable();
-      thisCLed->resetCalculatedRGB();
-      thisCLed->updateLed();      
+      PinballLED* thisCLed = LEDs[ledId].ledObject;
+      if(thisCLed->isEnabled() == false)
+      {
+        //thisCLed->flashOnce(4);
+        thisCLed->enable();
+        thisCLed->setFlashSpeed(0);
+        thisCLed->resetCalculatedRGB();
+        thisCLed->updateLed();
+      }else{
+        thisCLed->disable();
+        thisCLed->resetCalculatedRGB();
+        thisCLed->updateLed();      
+      }
     }
+    
   }
   
   if(rowCounter > 0)

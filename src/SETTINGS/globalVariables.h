@@ -54,5 +54,7 @@ unsigned long ledUpdateMicros = 0;
 
 int attactStage = 0;
 int attractCount = 0;
-int attractSwitchCount = 300; //30 seconds
-int attractUpdatesPerSecond = 10;
+
+int attractUpdatesPerSecond = 12;
+int attactSecondsPerScene = 10;
+int attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond; //10 seconds
