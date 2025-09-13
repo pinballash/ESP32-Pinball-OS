@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
-#include "CLASSES\PinballSwitch.h"
-#include "CLASSES\PinballCoil.h"
-#include "CLASSES\PinballLED.h"
-#include "CLASSES\PinballGame.h"
+#include "CLASSES/PinballCoil.h"
+#include "CLASSES/PinballCoil.h"
+#include "CLASSES/PinballLED.h"
+#include "CLASSES/PinballGame.h"
 //not using audio in this pinball table - commented out
 //#include "CLASSES\PinballAudio.h"
 
@@ -104,11 +104,11 @@ unsigned long lastMillisCoil;
 
 /* Global Variables From JSON Start*/
 
-#include "SETTINGS\JSON_switchArray.h"
-#include "SETTINGS\JSON_coilArray.h"
-#include "SETTINGS\flipperBindings_def.h"
-#include "SETTINGS\JSON_coilBindings.h"
-#include "SETTINGS\JSON_ledArray.h"
+#include "SETTINGS/JSON_switchArray.h"
+#include "SETTINGS/JSON_coilArray.h"
+#include "SETTINGS/flipperBindings_def.h"
+#include "SETTINGS/JSON_coilBindings.h"
+#include "SETTINGS/JSON_ledArray.h"
 //not using audio in this pinball table - commented out
 //#include "SETTINGS\JSON_audioArray.h"
 
@@ -177,7 +177,7 @@ void Tune3Trigger(); //from CHIMES\chimeEffects.h
 
 
 
-#include "LOGIC\interupts.h" //here we regualarly (1000 times per second) scan the switch matrix, process the results and then manage the coils
+#include "LOGIC/interupts.h" //here we regualarly (1000 times per second) scan the switch matrix, process the results and then manage the coils
 
 //setup a task handlers
 TaskHandle_t ScanSwitchMatrix;
@@ -185,11 +185,11 @@ TaskHandle_t ProcessSwitchesAndRules;
 TaskHandle_t ProcessLeds;
 
 
-#include "LOGIC\gameRules-BallyEightBallChamp.h"
+#include "LOGIC/gameRules-BallyEightBallChamp.h"
 
-#include "SHIFT-REGISTERS\shiftRegisterFunctions.h"
+#include "SHIFT-REGISTERS/shiftRegisterFunctions.h"
 
-#include "LIGHTING\ledHandlingFunctions.h"
+#include "LIGHTING/ledHandlingFunctions.h"
 
-#include "LOGIC\switchHandlingFunctions.h"
+#include "LOGIC/switchHandlingFunctions.h"
 

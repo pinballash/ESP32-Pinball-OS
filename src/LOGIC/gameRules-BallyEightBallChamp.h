@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "LIGHTING\ledArrays-BallyEightBallChamp.h"
+#include "LIGHTING/ledArrays-BallyEightBallChamp.h"
 
 bool triggerBonusMultiplierIncrease = false; 
 bool triggerSpinnerValueIncrease = false;

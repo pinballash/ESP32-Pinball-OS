@@ -1,4 +1,4 @@
-#include "CLASSES\PinballCoil.h"
+#include "CLASSES/PinballCoil.h"
 
 
 PinballCoil::PinballCoil(int ID)

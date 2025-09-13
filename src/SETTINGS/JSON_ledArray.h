@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h> 
 #include <Effortless_SPIFFS.h>
-#include "CLASSES\PinballLED.h"
+#include "CLASSES/PinballLED.h"
 
 //set up global switchObjects so they can be accessed later
 PinballLED led_0(0);

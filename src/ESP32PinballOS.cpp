@@ -10,24 +10,24 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include "WIFI\wifi_functions.h"
+#include "WIFI/wifi_functions.h"
 //settings from a file on the spiffs file system
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
-#include "SETTINGS\JSON_settings.h"
-#include "FILES\setupSPIFFS.h"
+#include "SETTINGS/JSON_settings.h"
+#include "FILES/setupSPIFFS.h"
 
 
 //these files set up switches and colis - later it would be good to do this based on a config file - this means we can have a web ui that gives configuration away from code
-#include "WIFI\userSettings.h"
-#include "SETTINGS\globalVariables.h"
-#include "LIGHTING\ledLights.h"
-#include "LOGIC\CoreMachineOperations.h"
+#include "WIFI/userSettings.h"
+#include "SETTINGS/globalVariables.h"
+#include "LIGHTING/ledLights.h"
+#include "LOGIC/CoreMachineOperations.h"
 //#include "DISPLAY\DMDDisplay.h"
-#include "DISPLAY\LCDDisplay.h"
-#include "CHIMES\chimeEffects.h"
-#include "WEB\Web_operations.h"
-#include "LOGIC\machineState.h"
-#include "SHIFT-REGISTERS\setupShifts.h"
+#include "DISPLAY/LCDDisplay.h"
+#include "CHIMES/chimeEffects.h"
+#include "WEB/Web_operations.h"
+#include "LOGIC/machineState.h"
+#include "SHIFT-REGISTERS/setupShifts.h"
 
 void setup() {
   // Setup Serial Monitor
@@ -39,7 +39,7 @@ void setup() {
 	lcd.setCursor(0,1);
 	lcd.print("by Ash Earl");
 	lcd.setCursor(0,2);
-	lcd.print("Booting");
+	lcd.print("Booting up");
 	lcd.setCursor(0,3);
 	lcd.print("Please wait...");
   

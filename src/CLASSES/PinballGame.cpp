@@ -1,4 +1,4 @@
-#include "CLASSES\PinballGame.h"
+#include "CLASSES/PinballGame.h"
 
 PinballGame::PinballGame(String GameName)
 {
