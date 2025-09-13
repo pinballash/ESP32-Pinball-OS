@@ -16,6 +16,7 @@ int LED_display_chase_pf_down(int rowCounter, int maxRows);
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond);
 char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter);
 void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond);
+void LED_display_chase_snake();
 
 /*
  * Function switch_event_outhole(int switchId) is a function that manages the logic behing the ball entering teh outhole
@@ -686,6 +687,9 @@ void processAllLeds()
       }else if(attactStage == 2)
       {
         pfRowCounter = LED_display_chase_pf_down(pfRowCounter, pfRowCount);
+      }else if(attactStage == 3)
+      {
+        LED_display_chase_snake();
       }
       
       ledUpdateMicros = micros();
@@ -1199,13 +1203,11 @@ int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
         thisCLed->updateLed();      
       }
     }
-    
   }
-  
   if(rowCounter > 0)
   {
     rowCounter--;
-    
+
   }else{
     rowCounter=maxRows-1;
     //rowCounter=maxRows;
@@ -1213,6 +1215,79 @@ int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
   //Serial.print("End: rowCounter = ");
   //Serial.println(rowCounter);
   return rowCounter;
+}
+
+int snakeCol= 0;
+int snakeRow =0;
+
+int snakeMaxRows = 42;
+int snakeMaxColumns = 15;
+
+bool snakeUp = true;
+
+void LED_display_chase_snake() 
+{
+  //here we snake up and down the playfield
+  //Serial.print("Start: rowCounter = ");
+  //Serial.println(rowCounter);
+
+  int myX = 0;
+  int myY = 0;
+  //if we are moving up....
+  if(snakeUp = true)
+  {
+    //going up
+    //check if able to move up?
+    if(snakeRow < snakeMaxRows)
+    {
+      //we are good
+
+    }else{
+      //we need to move column and change direction
+      snakeUp = false;
+      snakeRow--;
+      if(snakeCol < snakeMaxColumns-1)
+      {
+        //space to move
+        snakeCol++;
+      }else{
+        snakeCol=0;
+      }
+    }
+    
+    //display
+    myX = snakeCol;
+    myY = snakeRow;
+  }else{
+    //going down
+    //check if able to go down
+    if(snakeRow > -1)
+    {
+      //we are good
+
+    }else{
+      //we need to move column and change direction
+      snakeUp = true;
+      snakeRow++;
+      if(snakeCol < snakeMaxColumns-1)
+      {
+        //space to move
+        snakeCol++;
+      }else{
+        snakeCol=0;
+      }
+    }
+
+    //display
+    myX = snakeCol;
+    myY = snakeRow;
+
+  }
+  //display
+  //Get LED ID from 
+
+  //make changes
+  
 }
 
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond)
