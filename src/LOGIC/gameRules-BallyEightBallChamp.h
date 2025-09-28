@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "LIGHTING/ledArrays-BallyEightBallChamp.h"
+#include "LIGHTING/ledAttract-BallyEightBallChamp.h"
 
 bool triggerBonusMultiplierIncrease = false; 
 bool triggerSpinnerValueIncrease = false;
@@ -10,13 +11,6 @@ void bonusCountdown();
 void addBonus(int scoreValue, int multipler);
 void fireBonusLed(PinballLED* LED, int score, int multiplier);
 void resetPlayfieldMultiplierLeds();
-
-int LED_display_chase_pf(int rowCounter, int maxRows);
-int LED_display_chase_pf_down(int rowCounter, int maxRows);
-bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond);
-char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter);
-void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond);
-void LED_display_chase_snake();
 
 /*
  * Function switch_event_outhole(int switchId) is a function that manages the logic behing the ball entering teh outhole
@@ -181,7 +175,6 @@ void switch_event_saucer(int switchId)
   }
   
 }
-
 void switch_event_startbutton()
 {
   if(MachineState == 1)
@@ -356,7 +349,6 @@ void resetDrops()
 
 
 }
-
 bool resetDrop(int coilId, int switchId)
 {
   bool complete = true;
@@ -397,7 +389,6 @@ bool checkChamp() //returns true is any champ lights are still on.  Returns fals
   return true;
   
 }
-
 void checkEightBall() 
 {
   
@@ -449,7 +440,6 @@ void checkEightBall()
   }
   
 }
-
 bool checkBallWord()
 {
   if(Ball_led->isEnabled()==false)
@@ -587,7 +577,6 @@ void increaseSpinnerValue()
   }
 
 }
-
 void increasePlayfieldMultiplier()
 {
   if(double_playfield->isEnabled() == false)//turn on 2x and spinner value
@@ -615,148 +604,15 @@ void increasePlayfieldMultiplier()
 
 
 //LEDS
-
-
 /*
-* Function processAllLeds
-* loop through all columns and rows and check for a switchScored array values that are true. 
-* If a switch is assigned a special designation, like Start, Credit, Outhole or Flipper, action funtions can be called from here
-* TODO: If a switch is bound to a coil, without instanfFire, rules will need to be consulted to determine if coil needs to be fired or not
+The state of the game and its rules are integrated with the status of the LEDs
 */
-void processAllLeds()
-{
-  //this runs at ledUpdateFrequency
 
- 
-  //led patterns that will fire less frequently than this function does
-  
-  if((micros() - ledUpdateMicros >= (1000000/attractUpdatesPerSecond))) 
-  {
-    if(MachineState == 1)
-    {
-      attractCount++;
-      if(attractCount > attractSwitchCount)
-      {
-        for (byte id = 0; id < NUM_LEDS ; id++) 
-        {
-          //get the led object and read its state
-          PinballLED* thisLed = LEDs[id].ledObject; //get the PinballCoil instance associated
-          thisLed->disable();
-          thisLed->resetCalculatedRGB();
-          thisLed->setFlashSpeed(0);
-          thisLed->updateLed();
-
-          ledArray[id] = CRGB::Black;    
-
-        }
-        FastLED.show();
-        attractCount = 0;
-        if(attactStage == 0)
-        {
-          attactStage = 1;
-          pfRowCounter = 0;
-          attractUpdatesPerSecond = 50;
-          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 1){
-          attactStage = 2;
-          attractUpdatesPerSecond = 50;
-          pfRowCounter = pfRowCount-1;
-          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 2){
-          attactStage = 0;
-          attractUpdatesPerSecond = 12;
-          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }
-      }
-      if(attactStage == 0)
-      {
-        
-        ledArrayPottedBallsCounter = LED_display_chase(ledArray_PottedBalls, ledArrayPottedBallsCount, 3, ledArrayPottedBallsCounter);
-        ledArrayTableBallsCounter = LED_display_chase(ledArray_TableBalls, ledArrayTableBallsCount, 1, ledArrayTableBallsCounter);
-        ledArrayEIGHTBALLCounter = LED_display_chase(ledArray_EIGHTBALL, ledArrayEIGHTBALLCount, 4, ledArrayEIGHTBALLCounter);
-        ledArrayLowerRingCounter = LED_display_chase(ledArray_lowerrRing, ledArrayLowerRingCount, 4, ledArrayLowerRingCounter);
-        ledArrayLeftSideCounter = LED_display_chase(ledArray_LeftSide, ledArrayLeftSideCount, 4, ledArrayLeftSideCounter);
-        ledArrayRightSideCounter = LED_display_chase(ledArray_RightSide, ledArrayRightSideCount, 4, ledArrayRightSideCounter);
-        ledArraySpinnerCounter = LED_display_chase(ledArray_Spinner, ledArraySpinnerCount, 6, ledArraySpinnerCounter);
-        ledArrayTopLaneCounter = LED_display_chase(ledArray_TopLane, ledArrayTopLaneCount, 6, ledArrayTopLaneCounter);
-        LED_display_flashBlock(ledArray_CHAMP, ledArrayCHAMPCount, 2);
-        LED_display_flashBlock(ledArray_FiveThou, ledArrayFiveThouCount, 4);
-      }else if(attactStage == 1)
-      {
-        pfRowCounter = LED_display_chase_pf(pfRowCounter, pfRowCount);
-      }else if(attactStage == 2)
-      {
-        pfRowCounter = LED_display_chase_pf_down(pfRowCounter, pfRowCount);
-      }else if(attactStage == 3)
-      {
-        LED_display_chase_snake();
-      }
-      
-      ledUpdateMicros = micros();
-    } 
-  } 
-  //ledArrayTestBallsCounter = LED_display_chase(ledArray_TestBalls, ledArrayTestBallsCount, 1, ledArrayTestBallsCounter);
-  
-  bool needsReload = false;
-  for (byte id = 0; id < NUM_LEDS ; id++) 
-  {
-    //get the led object and read its state
-    PinballLED* thisLed = LEDs[id].ledObject; 
-    thisLed->tick();
-    if((thisLed->getUpdate() == true));// && (thisLed->isEnabled() == true))
-    { 
-      //Serial.println("[LED class] Update "+ (String)thisLed->getUpdate() + " enabled "+thisLed->isEnabled());
-      needsReload = true;
-      if(thisLed->isOn())
-      {
-        ledArray[id].setRGB(thisLed->getRed(),thisLed->getGreen(), thisLed->getBlue()); 
-        thisLed->setUpdate();
-        //Serial.println("[LED]"+thisLed->getName()+",on,initiated");
-      }else{
-        //this led is off
-        ledArray[id] = CRGB::Black;
-        thisLed->setUpdate();
-        //Serial.println("[LED]"+thisLed->getName()+",off,initiated");
-      }
-    }
-  }
-
-  if(needsReload == true)
-  {
-    FastLED.show();  // update to the WS2812B Led Strip
-  }
-  runningLeds = false;
-}
-
-
-void turnOnAttractLEDs(){
-  /*cycleLedPottedBalls = true;
-  cycleLedEIGHTBALL = true;
-  cycleLedLeftSide = true;
-  cycleLedRightSide = true;
-  cycleLedCHAMP = true;
-  cycleledLowerRing = true;
-  cycleLedTableBalls = true;
-  cycleLedSpinner = true;
-  cycleLedFiveThou = true;
-  cycleLedTopLane = true;*/
-}
 void turnOffAllLeds() //literally turn every LED off
 {
   //pause led processing
   vTaskSuspend(ProcessLeds);
-  
-  /*cycleLedPottedBalls = false;
-  cycleLedEIGHTBALL = false;
-  cycleLedLeftSide = false;
-  cycleLedRightSide = false;
-  cycleLedCHAMP = false;
-  cycleledLowerRing = false;
-  cycleLedTableBalls = false;
-  cycleLedSpinner = false;
-  cycleLedFiveThou = false;
-  cycleLedTopLane = false;*/
-  
+   
   for (byte id = 0; id < NUM_LEDS ; id++) 
   {
     //get the led object and read its state
@@ -988,7 +844,6 @@ void resetBallLEDs()
   fifteenball_pocket->resetCalculatedRGB();
   fifteenball_pocket->updateLed();
 }
-
 void bonusCountdown()
 {
   //identify if multiplier is in play
@@ -1125,7 +980,6 @@ void bonusCountdown()
   }
   
 }
-
 void fireBonusLed(PinballLED* LED, int score, int multiplier)
 {
   //flash LED, add score, play chimes, turn off led
@@ -1139,216 +993,6 @@ void fireBonusLed(PinballLED* LED, int score, int multiplier)
     LED->setFlashSpeed(0);
     LED->updateLed();
 }
-
-int LED_display_chase_pf(int rowCounter, int maxRows) //return pfRowCounter
-{
-  //Serial.print("Start: rowCounter = ");
-  //Serial.println(rowCounter);
-  int* pfLEDArray = playfieldRows[rowCounter];
-  for(int i = 0; i < pfColCount; i++)
-  {
-    
-    int ledId = pfLEDArray[i];
-    if(ledId >-1){
-        PinballLED* thisCLed = LEDs[ledId].ledObject;
-      if(thisCLed->isEnabled() == false)
-      {
-        //thisCLed->flashOnce(4);
-        thisCLed->enable();
-        thisCLed->setFlashSpeed(0);
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();
-      }else{
-        thisCLed->disable();
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();      
-      }
-    }
-  }
-    
-  rowCounter++;
-  if(rowCounter < maxRows)
-  {
-    //do nothing
-  }else{
-    rowCounter=0;
-  }
-  //Serial.print("End: rowCounter = ");
-  //Serial.println(rowCounter);
-  return rowCounter;
-}
-
-int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
-{
-  //Serial.print("Start: rowCounter = ");
-  //Serial.println(rowCounter);
-  int* pfLEDArray = playfieldRows[rowCounter];
-  for(int i = 0; i < pfColCount; i++)
-  {
-    
-    int ledId = pfLEDArray[i];
-    if(ledId >-1)
-    {
-      PinballLED* thisCLed = LEDs[ledId].ledObject;
-      if(thisCLed->isEnabled() == false)
-      {
-        //thisCLed->flashOnce(4);
-        thisCLed->enable();
-        thisCLed->setFlashSpeed(0);
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();
-      }else{
-        thisCLed->disable();
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();      
-      }
-    }
-  }
-  if(rowCounter > 0)
-  {
-    rowCounter--;
-
-  }else{
-    rowCounter=maxRows-1;
-    //rowCounter=maxRows;
-  }
-  //Serial.print("End: rowCounter = ");
-  //Serial.println(rowCounter);
-  return rowCounter;
-}
-
-int snakeCol= 0;
-int snakeRow =0;
-
-int snakeMaxRows = 42;
-int snakeMaxColumns = 15;
-
-bool snakeUp = true;
-
-void LED_display_chase_snake() 
-{
-  //here we snake up and down the playfield
-  //Serial.print("Start: rowCounter = ");
-  //Serial.println(rowCounter);
-
-  int myX = 0;
-  int myY = 0;
-  //if we are moving up....
-  if(snakeUp = true)
-  {
-    //going up
-    //check if able to move up?
-    if(snakeRow < snakeMaxRows)
-    {
-      //we are good
-
-    }else{
-      //we need to move column and change direction
-      snakeUp = false;
-      snakeRow--;
-      if(snakeCol < snakeMaxColumns-1)
-      {
-        //space to move
-        snakeCol++;
-      }else{
-        snakeCol=0;
-      }
-    }
-    
-    //display
-    myX = snakeCol;
-    myY = snakeRow;
-  }else{
-    //going down
-    //check if able to go down
-    if(snakeRow > -1)
-    {
-      //we are good
-
-    }else{
-      //we need to move column and change direction
-      snakeUp = true;
-      snakeRow++;
-      if(snakeCol < snakeMaxColumns-1)
-      {
-        //space to move
-        snakeCol++;
-      }else{
-        snakeCol=0;
-      }
-    }
-
-    //display
-    myX = snakeCol;
-    myY = snakeRow;
-
-  }
-  //display
-  //Get LED ID from 
-
-  //make changes
-  
-}
-
-bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond)
-{
-  bool isActioned = false;
-  for(char ledId = 0; ledId < LED_array_length; ledId++)
-    {
-      if ((isEven == true) && (ledId % 2) == 0) //if number is even and we are workinh with even
-      {
-        PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
-        if(thisCLed->isEnabled() == false)
-        {
-          thisCLed->flashOnce(flashesPerSecond); 
-          isActioned = true;
-        }
-      }else if ((isEven == false) && ((ledId % 2) != 0))//its an odd number and we are working with odd
-      {
-        
-        PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
-        if(thisCLed->isEnabled() == false)
-        {
-          thisCLed->flashOnce(flashesPerSecond); 
-          isActioned = true;
-        }
-      }
-    }
-    if(isActioned == true)
-    {
-      isEven = !isEven;
-    }
-    return isEven;
-}
-
-char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerPeriod, char counter)
-{
-  PinballLED* thisCLed = LEDs[LED_ID_array[counter]].ledObject;
-
-  if(thisCLed->flashOnce(flashesPerPeriod) == true)
-  {
-    counter++;
-  }
-  if(counter == LED_array_length)
-  {
-    counter = 0;
-  }
-  
-  return counter;
-}
-
-void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerPeriod)
-{
-  for(char ledId = 0; ledId < LED_array_length; ledId++)
-    {
-      PinballLED* thisCLed = LEDs[LED_ID_array[ledId]].ledObject;
-      if(thisCLed->isEnabled() == false)
-      {
-        thisCLed->flashOnce(flashesPerPeriod); 
-      }
-    }
-}
-
 void stepLanesLeft()
 {
   bool champArray[] = {
