@@ -1,10 +1,10 @@
 #include <Arduino.h>
 int LED_display_chase_pf_up(int rowCounter, int maxRows);
-int LED_display_chase_flash_pf_up(int rowCounter, int maxRows);
-int LED_display_chase_flash_pf_left(int colCounter, int maxCols);
+int LED_display_chase_flash_pf_up(int rowCounter, int maxRows, int flashesPerSecond);
+int LED_display_chase_flash_pf_left(int colCounter, int maxCols, int flashesPerSecond);
 int LED_display_chase_pf_down(int rowCounter, int maxRows);
-int LED_display_chase_flash_pf_down(int rowCounter, int maxRows);
-int LED_display_chase_flash_pf_right(int colCounter, int maxCols);
+int LED_display_chase_flash_pf_down(int rowCounter, int maxRows, int flashesPerSecond);
+int LED_display_chase_flash_pf_right(int colCounter, int maxCols, int flashesPerSecond);
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond);
 char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter);
 void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond);
@@ -123,21 +123,21 @@ void processAllLeds()
       }else if(attactStage == 3)
       {
         //LED_display_chase_snake();
-        pfColCounter = LED_display_chase_flash_pf_left(pfColCounter, pfColCount);
+        pfColCounter = LED_display_chase_flash_pf_left(pfColCounter, pfColCount, 10);
       }else if(attactStage == 4)
       {
         //LED_display_chase_snake();
-        pfColCounter = LED_display_chase_flash_pf_right(pfColCounter, pfColCount);
+        pfColCounter = LED_display_chase_flash_pf_right(pfColCounter, pfColCount, 10);
       }else if(attactStage == 5)
       {
         //LED_display_chase_snake();
-        pfColCounter = LED_display_chase_flash_pf_left(pfColCounter, pfColCount);
-        pfRowCounter = LED_display_chase_flash_pf_down(pfRowCounter, pfRowCount);
+        pfColCounter = LED_display_chase_flash_pf_left(pfColCounter, pfColCount, 10);
+        pfRowCounter = LED_display_chase_flash_pf_down(pfRowCounter, pfRowCount, 10);
       }else if(attactStage == 6)
       {
         //LED_display_chase_snake();
-        pfColCounter = LED_display_chase_flash_pf_right(pfColCounter, pfColCount);
-        pfRowCounter = LED_display_chase_flash_pf_up(pfRowCounter, pfRowCount);
+        pfColCounter = LED_display_chase_flash_pf_right(pfColCounter, pfColCount, 10);
+        pfRowCounter = LED_display_chase_flash_pf_up(pfRowCounter, pfRowCount, 10);
       }
       
       ledUpdateMicros = micros();
@@ -179,11 +179,6 @@ Actual LED updates now happen here
   }
   runningLeds = false;
 }
-
-void turnOnAttractLEDs(){
- //no code
-}
-
 
 int LED_display_chase_pf_up(int rowCounter, int maxRows) //return pfRowCounter
 {
@@ -250,8 +245,9 @@ int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
   return rowCounter;
 }
 
-int LED_display_chase_flash_pf_up(int rowCounter, int maxRows) //return pfRowCounter
+int LED_display_chase_flash_pf_up(int rowCounter, int maxRows, int flashesPerSecond) //return pfRowCounter
 {
+  
   int* pfLEDArray = playfieldRows[rowCounter];
   for(int i = 0; i < pfColCount; i++)
   {
@@ -259,9 +255,20 @@ int LED_display_chase_flash_pf_up(int rowCounter, int maxRows) //return pfRowCou
     int ledId = pfLEDArray[i];
     if(ledId >-1){
         PinballLED* thisCLed = LEDs[ledId].ledObject;
-        thisCLed->flashOnce(3); 
+        thisCLed->flashOnce(flashesPerSecond); 
     }
   }
+  
+  //convert code to handle led matrix
+  /*for(int i = 0; i < pfColCount; i++)
+  {
+    int* pfLEDArray = pfMatrix[pfColCount][rowCounter];
+    int ledId = pfLEDArray[0]; 
+    if(ledId >-1){
+        PinballLED* thisCLed = LEDs[ledId].ledObject;
+        thisCLed->flashOnce(3); 
+    }
+  }*/
     
   rowCounter++;
   if(rowCounter < maxRows)
@@ -273,7 +280,7 @@ int LED_display_chase_flash_pf_up(int rowCounter, int maxRows) //return pfRowCou
   return rowCounter;
 }
 
-int LED_display_chase_flash_pf_down(int rowCounter, int maxRows) //return pfRowCounter
+int LED_display_chase_flash_pf_down(int rowCounter, int maxRows, int flashesPerSecond) //return pfRowCounter
 {
   int* pfLEDArray = playfieldRows[rowCounter];
   for(int i = 0; i < pfColCount; i++)
@@ -282,7 +289,7 @@ int LED_display_chase_flash_pf_down(int rowCounter, int maxRows) //return pfRowC
     if(ledId >-1)
     {
       PinballLED* thisCLed = LEDs[ledId].ledObject;
-      thisCLed->flashOnce(3); 
+      thisCLed->flashOnce(flashesPerSecond); 
     }
   }
   if(rowCounter > 0)
@@ -438,7 +445,7 @@ void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flas
     }
 }
 
-int LED_display_chase_flash_pf_left(int colCounter, int maxCols) //return pfColCounter
+int LED_display_chase_flash_pf_left(int colCounter, int maxCols, int flashesPerSecond) //return pfColCounter
 {
   int* pfLEDArray = playfieldCols[colCounter];
   for(int i = 0; i < pfRowCount; i++)
@@ -460,7 +467,7 @@ int LED_display_chase_flash_pf_left(int colCounter, int maxCols) //return pfColC
       }*/
      //if(thisCLed->isEnabled() == false)
      // {
-        thisCLed->flashOnce(3); 
+        thisCLed->flashOnce(flashesPerSecond); 
      // }
     }
   }
@@ -474,7 +481,7 @@ int LED_display_chase_flash_pf_left(int colCounter, int maxCols) //return pfColC
   }
   return colCounter;
 }
-int LED_display_chase_flash_pf_right(int colCounter, int maxCols) //return pfColCounter
+int LED_display_chase_flash_pf_right(int colCounter, int maxCols, int flashesPerSecond) //return pfColCounter
 {
   int* pfLEDArray = playfieldCols[colCounter];
   for(int i = 0; i < pfRowCount; i++)
@@ -496,7 +503,7 @@ int LED_display_chase_flash_pf_right(int colCounter, int maxCols) //return pfCol
       }*/
      //if(thisCLed->isEnabled() == false)
      // {
-        thisCLed->flashOnce(3); 
+        thisCLed->flashOnce(flashesPerSecond); 
      // }
     }
   }

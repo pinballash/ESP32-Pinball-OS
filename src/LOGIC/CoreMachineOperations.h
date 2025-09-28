@@ -152,7 +152,6 @@ unsigned long lastMillisCoil;
 
   void processAllLeds();
   void turnOffAllLeds(); 
-  void turnOnAttractLEDs();
   void setNewBallLEDs(bool dots, bool resetChamp); //sets up playfield lights - dots true, 1-7, false 9-15 
   void resetChampLeds(); 
   void resetBonusLeds(); 

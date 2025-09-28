@@ -92,7 +92,7 @@ void switch_event_outhole(int switchId)
           changeState(3); //moving to End of game
           digitalWrite(hvrPin, HIGH);
           turnOffAllLeds();
-          turnOnAttractLEDs();
+          
           //Serial.println("[INFO][switch_event_outhole] Thats the last ball, end of game");
 
           //need much more code here, but ok for now

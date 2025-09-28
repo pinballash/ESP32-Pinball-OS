@@ -183,8 +183,9 @@ void PinballLED::disable()
 bool PinballLED::flashOnce(int flashTime)
 {
     //this->_lastBlink = 0;
-    if(this->isEnabled() == false)
-    {
+    //do we not want to flash again, even if it is flashing - I think so
+    //if(this->isEnabled() == false)
+    //{
       this->_lastBlink = micros();
       this->_flashSpeed = flashTime;
       this->_flashOnce = true;
@@ -195,9 +196,9 @@ bool PinballLED::flashOnce(int flashTime)
       //Serial.println("[LED]"+this->_LEDName+",on,"+this->_lastBlink);
       //Serial.println("[LED]"+this->_LEDName+",on,"+this->_lastBlink+", , ");
       return true;
-    }else{
-      return false;
-    }
+    //}else{
+    //  return false;
+    //}
 
 }
 

@@ -164,35 +164,6 @@ char ledArrayTopLaneCounter = 0;
 bool cycleLedTopLane = true;
 bool ledArrayTopLaneEven = true;
 
-/*
-int row0[] = {92};
-int row1[] = {88};
-int row3[] = {89,87};
-int row4[] = {90,86};
-int row5[] = {80};
-int row6[] = {81,79};
-int row7[] = {83,82,68,78,77};
-int row8[] = {63,65,66,69,71,74,76};
-int row9[] = {62,64,67,70,72,73,75};
-int row10[] = {};
-int row11[] = {41,60,52};
-int row12[] = {42,59,49,54};
-int row13[] = {43,58,57,56,48,51};
-int row14[] = {39,40,44,45,46,47,36,31,30};
-int row15[] = {37,14,34,33,32,29};
-int row16[] = {38,35,28};
-int row17[] = {13,15,27};
-int row18[] = {16,26};
-int row19[] = {12,17};
-int row20[] = {25};
-int row21[] = {11,24};
-int row22[] = {10,23};
-int row23[] = {9,22};
-int row24[] = {8,21,20,19};
-int row25[] = {};
-int row26[] = {6,5,4,3,2};
-*/
-
 int pfRow41[] = {-1,-1,-1,-1,-1,-1,6,5,4,3,2,-1,-1,-1,-1};
 int pfRow40[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 int pfRow39[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
@@ -254,17 +225,27 @@ int pfCol14[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 
 const int pfRowCount = 42;
 const int pfColCount = 15;
+
+int* pfMatrix[pfColCount][pfRowCount] = {
+  pfCol0,
+  pfCol1,
+  pfCol2,
+  pfCol3,
+  pfCol4,
+  pfCol5,
+  pfCol6,
+  pfCol7,
+  pfCol8,
+  pfCol9,
+  pfCol10,
+  pfCol11,
+  pfCol12,
+  pfCol13,
+  pfCol14
+};
+
 int* playfieldRows[pfRowCount] = {pfRow0,pfRow1,pfRow2,pfRow3,pfRow4,pfRow5,pfRow6,pfRow7,pfRow8,pfRow9,pfRow10,pfRow11,pfRow12,pfRow13,pfRow14,pfRow15,pfRow16,pfRow17,pfRow18,pfRow19,pfRow20,pfRow21,pfRow22,pfRow23,pfRow24,pfRow25,pfRow26,pfRow27,pfRow28,pfRow29,pfRow30,pfRow31,pfRow32,pfRow33,pfRow34,pfRow35,pfRow36,pfRow37,pfRow38,pfRow39,pfRow40,pfRow41};
 int* playfieldCols[pfColCount] = {pfCol0,pfCol1,pfCol2,pfCol3,pfCol4,pfCol5,pfCol6,pfCol7,pfCol8,pfCol9,pfCol10,pfCol11,pfCol12,pfCol13,pfCol14};
-
-// Array to hold the size of each row 
-/*int pfArraySize[pfRowCount] = {1,1,2,2,1,
-                               2,5,7,7,0,
-                               3,4,6,9,6,
-                               3,3,2,2,1,
-                               2,2,2,4,0,
-                               5};
-*/
 int pfRowCounter = 0;
 int pfColCounter = 0;
 bool chase_pf_up = false;
