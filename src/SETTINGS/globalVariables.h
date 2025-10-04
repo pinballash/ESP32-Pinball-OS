@@ -56,5 +56,5 @@ int attactStage = 3;
 int attractCount = 0;
 
 int attractUpdatesPerSecond = 24;
-int attactSecondsPerScene = 10;
+int attactSecondsPerScene = 5;
 int attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond; //10 seconds
