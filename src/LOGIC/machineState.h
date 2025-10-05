@@ -50,7 +50,6 @@ void changeState(int newState)
               MachineState = 5;
               lastMachineState = 1;
               forceDisplayUpdate = true;
-              
             }
             break;
           }    
@@ -61,7 +60,6 @@ void changeState(int newState)
             {
               //moving from Game to End Game : OK
               Serial.println("[changeState] - Game->End Game");
-
               MachineState = 3;
               lastMachineState = 2;
               forceDisplayUpdate = true;
@@ -73,7 +71,6 @@ void changeState(int newState)
               //burn up the store enegy in the caps
               resetDrops();
               Tune2Trigger();
-
             }else if (newState == 5)
             {
               //moving from End Game to Atract : OK
@@ -81,7 +78,6 @@ void changeState(int newState)
               MachineState = 5;
               lastMachineState = 2;
               forceDisplayUpdate = true;
-              
             }
             break;
           }
@@ -112,11 +108,8 @@ void changeState(int newState)
               MachineState = 1;
               lastMachineState = 3;
               forceDisplayUpdate = true;
-              
             }
             break;
           }
-      
     }
-
 }

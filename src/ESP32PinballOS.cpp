@@ -96,7 +96,6 @@ void setup() {
     &DisplayController,
     DISPLAY_CPU_Core_Selection);
   
-  
   //set up web operations
   xTaskCreatePinnedToCore(
     WebOperationsFunction,
@@ -107,12 +106,10 @@ void setup() {
     &WebOperationsTask,
     WEB_CPU_Core_Selection);
  
-
   if(webOn == true)
   {
     WiFi.begin(setting_SSID, setting_SSIDPassword);
       // Wait for connection
-
       int WifiWaitCounter = 0;
       int MaxWait = 5;
   
@@ -139,7 +136,6 @@ void setup() {
         }
       }else
       {
-        
         startSoftAccessPoint(softAPssid, softAPpassword, softAPlocalIP, softAPgatewayIP);
         setUpDNSServer(dnsServer, softAPlocalIP);
         server.begin();
@@ -149,7 +145,6 @@ void setup() {
           while (1) {
             delay(1000);
           }
-          
         }
         
         g_myPinballGame.setDMDTopLine((String)localIP);
@@ -157,24 +152,19 @@ void setup() {
         wifiSoftAPInUse = true;
         g_myPinballGame.setDMDBottomLine("SOFT AP ONLINE");
   }
-      
       }
       else
       {
         g_myPinballGame.setDMDBottomLine("                    ");
       }
-
     changeState(1); 
 
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
     FastLED.setBrightness(8);
-
-
 }
 
 void loop() {
   
-
   /*if(tso_PinballGame != "")
   {
     Serial.println("[TSO_PG]"+tso_PinballGame);
@@ -187,16 +177,12 @@ void loop() {
     Serial.println("[TSO_PS]"+tso_PinballSwitch);
     tso_PinballSwitch = "";
   }
-
-
   
- if(tso_PinballCoil != "")
+  if(tso_PinballCoil != "")
   {
     Serial.println("[TSO_PC]"+tso_PinballCoil);
     tso_PinballCoil = "";
   }
-
-  
 
   if(tso_PinballDisplay != "")
   {
@@ -221,7 +207,6 @@ void loop() {
     Serial.println("[TSO_WEB]"+tso_Webserver);
     tso_Webserver = "";
   }
- 
 
   //vTaskDelay(5000);//do nothing
   if((millis() > mainLoopMillis + 5000) && (memoryStats == true))
@@ -237,6 +222,6 @@ void loop() {
     //ProcessAudioShifts(audios[0].AudioObject); 
     //write_sr_audio();
   }*/
-  
+
 }
 

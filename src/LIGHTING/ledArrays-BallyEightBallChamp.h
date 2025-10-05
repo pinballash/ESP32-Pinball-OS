@@ -58,12 +58,9 @@ PinballLED* special_centre = LEDs[49].ledObject;
 PinballLED* special_left_rollover = LEDs[9].ledObject;
 PinballLED* special_right_rollover = LEDs[23].ledObject;
 
-
-
 PinballLED* onethousand_spinner = LEDs[15].ledObject;
 PinballLED* threethousand_spinner = LEDs[16].ledObject;
 PinballLED* fivethousand_spinner = LEDs[17].ledObject;
-
 
 PinballLED* E_led = LEDs[36].ledObject;
 PinballLED* I_led = LEDs[44].ledObject;
@@ -80,6 +77,7 @@ PinballLED* balL_led = LEDs[48].ledObject;
 char ledArray_lowerrRing[] = {
   80,90,89,88,87,86
 };
+
 char ledArrayLowerRingCount = 6;
 char ledArrayLowerRingCounter = 0;
 bool cycleledLowerRing = true;
@@ -92,12 +90,14 @@ char ledSecialCount = 6;
 char ledArray_CHAMP[] = {
   82,19,20,21,78
 };
+
 char ledArrayCHAMPCount = 5;
 bool cycleLedCHAMP = true;
 
 char ledArray_EIGHTBALL[] = {
   36,44,45,46,47,48,56,57,58
 };
+
 char ledArrayEIGHTBALLCount = 9;
 char ledArrayEIGHTBALLCounter = 0;
 bool cycleLedEIGHTBALL = true;
@@ -105,6 +105,7 @@ bool cycleLedEIGHTBALL = true;
 char ledArray_LeftSide[] = {
   13,12,11,10,9,8
 };
+
 char ledArrayLeftSideCount = 6;
 char ledArrayLeftSideCounter = 0;
 bool cycleLedLeftSide = true;
@@ -112,6 +113,7 @@ bool cycleLedLeftSide = true;
 char ledArray_RightSide[] = {
   27,26,25,24,23,22
 };
+
 char ledArrayRightSideCount = 6;
 char ledArrayRightSideCounter = 0;
 bool cycleLedRightSide = true;
@@ -119,6 +121,7 @@ bool cycleLedRightSide = true;
 char ledArray_TableBalls[] = {
   39,37,34,32,30,42,54,40,14,33,31,29,43,51
 };
+
 char ledArrayTableBallsCount = 14;
 char ledArrayTableBallsCounter = 0;
 bool cycleLedTableBalls = true;
@@ -126,15 +129,16 @@ bool cycleLedTableBalls = true;
 char ledArray_PottedBalls[] = {
   62,64,67,70,72,73,75,63,65,66,69,71,74,76//,68
 };
+
 char ledArrayPottedBallsCount = 15;
 char ledArrayPottedBallsCounter = 0;
 bool cycleLedPottedBalls = true;
 bool ledArrayPottedBallsEven = true;
 
-
 char ledArray_TestBalls[] = {
   62,64//,68
 };
+
 char ledArrayTestBallsCount = 2;
 char ledArrayTestBallsCounter = 0;
 bool cycleLedTestBalls = true;
@@ -143,6 +147,7 @@ bool ledArrayTestBallsEven = true;
 char ledArray_Spinner[] = {
   15,16,17,17,16,15
 };
+
 char ledArraySpinnerCount = 6;
 char ledArraySpinnerCounter = 0;
 bool cycleLedSpinner = true;
@@ -151,6 +156,7 @@ bool ledArraySpinnerEven = true;
 char ledArray_FiveThou[] = {
   28,35,38,41,52
 };
+
 char ledArrayFiveThouCount = 5;
 char ledArrayFiveThouCounter = 0;
 bool cycleLedFiveThou = true;
@@ -159,6 +165,7 @@ bool ledArrayFiveThouEven = true;
 char ledArray_TopLane[] = {
   6,5,4,3,2,2,3,4,5,6
 };
+
 char ledArrayTopLaneCount = 10;
 char ledArrayTopLaneCounter = 0;
 bool cycleLedTopLane = true;
@@ -185,9 +192,6 @@ int pfMatrix[pfColCount][pfRowCount] = {
   {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
 };
 
-//int* playfieldRows[pfRowCount] = {pfRow0,pfRow1,pfRow2,pfRow3,pfRow4,pfRow5,pfRow6,pfRow7,pfRow8,pfRow9,pfRow10,pfRow11,pfRow12,pfRow13,pfRow14,pfRow15,pfRow16,pfRow17,pfRow18,pfRow19,pfRow20,pfRow21,pfRow22,pfRow23,pfRow24,pfRow25,pfRow26,pfRow27,pfRow28,pfRow29,pfRow30,pfRow31,pfRow32,pfRow33,pfRow34,pfRow35,pfRow36,pfRow37,pfRow38,pfRow39,pfRow40,pfRow41};
-//int* playfieldCols[pfColCount] = {pfCol0,pfCol1,pfCol2,pfCol3,pfCol4,pfCol5,pfCol6,pfCol7,pfCol8,pfCol9,pfCol10,pfCol11,pfCol12,pfCol13,pfCol14};
 int pfRowCounter = 0;
 int pfColCounter = 0;
 bool chase_pf_up = false;
-

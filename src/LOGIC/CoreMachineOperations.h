@@ -65,7 +65,6 @@ int isrclockEnablePin = setting_isrclockEnablePin; //latch
 int isrdataIn = setting_isrdataIn;
 int isrclockIn = setting_isrclockIn;
 
-
 // input and output bytes for the shift registers
 byte incoming;
 byte incoming2;
@@ -103,7 +102,6 @@ unsigned long lastMillisCoil;
 /* Global Variables End*/
 
 /* Global Variables From JSON Start*/
-
 #include "SETTINGS/JSON_switchArray.h"
 #include "SETTINGS/JSON_coilArray.h"
 #include "SETTINGS/flipperBindings_def.h"
@@ -111,58 +109,46 @@ unsigned long lastMillisCoil;
 #include "SETTINGS/JSON_ledArray.h"
 //not using audio in this pinball table - commented out
 //#include "SETTINGS\JSON_audioArray.h"
-
-
-
 /* Global Variables From JSON End*/
 
 //START delcaration of functions within LOGIC\switchHandlingFunctions.h
-
-  void ProcessSwitchesAndRulesFunction( void * pvParameters);
-  void scanSwitchMatrix(); 
-  void triggerSwitches();
-  void processAllSwitches();
-
+void ProcessSwitchesAndRulesFunction( void * pvParameters);
+void scanSwitchMatrix(); 
+void triggerSwitches();
+void processAllSwitches();
 //END delcaration of functions within LOGIC\switchHandlingFunctions.h
 
 //START delcaration of functions within SHIFT-REGISTERS\shiftRegisterFunctions.h
-
-  void ProcessShifts(PinballCoil* CoilObject); 
-  void read_sr(); 
-  void write_sr_matrix(); 
-  void write_sr_coils(); 
-  void manageCoils(); 
-  //not using audio in this pinball table - commented out
-  //void ProcessAudioShifts(PinballAudio* AudioObject); 
-  //void ResetAudioShifts(); 
-  //void manageAudio(); 
-  //void write_sr_audio(); 
-
+void ProcessShifts(PinballCoil* CoilObject); 
+void read_sr(); 
+void write_sr_matrix(); 
+void write_sr_coils(); 
+void manageCoils(); 
+//not using audio in this pinball table - commented out
+//void ProcessAudioShifts(PinballAudio* AudioObject); 
+//void ResetAudioShifts(); 
+//void manageAudio(); 
+//void write_sr_audio(); 
 //END delcaration of functions within SHIFT-REGISTERS\shiftRegisterFunctions.h
 
 //START delcaration of functions within LOGIC\gameRules-BallyEightBallChamp.h
-
-  void switch_event_startbutton(); 
-  void switch_event_outhole(int switchId); 
-  void addScore(int switchID);
-  bool checkChamp(); 
-  void increaseBonusMultiplier(); 
-  void increaseSpinnerValue(); 
-  void resetDrops(); 
-
-  void processAllLeds();
-  void turnOffAllLeds(); 
-  void setNewBallLEDs(bool dots, bool resetChamp); //sets up playfield lights - dots true, 1-7, false 9-15 
-  void resetChampLeds(); 
-  void resetBonusLeds(); 
-  void resetSpinnerLeds(); 
-
+void switch_event_startbutton(); 
+void switch_event_outhole(int switchId); 
+void addScore(int switchID);
+bool checkChamp(); 
+void increaseBonusMultiplier(); 
+void increaseSpinnerValue(); 
+void resetDrops(); 
+void processAllLeds();
+void turnOffAllLeds(); 
+void setNewBallLEDs(bool dots, bool resetChamp); //sets up playfield lights - dots true, 1-7, false 9-15 
+void resetChampLeds(); 
+void resetBonusLeds(); 
+void resetSpinnerLeds(); 
 //END delcaration of functions within LOGIC\gameRules-BallyEightBallChamp.h
 
 //START delcaration of functions within LIGHTING\ledHandlingFunctions.h
-
-  void ProcessLedsFunction( void * pvParameters);
-
+void ProcessLedsFunction( void * pvParameters);
 //END delcaration of functions within LIGHTING\ledHandlingFunctions.h
 
 void changeState(int newState); //from LOGIC\machineState.h
@@ -173,16 +159,12 @@ void Tune1Trigger(); //from CHIMES\chimeEffects.h
 void Tune2Trigger(); //from CHIMES\chimeEffects.h
 void Tune3Trigger(); //from CHIMES\chimeEffects.h
 
-
-
-
 #include "LOGIC/interupts.h" //here we regualarly (1000 times per second) scan the switch matrix, process the results and then manage the coils
 
 //setup a task handlers
 TaskHandle_t ScanSwitchMatrix;
 TaskHandle_t ProcessSwitchesAndRules;
 TaskHandle_t ProcessLeds;
-
 
 #include "LOGIC/gameRules-BallyEightBallChamp.h"
 
@@ -191,4 +173,3 @@ TaskHandle_t ProcessLeds;
 #include "LIGHTING/ledHandlingFunctions.h"
 
 #include "LOGIC/switchHandlingFunctions.h"
-

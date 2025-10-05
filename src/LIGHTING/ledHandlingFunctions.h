@@ -2,7 +2,6 @@
 
 void ProcessLedsFunction( void * pvParameters)
 {
-  
   Serial.print("ProcessLedsFunction running on core ");
   Serial.println(xPortGetCoreID());
   unsigned long lastMillisSw = 0;
@@ -17,10 +16,8 @@ void ProcessLedsFunction( void * pvParameters)
   {
     if((micros() - lastMicrosLoopRan >= UpdateLedsEveryMicroSeconds)) //&& (runningLeds==false))//we must not let this loop run away with itself, rate limiter here
     {
-      
       runningLeds = true;
       //do processing
-      //Serial.println("Processing LEDs");
       measureMicro = micros();
       processAllLeds(); //exists with the LOGIC\gameRules-[gamename].h
       processSwitchMicro = processSwitchMicro + (micros() - measureMicro);

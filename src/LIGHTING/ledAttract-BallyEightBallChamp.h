@@ -182,13 +182,11 @@ Actual LED updates now happen here
 
 int LED_display_chase_pf_up(int rowCounter, int maxRows) //return pfRowCounter
 {
-  //int* pfLEDArray = playfieldRows[rowCounter];
   for(int i = 0; i < pfColCount; i++)
   {
-    
     int ledId = pfMatrix[i][rowCounter];
     if(ledId >-1){
-        PinballLED* thisCLed = LEDs[ledId].ledObject;
+      PinballLED* thisCLed = LEDs[ledId].ledObject;
       if(thisCLed->isEnabled() == false)
       {
         thisCLed->enable();
@@ -201,8 +199,7 @@ int LED_display_chase_pf_up(int rowCounter, int maxRows) //return pfRowCounter
         thisCLed->updateLed();      
       }
     }
-  }
-    
+  }   
   rowCounter++;
   if(rowCounter < maxRows)
   {
@@ -215,7 +212,6 @@ int LED_display_chase_pf_up(int rowCounter, int maxRows) //return pfRowCounter
 
 int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
 {
-  //int* pfLEDArray = playfieldRows[rowCounter];
   for(int i = 0; i < pfColCount; i++)
   {
     int ledId = pfMatrix[i][rowCounter];
@@ -238,7 +234,6 @@ int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
   if(rowCounter > 0)
   {
     rowCounter--;
-
   }else{
     rowCounter=maxRows-1;
   }
@@ -247,29 +242,15 @@ int LED_display_chase_pf_down(int rowCounter, int maxRows) //return pfRowCounter
 
 int LED_display_chase_flash_pf_up(int rowCounter, int maxRows, int flashesPerSecond) //return pfRowCounter
 {
-  
   //int* pfLEDArray = playfieldRows[rowCounter];
   for(int i = 0; i < pfColCount; i++)
-  {
-    
+  { 
     int ledId = pfMatrix[i][rowCounter];
     if(ledId >-1){
         PinballLED* thisCLed = LEDs[ledId].ledObject;
         thisCLed->flashOnce(flashesPerSecond); 
     }
-  }
-  
-  //convert code to handle led matrix
-  /*for(int i = 0; i < pfColCount; i++)
-  {
-    int* pfLEDArray = pfMatrix[pfColCount][rowCounter];
-    int ledId = pfLEDArray[0]; 
-    if(ledId >-1){
-        PinballLED* thisCLed = LEDs[ledId].ledObject;
-        thisCLed->flashOnce(3); 
-    }
-  }*/
-    
+  }  
   rowCounter++;
   if(rowCounter < maxRows)
   {
@@ -449,28 +430,13 @@ void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flas
 
 int LED_display_chase_flash_pf_left(int colCounter, int maxCols, int flashesPerSecond) //return pfColCounter
 {
-  //int* pfLEDArray = playfieldCols[colCounter];
   for(int i = 0; i < pfRowCount; i++)
-  {
-    
+  {    
     int ledId = pfMatrix[colCounter][i];
     if(ledId >-1){
         PinballLED* thisCLed = LEDs[ledId].ledObject;
-      /*if(thisCLed->isEnabled() == false)
-      {
-        thisCLed->enable();
-        thisCLed->setFlashSpeed(0);
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();
-      }else{
-        thisCLed->disable();
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();      
-      }*/
-     //if(thisCLed->isEnabled() == false)
-     // {
+
         thisCLed->flashOnce(flashesPerSecond); 
-     // }
     }
   }
     
@@ -485,37 +451,20 @@ int LED_display_chase_flash_pf_left(int colCounter, int maxCols, int flashesPerS
 }
 int LED_display_chase_flash_pf_right(int colCounter, int maxCols, int flashesPerSecond) //return pfColCounter
 {
-  //int* pfLEDArray = playfieldCols[colCounter];
   for(int i = 0; i < pfRowCount; i++)
   {
     
     int ledId = pfMatrix[colCounter][i];
     if(ledId >-1){
         PinballLED* thisCLed = LEDs[ledId].ledObject;
-      /*if(thisCLed->isEnabled() == false)
-      {
-        thisCLed->enable();
-        thisCLed->setFlashSpeed(0);
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();
-      }else{
-        thisCLed->disable();
-        thisCLed->resetCalculatedRGB();
-        thisCLed->updateLed();      
-      }*/
-     //if(thisCLed->isEnabled() == false)
-     // {
         thisCLed->flashOnce(flashesPerSecond); 
-     // }
     }
   }
   if(colCounter > 0)
   {
     colCounter--;
-
   }else{
     colCounter=maxCols-1;
   }
   return colCounter;  
-  
 }

@@ -26,42 +26,33 @@ TaskHandle_t DisplayDiagnosticsMode;
 
 LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 20 chars and 4 line display
 
-
 void DisplayControllerFunction(void * pvParameters)
 {
   resetDisplay();  
   for(;;){
     if(g_myPinballGame.isGameActive() == true)
 	{
-
 		lcd.setCursor(0,0);
 		lcd.print("                    ");
-		
 		lcd.setCursor(0,1);
 		lcd.print(g_myPinballGame.getScoreDisplay(1));
-
 		lcd.setCursor(0,3);
 		lcd.print(g_myPinballGame.getScoreDisplay(3));
-
 		lcd.setCursor(13,1);
 		lcd.print(g_myPinballGame.getScoreDisplay(2));
-
 		lcd.setCursor(13,3);
 		lcd.print(g_myPinballGame.getScoreDisplay(4));
-
 		lcd.setCursor(0,2);
 		lcd.print("Player "+g_myPinballGame.getPlayerDisplay());
-
 		lcd.setCursor(11,2);
 		lcd.print(g_myPinballGame.getBallDisplay()+" Ball");
-	
-	}else{
+
+	}else
+	{
 		String DMDTopText = g_myPinballGame.getDMDTopLine();
 		String DMDBottomText = g_myPinballGame.getDMDBottomLine();
-
 		ScoreboardTText = DMDTopText;
 		ScoreboardBText = DMDBottomText; 
-		
 		if(ScoreboardTText.length() < 20)
 		{
 			//we need to pad
@@ -85,10 +76,8 @@ void DisplayControllerFunction(void * pvParameters)
 		lcd.setCursor(0,2);
 		lcd.print(ScoreboardBText);
 	}
-	
     vTaskDelay(50);       
   }
-
 }
 
 void resetDisplay() //to be done when changing layout on the display
@@ -98,6 +87,7 @@ void resetDisplay() //to be done when changing layout on the display
 	displayClearLine(2);
 	displayClearLine(3);
 }
+
 void oneTopOneBottomDisplay(String DMDTopLine, String DMDBottomLine) // Simple layout with a top line and a bottom line.
 {
   /*DMDDisplay.setZone(0,12,23); // Make zone 0 the whole top display
@@ -171,6 +161,5 @@ String createScore(int score)
 		return returnString;	
 	}
 	return scoreString;
-
 }
 

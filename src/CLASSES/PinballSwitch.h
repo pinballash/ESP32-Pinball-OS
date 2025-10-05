@@ -20,11 +20,7 @@ class PinballSwitch
     bool _fired = false;
 
   public:
-   
-
-
   //constructor
- 
   PinballSwitch(int ID);
   
   //Public Functions 

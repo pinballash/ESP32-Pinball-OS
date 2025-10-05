@@ -36,9 +36,7 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
   {
     if(micros() - lastMicrosLoopRan >= processSwitchArrayEveryMicroSeconds) //we must not let this loop run away with itself, rate limiter here
     {
-      
-      //do processing
-      
+      //do processing 
       // count how many times we are scanning switch matrix per second, and display it, remove this debug message in live version
       counterSw++;
       //static int tempSound=1;
@@ -51,7 +49,6 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
           Serial.print(" : is currently running at approximatly ");
           Serial.print(counterSw);
           Serial.println("Hz (full program cycles per second)");
-          
         }
         reportedSwitchMatrixHz = counterSw;
         counterSw = 0;
@@ -69,7 +66,6 @@ void ProcessSwitchesAndRulesFunction( void * pvParameters)
       //release the CPU for processing other tasks
       vTaskDelay(pdMS_TO_TICKS(1));
     }  
-    
   }
 }
 

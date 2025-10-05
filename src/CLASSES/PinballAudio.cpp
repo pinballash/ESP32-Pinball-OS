@@ -6,14 +6,6 @@ PinballAudio::PinballAudio(int ID)
   this->_ID = ID;
 
 }
-/*PinballCoil::PinballCoil(String coilName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff)
-{
-  this->_coilName = coilName;
-  this->_shiftRegister = shiftRegister;
-  this->_shiftRegisterBit = shiftRegisterBit;
-  this->_pulseTime = pulseTime;
-  this->_pulseBackOff = pulseBackOff;
-}*/
 
 void PinballAudio::setValues(String audioName, byte shiftRegister, byte shiftRegisterBit, int pulseTime, int pulseBackOff)
 {
@@ -56,7 +48,6 @@ void PinballAudio::releaseAudio()
   if(this->_debug  == true)
   {
     
-
     //String DebugLog = this->_debugLog;
     extern String tso_PinballAudio;
     tso_PinballAudio = tso_PinballAudio + "[CLASS] PinballAudio: [releaseAudio] Audio " + this->_audioName + " SRb = " + String(this->_shiftRegisterBit);

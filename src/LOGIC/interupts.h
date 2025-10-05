@@ -19,6 +19,5 @@ void IRAM_ATTR Timer0_ISR()
     reportedSwitchMatrixHz = INTHz;
     INTHz = 0;
     lastMillisSwINT = millis();
-  }
-    
+  } 
 }

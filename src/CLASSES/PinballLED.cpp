@@ -15,6 +15,7 @@ String PinballLED::getName()
 {
   return this->_LEDName;
 }
+
 void PinballLED::setValues(String ledName, String colour, bool isOn, int flashSpeed)
 {
   this->_LEDName = ledName;
@@ -48,7 +49,6 @@ void PinballLED::updateRGB()
     this->_red=(byte)(rgb>>16);
     this->_green=(byte)(rgb>>8);
     this->_blue=(byte)(rgb);
-
 }
 
 void PinballLED::resetCalculatedRGB()
@@ -57,7 +57,6 @@ void PinballLED::resetCalculatedRGB()
     this->_calaculatedBlue = this->_blue;
     this->_calaculatedGreen = this->_green;
 }
-
 
 String PinballLED::getColour()
 {
@@ -131,9 +130,7 @@ void PinballLED::tick()
  if((this->_flashSpeed > 0) && (this->_enabled == true))
  {
 
-    //so here we need to think about the whole period.  We need to be on for half the period and off for hals the period
-    
-
+    //so here we need to think about the whole period.  We need to be on for half the period and off for half the period
     unsigned long timerMicros = micros();
     if((timerMicros - this->_lastBlink >= halfLife) && (this->isEnabled() == true))
     {
@@ -149,13 +146,9 @@ void PinballLED::tick()
         
         if(this->_flashOnce == true)
         {
-          
-          //Serial.println("[LED]"+this->_LEDName+",disable,"+timerMicros+","+(timerMicros - this->_lastBlink)+","+halfLife);
-          
           this->_enabled = false;
           this->resetCalculatedRGB();
           this->_needsUpdate == true;
-
         }else
         {
           this->_isOn = true;
@@ -163,7 +156,6 @@ void PinballLED::tick()
         }
       }
       this->_lastBlink = micros();
-      
     }
  }
 }
@@ -182,24 +174,14 @@ void PinballLED::disable()
 
 bool PinballLED::flashOnce(int flashTime)
 {
-    //this->_lastBlink = 0;
-    //do we not want to flash again, even if it is flashing - I think so
-    //if(this->isEnabled() == false)
-    //{
-      this->_lastBlink = micros();
-      this->_flashSpeed = flashTime;
-      this->_flashOnce = true;
-      this->_enabled = true;
-      this->_isOn = true;
-      this->resetCalculatedRGB();
-      this->_needsUpdate = true;
-      //Serial.println("[LED]"+this->_LEDName+",on,"+this->_lastBlink);
-      //Serial.println("[LED]"+this->_LEDName+",on,"+this->_lastBlink+", , ");
-      return true;
-    //}else{
-    //  return false;
-    //}
-
+  this->_lastBlink = micros();
+  this->_flashSpeed = flashTime;
+  this->_flashOnce = true;
+  this->_enabled = true;
+  this->_isOn = true;
+  this->resetCalculatedRGB();
+  this->_needsUpdate = true;
+  return true;
 }
 
 void PinballLED::setFlashSpeed(int speed)
@@ -219,8 +201,3 @@ void PinballLED::dimLed()
   this->_calaculatedGreen = this->_calaculatedGreen >> 2;
   this->_calaculatedBlue = this->_calaculatedBlue >> 2;
 }
-
-
-
-
- 

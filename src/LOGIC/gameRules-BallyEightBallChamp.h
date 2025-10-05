@@ -22,7 +22,6 @@ void resetPlayfieldMultiplierLeds();
  */
 void switch_event_outhole(int switchId)
 {
-  
   bool serveBall = false;
   unsigned long triggerTimer = millis();
   bool isGameActive = g_myPinballGame.isGameActive();
@@ -36,9 +35,7 @@ void switch_event_outhole(int switchId)
     }else
     {
       if(g_myPinballGame.isBallSave()==false)
-      {
-
-        
+      {       
         bonusCountdown();
         int thisPlayerNumber = g_myPinballGame.getCurrentPlayerNumber();
         g_myPinballGame.endOfBall(g_myPinballGame.getCurrentPlayerNumber());
@@ -49,9 +46,7 @@ void switch_event_outhole(int switchId)
         resetSpinnerLeds();
         resetChampLeds();
         resetPlayfieldMultiplierLeds();
-        //calculatebonus();
-          
-        
+        //calculatebonus(); 
       }
       Serial.println("Outhole trigger - Ok, this is the second time we have triggered - lets move on");
       serveBall = true;
@@ -98,10 +93,10 @@ void switch_event_outhole(int switchId)
           //need much more code here, but ok for now
         }
       }
-      
     }
   }
 }
+
 void switch_event_saucer(int switchId)
 {
   //saucer code here
@@ -168,13 +163,10 @@ void switch_event_saucer(int switchId)
       write_sr_coils(); //update shift register
       //todo: add score and other mode logic
     }
-
     addScore(switchId);
-
-
   }
-  
 }
+
 void switch_event_startbutton()
 {
   if(MachineState == 1)
@@ -198,9 +190,9 @@ void switch_event_startbutton()
     setNewBallLEDs(true, true);
   }
 }
+
 void addScore(int switchID)
 {
-  
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
   int score = g_myPinballGame.getPlayerSwitchScore(switchID,playerNumber) * g_myPinballGame.getPlayfieldMultiplier();
   int playerscore = g_myPinballGame.getPlayerScore(playerNumber) + score;
@@ -221,6 +213,7 @@ void addScore(int switchID)
   }
   ChimeRing(coilid);
 }
+
 void addBonus(int scoreValue, int multiplier)
 {
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
@@ -249,6 +242,7 @@ void addBonus(int scoreValue, int multiplier)
   }
   
 }
+
 void resetDrops()
 {
   bool complete = true;
@@ -349,6 +343,7 @@ void resetDrops()
 
 
 }
+
 bool resetDrop(int coilId, int switchId)
 {
   bool complete = true;
@@ -379,6 +374,7 @@ bool resetDrop(int coilId, int switchId)
     return true;
 
 }
+
 bool checkChamp() //returns true is any champ lights are still on.  Returns false if champ lights are all off.
 {
   
@@ -389,6 +385,7 @@ bool checkChamp() //returns true is any champ lights are still on.  Returns fals
   return true;
   
 }
+
 void checkEightBall() 
 {
   
@@ -440,6 +437,7 @@ void checkEightBall()
   }
   
 }
+
 bool checkBallWord()
 {
   if(Ball_led->isEnabled()==false)
@@ -474,6 +472,7 @@ bool checkBallWord()
     return false;
   }
 }
+
 void checkEightWord()
 {
   if((E_led->isEnabled()==true) && (I_led->isEnabled()==true) && (G_led->isEnabled()==true) && (H_led->isEnabled()==true) && (T_led->isEnabled()==true))
@@ -498,6 +497,7 @@ void checkEightWord()
     }
   } 
 }
+
 void increaseBonusMultiplier() //setp the bonus multiplier up.
 {
   
@@ -550,6 +550,7 @@ void increaseBonusMultiplier() //setp the bonus multiplier up.
 
   }
 }
+
 void increaseSpinnerValue()
 {
   int playerNumber = g_myPinballGame.getCurrentPlayerNumber();
@@ -577,6 +578,7 @@ void increaseSpinnerValue()
   }
 
 }
+
 void increasePlayfieldMultiplier()
 {
   if(double_playfield->isEnabled() == false)//turn on 2x and spinner value
@@ -630,6 +632,7 @@ void turnOffAllLeds() //literally turn every LED off
 
   
 }
+
 void setNewBallLEDs(bool dots, bool resetChamp) //turns on all table balls for dots or stripes.  If true argument its dots, if false, its stripes.
 {
 
@@ -715,6 +718,7 @@ void setNewBallLEDs(bool dots, bool resetChamp) //turns on all table balls for d
   
 
 }
+
 void resetChampLeds()
 {
   c_champ->enable();
@@ -742,6 +746,7 @@ void resetChampLeds()
   p_champ->setFlashSpeed(0);
   p_champ->updateLed();
 }
+
 void resetPlayfieldMultiplierLeds()
 {
   double_playfield->disable();
@@ -752,6 +757,7 @@ void resetPlayfieldMultiplierLeds()
   triple_playfield->resetCalculatedRGB();
   triple_playfield->updateLed();
 }
+
 void resetBonusLeds()
 {
   twox_bonus->disable();
@@ -766,6 +772,7 @@ void resetBonusLeds()
   fivex_bonus->resetCalculatedRGB();
   fivex_bonus->updateLed();
 }
+
 void resetSpinnerLeds()
 
 {
@@ -782,6 +789,7 @@ void resetSpinnerLeds()
   fivethousand_spinner->updateLed();
 
 }
+
 void resetBallLEDs()
 {
   oneball_pocket->disable();
@@ -844,6 +852,7 @@ void resetBallLEDs()
   fifteenball_pocket->resetCalculatedRGB();
   fifteenball_pocket->updateLed();
 }
+
 void bonusCountdown()
 {
   //identify if multiplier is in play
@@ -980,6 +989,7 @@ void bonusCountdown()
   }
   
 }
+
 void fireBonusLed(PinballLED* LED, int score, int multiplier)
 {
   //flash LED, add score, play chimes, turn off led
@@ -993,6 +1003,7 @@ void fireBonusLed(PinballLED* LED, int score, int multiplier)
     LED->setFlashSpeed(0);
     LED->updateLed();
 }
+
 void stepLanesLeft()
 {
   bool champArray[] = {

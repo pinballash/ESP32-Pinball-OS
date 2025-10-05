@@ -1,8 +1,6 @@
 #include "CLASSES/PinballSwitch.h"
 #include <Arduino.h>
 
-
-
 PinballSwitch::PinballSwitch(int ID)
 {
   this->_ID = ID;
@@ -16,6 +14,7 @@ String PinballSwitch::getName()
 {
   return _switchName;
 }
+
 void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, bool isStart, bool isCredit, bool isOuthole, bool debug, bool autoOn)
 {
   this->_switchName = switchName;
@@ -26,7 +25,6 @@ void PinballSwitch::setValues(String switchName, int debounce, bool isFlipper, b
   this->_isOuthole = isOuthole;
   this->_debug = debug;
   this->_autoOn = autoOn;
-
 }
 
 //to fire the switch run mySwitchName.triggerSwitch(), this will return true or false depending on whether it was ok or not
@@ -90,7 +88,6 @@ bool PinballSwitch::isOuthole()
   return this->_isOuthole;
 }
 
-
 void PinballSwitch::toggleDebug()
 {
   this->_debug = !this->_debug;
@@ -108,10 +105,7 @@ int PinballSwitch::getSwitchScore()
 
 void PinballSwitch::setSwitchScore(int pointsScore)
 {
-  
   this->_pointsScore = pointsScore;
-  //extern String tso_PinballSwitch;
-  //tso_PinballSwitch = tso_PinballSwitch + "[CLASS] PinballSwitch: [setSwitchScore] Switch " + this->getName() + " " + String(pointsScore);
 }
 
 void PinballSwitch::reEnable()
@@ -121,13 +115,12 @@ void PinballSwitch::reEnable()
 }
 
 bool PinballSwitch::isOn()
-{ 
-  
+{  
   return this->_isOn;
 }
+
 bool PinballSwitch::hasFired()
-{ 
-  
+{   
   return this->_fired;
 }
 
@@ -135,4 +128,3 @@ int PinballSwitch::getDebounce()
 {
   return this->_debounce;
 }
- 

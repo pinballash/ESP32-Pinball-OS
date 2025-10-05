@@ -6,31 +6,26 @@ class PinballLED
 {
 	private:
 		int _ID; 
-        String _colour = "000000";
-        String _LEDName = "Name not set";
-        bool _enabled = false;
-        bool _isOn = true;
-        int _flashSpeed = 0; //flashes per period
-        int _flashPeriodLength = 2; //in seconds
-        bool _blinkOn = true;
-        byte _red;
-        byte _green;
-        byte _blue;
-        bool _needsUpdate = false;
-        unsigned long _lastBlink = 0;
-        bool _flashOnce = false;
-        bool _fadeOut = true;
-        int _fadeLevel = 0;
-        byte _calaculatedRed;
-        byte _calaculatedBlue;
-        byte _calaculatedGreen;
-
+      String _colour = "000000";
+      String _LEDName = "Name not set";
+      bool _enabled = false;
+      bool _isOn = true;
+      int _flashSpeed = 0; //flashes per period
+      int _flashPeriodLength = 2; //in seconds
+      bool _blinkOn = true;
+      byte _red;
+      byte _green;
+      byte _blue;
+      bool _needsUpdate = false;
+      unsigned long _lastBlink = 0;
+      bool _flashOnce = false;
+      bool _fadeOut = true;
+      int _fadeLevel = 0;
+      byte _calaculatedRed;
+      byte _calaculatedBlue;
+      byte _calaculatedGreen;
   public:
-   
-
-
   //constructor
- 
   PinballLED(int ID);
   
   //Public Functions 
@@ -58,6 +53,5 @@ class PinballLED
   void setFlashSpeed(int speed);
   void fadeOut();
   void dimLed();
-  
 };
 #endif
