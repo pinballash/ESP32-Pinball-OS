@@ -194,4 +194,6 @@ int pfMatrix[pfColCount][pfRowCount] = {
 
 int pfRowCounter = 0;
 int pfColCounter = 0;
+int pfRowCounter1 = 0;
+int pfRowCounter2 = pfRowCount-1;
 bool chase_pf_up = false;

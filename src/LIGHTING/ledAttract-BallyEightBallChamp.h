@@ -5,6 +5,8 @@ int LED_display_chase_flash_pf_left(int colCounter, int maxCols, int flashesPerS
 int LED_display_chase_pf_down(int rowCounter, int maxRows);
 int LED_display_chase_flash_pf_down(int rowCounter, int maxRows, int flashesPerSecond);
 int LED_display_chase_flash_pf_right(int colCounter, int maxCols, int flashesPerSecond);
+int LED_display_chase_pf_right(int colCounter, int maxCols);
+int LED_display_chase_pf_left(int colCounter, int maxCols);
 bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool isEven, int flashesPerSecond);
 char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter);
 void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond);
@@ -80,6 +82,12 @@ void processAllLeds()
           attractUpdatesPerSecond = 24;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 6){
+          attactStage = 7;
+          attractUpdatesPerSecond = 48;
+          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
+          pfRowCounter1 = 0;
+          pfRowCounter2 = pfRowCount-1;
+        }else if(attactStage == 7){
           attactStage = 0;
           attractUpdatesPerSecond = 12;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
@@ -131,13 +139,20 @@ void processAllLeds()
       }else if(attactStage == 5)
       {
         //LED_display_chase_snake();
-        pfColCounter = LED_display_chase_flash_pf_left(pfColCounter, pfColCount, 10);
-        pfRowCounter = LED_display_chase_flash_pf_down(pfRowCounter, pfRowCount, 10);
+        pfColCounter = LED_display_chase_pf_left(pfColCounter, pfColCount);
+        //pfRowCounter = LED_display_chase_flash_pf_down(pfRowCounter, pfRowCount, 10);
       }else if(attactStage == 6)
       {
         //LED_display_chase_snake();
-        pfColCounter = LED_display_chase_flash_pf_right(pfColCounter, pfColCount, 10);
-        pfRowCounter = LED_display_chase_flash_pf_up(pfRowCounter, pfRowCount, 10);
+        pfColCounter = LED_display_chase_pf_right(pfColCounter, pfColCount);
+        //pfRowCounter = LED_display_chase_flash_pf_up(pfRowCounter, pfRowCount, 10);
+      }
+      else if(attactStage == 7)
+      {
+        //LED_display_chase_snake();
+        pfRowCounter1 = LED_display_chase_pf_up(pfRowCounter1, pfRowCount);
+        pfRowCounter2 = LED_display_chase_pf_down(pfRowCounter2, pfRowCount);
+        //pfRowCounter = LED_display_chase_flash_pf_up(pfRowCounter, pfRowCount, 10);
       }
       
       ledUpdateMicros = micros();
@@ -458,6 +473,67 @@ int LED_display_chase_flash_pf_right(int colCounter, int maxCols, int flashesPer
     if(ledId >-1){
         PinballLED* thisCLed = LEDs[ledId].ledObject;
         thisCLed->flashOnce(flashesPerSecond); 
+    }
+  }
+  if(colCounter > 0)
+  {
+    colCounter--;
+  }else{
+    colCounter=maxCols-1;
+  }
+  return colCounter;  
+}
+
+int LED_display_chase_pf_left(int colCounter, int maxCols) //return pfColCounter
+{
+  for(int i = 0; i < pfRowCount; i++)
+  {    
+    int ledId = pfMatrix[colCounter][i];
+    if(ledId >-1){
+        PinballLED* thisCLed = LEDs[ledId].ledObject;
+
+        if(thisCLed->isEnabled() == false)
+        {
+          thisCLed->enable();
+          thisCLed->setFlashSpeed(0);
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();
+        }else{
+          thisCLed->disable();
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();      
+        }
+    }
+  }
+    
+  colCounter++;
+  if(colCounter < maxCols)
+  {
+    //do nothing
+  }else{
+    colCounter=0;
+  }
+  return colCounter;
+}
+int LED_display_chase_pf_right(int colCounter, int maxCols) //return pfColCounter
+{
+  for(int i = 0; i < pfRowCount; i++)
+  {
+    
+    int ledId = pfMatrix[colCounter][i];
+    if(ledId >-1){
+        PinballLED* thisCLed = LEDs[ledId].ledObject;
+        if(thisCLed->isEnabled() == false)
+        {
+          thisCLed->enable();
+          thisCLed->setFlashSpeed(0);
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();
+        }else{
+          thisCLed->disable();
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();      
+        }
     }
   }
   if(colCounter > 0)
