@@ -5,6 +5,15 @@
 
 This repository is created from the whole PlatformIO project on my laptop, however if you want to work in arduino, just download the contents of the <b>src</b> folder and the main program to open is ESP32Pinball.cpp.  I do reccomend installing Visual Studio code and adding the platformIO extension.  Fiddly for the uninitiated but makes things so much easier.
 
+<em>THIS CODE WAS CREATED ON MAC, THIS MEANS IF YOU ARE USING A WINDOWS DEVICE TO BUILD THE FIRMWARE, YOU MAY NEED TO FIND AND REPLACE "/" TO "\" IN THE CODE<em>
+
+For example this is good for Mac
+#include "SETTINGS/JSON_settings.h"
+
+and this is good for Windows
+#include "SETTINGS\JSON_settings.h"
+
+
 Based upon the excellent Mishmash Homebrew Pinball found here: <a href="https://www.pinballinfo.com/community/threads/mishmash-self-build-let%E2%80%99s-make-a-pinball-machine.50005/post-451003">Here</a>
 
 Progress on this project also documented here: <a href="https://www.pinballinfo.com/community/threads/mishmash-homebrew-pt-ii.57332/">Here</a>
