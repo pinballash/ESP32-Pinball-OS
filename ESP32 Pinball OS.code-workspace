@@ -3,10 +3,6 @@
 		{
 			"name": "ESP32 Pinball OS",
 			"path": "."
-		},
-		{
-			"name": "LCD Screen Setup",
-			"path": "../../LCDScreen/LCD Screen Setup"
 		}
 	],
 	"settings": {
