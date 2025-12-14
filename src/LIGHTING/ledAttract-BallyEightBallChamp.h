@@ -56,40 +56,47 @@ void processAllLeds()
         */
         if(attactStage == 0)
         {
-          attactStage = 1;
+          attactStage = 1; // display chase up
           pfRowCounter = 0;
-          attractUpdatesPerSecond = 50;
+          attractUpdatesPerSecond = pfRowCount * 2;
+          attactSecondsPerScene = 1;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 1){
           attactStage = 2;
-          attractUpdatesPerSecond = 50;
+          attractUpdatesPerSecond = pfRowCount * 2;
           pfRowCounter = pfRowCount-1;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 2){
-          attactStage = 3;
-          attractUpdatesPerSecond = 24;
+          attactStage = 3; //display sweep left
+          pfColCounter = 0;
+          attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 3){
-          attactStage = 4;
-          attractUpdatesPerSecond = 24;
+          attactStage = 4; //display sweep right
+          pfColCounter = 0;
+          attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 4){
-          attactStage = 5;
-          attractUpdatesPerSecond = 24;
+          attactStage = 5; //display chase left
+          pfColCounter = 0;
+          attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 5){
-          attactStage = 6;
-          attractUpdatesPerSecond = 24;
+          attactStage = 6; //display chase right
+          pfColCounter = 0;
+          attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attactStage == 6){
-          attactStage = 7;
-          attractUpdatesPerSecond = 48;
+          attactStage = 7; //up and down sweep
+          attactSecondsPerScene = 2;
+          attractUpdatesPerSecond = pfRowCount; //one sweep per second
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
           pfRowCounter1 = 0;
           pfRowCounter2 = pfRowCount-1;
         }else if(attactStage == 7){
           attactStage = 0;
           attractUpdatesPerSecond = 12;
+          attactSecondsPerScene = 8;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }
         /*
