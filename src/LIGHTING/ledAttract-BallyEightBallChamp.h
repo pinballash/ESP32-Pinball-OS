@@ -11,6 +11,7 @@ bool LED_display_oddsAndEvens(char LED_ID_array[], char LED_array_length, bool i
 char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPerSecond, char counter);
 void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond);
 void LED_display_chase_snake();
+void LED_display_twinkle();
 
 /*
 * Function processAllLeds
@@ -54,47 +55,52 @@ void processAllLeds()
         Attract Timing
         move between the attact scenes
         */
-        if(attactStage == 0)
+        if(attractStage == 0)
         {
-          attactStage = 1; // display chase up
+          attractStage = 1; // display chase up
           pfRowCounter = 0;
           attractUpdatesPerSecond = pfRowCount * 2;
           attactSecondsPerScene = 1;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 1){
-          attactStage = 2;
+        }else if(attractStage == 1){
+          attractStage = 2;
           attractUpdatesPerSecond = pfRowCount * 2;
           pfRowCounter = pfRowCount-1;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 2){
-          attactStage = 3; //display sweep left
+        }else if(attractStage == 2){
+          attractStage = 3; //display sweep left
           pfColCounter = 0;
           attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 3){
-          attactStage = 4; //display sweep right
+        }else if(attractStage == 3){
+          attractStage = 4; //display sweep right
           pfColCounter = 0;
           attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 4){
-          attactStage = 5; //display chase left
+        }else if(attractStage == 4){
+          attractStage = 5; //display chase left
           pfColCounter = 0;
           attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 5){
-          attactStage = 6; //display chase right
+        }else if(attractStage == 5){
+          attractStage = 6; //display chase right
           pfColCounter = 0;
           attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
-        }else if(attactStage == 6){
-          attactStage = 7; //up and down sweep
+        }else if(attractStage == 6){
+          attractStage = 7; //up and down sweep
           attactSecondsPerScene = 2;
           attractUpdatesPerSecond = pfRowCount; //one sweep per second
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
           pfRowCounter1 = 0;
           pfRowCounter2 = pfRowCount-1;
-        }else if(attactStage == 7){
-          attactStage = 0;
+        }else if(attractStage == 7){
+          attractStage = 8;
+          attractUpdatesPerSecond = 2;
+          attactSecondsPerScene = 4;
+          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
+        }else if(attractStage == 8){
+          attractStage = 0;
           attractUpdatesPerSecond = 12;
           attactSecondsPerScene = 8;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
@@ -106,7 +112,7 @@ void processAllLeds()
       /*
       Process Attract effects
       */
-      if(attactStage == 0)
+      if(attractStage == 0)
       {
         
         /*
@@ -122,44 +128,49 @@ void processAllLeds()
         ledArrayTopLaneCounter = LED_display_chase(ledArray_TopLane, ledArrayTopLaneCount, 6, ledArrayTopLaneCounter);
         LED_display_flashBlock(ledArray_CHAMP, ledArrayCHAMPCount, 2);
         LED_display_flashBlock(ledArray_FiveThou, ledArrayFiveThouCount, 4);
-      }else if(attactStage == 1)
+      }else if(attractStage == 1)
       {
         /*
         Update a sweep of LEDs moving up the playfield
         */
        //do we need to set starting values?  Then do this when the attact mode changes
         pfRowCounter = LED_display_chase_pf_up(pfRowCounter, pfRowCount);
-      }else if(attactStage == 2)
+      }else if(attractStage == 2)
       {
         /*
         Update a sweep of LEDs moving down the playfield
         */
         pfRowCounter = LED_display_chase_pf_down(pfRowCounter, pfRowCount);
-      }else if(attactStage == 3)
+      }else if(attractStage == 3)
       {
         //LED_display_chase_snake();
         pfColCounter = LED_display_chase_flash_pf_left(pfColCounter, pfColCount, 10);
-      }else if(attactStage == 4)
+      }else if(attractStage == 4)
       {
         //LED_display_chase_snake();
         pfColCounter = LED_display_chase_flash_pf_right(pfColCounter, pfColCount, 10);
-      }else if(attactStage == 5)
+      }else if(attractStage == 5)
       {
         //LED_display_chase_snake();
         pfColCounter = LED_display_chase_pf_left(pfColCounter, pfColCount);
         //pfRowCounter = LED_display_chase_flash_pf_down(pfRowCounter, pfRowCount, 10);
-      }else if(attactStage == 6)
+      }else if(attractStage == 6)
       {
         //LED_display_chase_snake();
         pfColCounter = LED_display_chase_pf_right(pfColCounter, pfColCount);
         //pfRowCounter = LED_display_chase_flash_pf_up(pfRowCounter, pfRowCount, 10);
       }
-      else if(attactStage == 7)
+      else if(attractStage == 7)
       {
         //LED_display_chase_snake();
         pfRowCounter1 = LED_display_chase_pf_up(pfRowCounter1, pfRowCount);
         pfRowCounter2 = LED_display_chase_pf_down(pfRowCounter2, pfRowCount);
         //pfRowCounter = LED_display_chase_flash_pf_up(pfRowCounter, pfRowCount, 10);
+      }
+      else if(attractStage == 8)
+      {
+        LED_display_twinkle();
+
       }
       
       ledUpdateMicros = micros();
@@ -550,4 +561,27 @@ int LED_display_chase_pf_right(int colCounter, int maxCols) //return pfColCounte
     colCounter=maxCols-1;
   }
   return colCounter;  
+}
+
+void LED_display_twinkle()
+{
+  for(int i = 0; i < NUM_LEDS; i++)
+  {
+    
+    int ledId = i;
+    if(ledId >-1){
+        PinballLED* thisCLed = LEDs[ledId].ledObject;
+        if(thisCLed->isEnabled() == false)
+        {
+          thisCLed->enable();
+          thisCLed->setFlashSpeed(0);
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();
+        }else{
+          thisCLed->disable();
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();      
+        }
+    }
+  }
 }

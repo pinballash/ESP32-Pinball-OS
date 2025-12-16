@@ -9,7 +9,7 @@ bool writeToFlash = false;
 String setting_MachineName = "Your Game Name";
 String setting_MachineVersion = "0.1";
 
-String setting_SSID = "YourWiFiHere";
+String setting_SSID = "YourWifiSSIDHere";
 String setting_SSIDPassword = "";
 
 // Define Connections to 74HC595 - Switch Matrix Output Shift Register

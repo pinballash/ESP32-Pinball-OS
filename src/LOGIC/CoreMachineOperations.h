@@ -17,9 +17,9 @@ bool threadDebug = false;
 bool srDebug = false;
 bool osrDebug = false;
 bool generalMODebug = false;
-bool memoryStats = false;
+bool memoryStats = true;
 unsigned long processSwitchArrayEveryMicroSeconds = (1000000/1000); //1000 times per second
-int ledUpdateFrequency = 120;
+int ledUpdateFrequency = 50;
 unsigned long UpdateLedsEveryMicroSeconds = (1000000/ledUpdateFrequency); 
 bool runningLeds = false;
 

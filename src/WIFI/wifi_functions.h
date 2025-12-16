@@ -56,5 +56,5 @@ void startSoftAccessPoint(const char *softAPssid, const char *softAPpassword, co
 	my_config.ampdu_rx_enable = false;
 	esp_wifi_init(&my_config);
 	esp_wifi_start();
-	vTaskDelay(100 / portTICK_PERIOD_MS);  // Add a small delay
+	vTaskDelay(1000 / portTICK_PERIOD_MS);  // Add a small delay
 }

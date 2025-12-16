@@ -29,6 +29,9 @@
 #include "LOGIC/machineState.h"
 #include "SHIFT-REGISTERS/setupShifts.h"
 
+#include "WIFI/wifi_operations.h"
+#include "CONNECTIVITY/connectivity_operations.h"
+
 void setup() {
   // Setup Serial Monitor
   Serial.begin(115200);
@@ -67,10 +70,32 @@ void setup() {
 
   //set up the processess that will function as separate threads
   //set up loop handling rules
+  if(webOn == true)
+  { //set up web operations
+    xTaskCreatePinnedToCore(
+      WebOperationsFunction,
+      "WebOperationsTask",
+      WEB_Task_Mem_Alloc,
+      NULL,
+      WEB_CPU_Task_Priority,
+      &WebOperationsTask,
+      WEB_CPU_Core_Selection);
+
+
+    xTaskCreatePinnedToCore(
+      WiFiOperationsFunction,
+      "WiFiOperationsTask",
+      WiFi_Task_Mem_Alloc,
+      NULL,
+      WiFi_CPU_Task_Priority,
+      &WiFiOperationsTask,
+      WiFi_CPU_Core_Selection);
+  }
+  
   xTaskCreatePinnedToCore(
     ProcessSwitchesAndRulesFunction,
     "ProcessSwitchesAndRules",
-    5000,
+    RULES_Task_Mem_Alloc,
     NULL,
     RULES_CPU_Task_Priority,
     &ProcessSwitchesAndRules,
@@ -80,7 +105,7 @@ void setup() {
   xTaskCreatePinnedToCore(
     ProcessLedsFunction,
     "ProcessLeds",
-    20000,
+    LED_Task_Mem_Alloc,
     NULL,
     LED_CPU_Task_Priority,
     &ProcessLeds,
@@ -90,73 +115,13 @@ void setup() {
   xTaskCreatePinnedToCore(
     DisplayControllerFunction,
     "DisplayController",
-    5000,
+    DISPLAY_Task_Mem_Alloc,
     NULL,
     DISPLAY_CPU_Task_Priority,
     &DisplayController,
     DISPLAY_CPU_Core_Selection);
   
-  //set up web operations
-  xTaskCreatePinnedToCore(
-    WebOperationsFunction,
-    "WebOperationsTask",
-    20000,
-    NULL,
-    WEB_CPU_Task_Priority,
-    &WebOperationsTask,
-    WEB_CPU_Core_Selection);
- 
-  if(webOn == true)
-  {
-    WiFi.begin(setting_SSID, setting_SSIDPassword);
-      // Wait for connection
-      int WifiWaitCounter = 0;
-      int MaxWait = 5;
-  
-      g_myPinballGame.setDMDTopLine("Wi-Fi Connecting");
-      while ((WiFi.status() != WL_CONNECTED) && (WifiWaitCounter < MaxWait)) 
-      {
-        delay(1000);
-        //Serial.print(".");
-        WifiWaitCounter++;
-      }
-        
-      if(WiFi.status() ==  WL_CONNECTED)
-      {
-        WifiConnected = true;
-        localIP = WiFi.localIP();
-        g_myPinballGame.setDMDTopLine("Connected           ");
-        
-        if (!MDNS.begin(host)) { //http://<host>.local
-          while (1) {
-            delay(1000);
-          }
-        }else{
-          g_myPinballGame.setDMDBottomLine(WiFi.localIP().toString());
-        }
-      }else
-      {
-        startSoftAccessPoint(softAPssid, softAPpassword, softAPlocalIP, softAPgatewayIP);
-        setUpDNSServer(dnsServer, softAPlocalIP);
-        server.begin();
-        localIP = WiFi.softAPIP();
-        g_myPinballGame.setDMDBottomLine(WiFi.softAPIP().toString());
-        if (!MDNS.begin(host)) { //http://<host>.local
-          while (1) {
-            delay(1000);
-          }
-        }
-        
-        g_myPinballGame.setDMDTopLine((String)localIP);
-        delay(1000);
-        wifiSoftAPInUse = true;
-        g_myPinballGame.setDMDBottomLine("SOFT AP ONLINE");
-  }
-      }
-      else
-      {
-        g_myPinballGame.setDMDBottomLine("                    ");
-      }
+    
     changeState(1); 
 
     FastLED.addLeds<WS2812B, 16, GRB>(ledArray, NUM_LEDS);
@@ -165,7 +130,7 @@ void setup() {
 
 void loop() {
   
-  /*if(tso_PinballGame != "")
+  if(tso_PinballGame != "")
   {
     Serial.println("[TSO_PG]"+tso_PinballGame);
     tso_PinballGame = "";
@@ -216,12 +181,13 @@ void loop() {
     Serial.println("[Main Loop][MEM Stat] Free memory: " + String(esp_get_free_heap_size()) + " bytes");
     Serial.println("[Main Loop][MEM Stat] Display Controller Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(DisplayController)));
     Serial.println("[Main Loop][MEM Stat] WebOperations Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(WebOperationsTask)));
+    Serial.println("[Main Loop][MEM Stat] WifiOperations Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(WiFiOperationsTask)));
     Serial.println("[Main Loop][MEM Stat] Process Switches Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(ProcessSwitchesAndRules)));
     Serial.println("[Main Loop][MEM Stat] Led High Water Mark: " + String(uxTaskGetStackHighWaterMark(ProcessLeds)));
     //audios[0].AudioObject->fireAudio();
     //ProcessAudioShifts(audios[0].AudioObject); 
     //write_sr_audio();
-  }*/
+  }
 
 }
 

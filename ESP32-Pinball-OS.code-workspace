@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "SimpleESP32Radio",
+			"path": "../../Documents/PlatformIO/Projects/Mums Libby/SimpleESP32Radio"
+		}
+	],
+	"settings": {}
+}

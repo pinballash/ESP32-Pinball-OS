@@ -3,7 +3,7 @@
 int WEBHz = 0;
 int CMOHz = 0;
 int DisplayControllerHz = 0;
-bool webOn = false;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
+bool webOn = true;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
 bool chimesOn = true;
 
 unsigned long lastMillisSwINT = 0;
@@ -18,15 +18,23 @@ bool flip2Released= true;
 
 int LED_CPU_Core_Selection = 0;
 int LED_CPU_Task_Priority = 24;
-
-int WEB_CPU_Core_Selection = 0;
-int WEB_CPU_Task_Priority = 50;
+int LED_Task_Mem_Alloc = 5000;
 
 int DISPLAY_CPU_Core_Selection = 0;
 int DISPLAY_CPU_Task_Priority = 32;
+int DISPLAY_Task_Mem_Alloc = 5000;
 
 int RULES_CPU_Core_Selection = 0;
-int RULES_CPU_Task_Priority = 24;
+int RULES_CPU_Task_Priority = 25;
+int RULES_Task_Mem_Alloc = 5000;
+
+int WEB_CPU_Core_Selection = 1;
+int WEB_CPU_Task_Priority = 50;
+int WEB_Task_Mem_Alloc = 20000;
+
+int WiFi_CPU_Core_Selection = 0;
+int WiFi_CPU_Task_Priority = 49;
+int WiFi_Task_Mem_Alloc = 5000;
 
 int MachineState = 0; //this can be Bootup-0, Atract-1, Game-2, End Game-3, End Ball-4
 int lastMachineState = 0;
@@ -52,9 +60,11 @@ String tso_Webserver = "";
 unsigned long mainLoopMillis = 0;
 unsigned long ledUpdateMicros = 0;
 
-int attactStage = 3;
+int attractStage = 3;
 int attractCount = 0;
 
 int attractUpdatesPerSecond = 30;
 int attactSecondsPerScene = 1;
 int attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond; //10 seconds
+
+bool WifiOnline = false;

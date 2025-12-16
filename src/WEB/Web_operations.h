@@ -546,7 +546,7 @@ void web_handle_viewState()
   strcat( concatString, html_footer );
   strcat( concatString, liveview_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -643,7 +643,7 @@ void web_handle_config_switches()
   strcat( concatString, html_footer );
   strcat( concatString, switchConfig_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -796,7 +796,7 @@ void web_handle_config_coils()
   strcat( concatString, html_footer );
   strcat( concatString, coilConfig_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -879,7 +879,7 @@ void web_handle_config_switchcoilbinding()
   strcat( concatString, html_footer );
   strcat( concatString, switchCoilBindingConfig_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -999,7 +999,7 @@ void web_handle_config_()
   strcat( concatString, html_footer );
   strcat( concatString, dummy_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1018,7 +1018,7 @@ void web_handle_config_menu()
   strcat( concatString, html_footer );
   strcat( concatString, dummy_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1037,7 +1037,7 @@ void web_handle_config_lighting()
   strcat( concatString, html_footer );
   strcat( concatString, lightingConfig_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1056,7 +1056,7 @@ void web_handle_config_titles()
   strcat( concatString, html_footer );
   strcat( concatString, dummy_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1075,7 +1075,7 @@ void web_handle_config_credits()
   strcat( concatString, html_footer );
   strcat( concatString, dummy_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1094,7 +1094,7 @@ void web_handle_config_instructions()
   strcat( concatString, html_footer );
   strcat( concatString, dummy_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1113,7 +1113,7 @@ void web_handle_config_modes()
   strcat( concatString, html_footer );
   strcat( concatString, switch_score_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1175,7 +1175,7 @@ void web_handle_config()
   strcat( concatString, html_footer );
   strcat( concatString, config_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
  
 }
@@ -1195,7 +1195,7 @@ void web_handle_firmwareUpload()
   strcat( concatString, html_footer );
   strcat( concatString, upload_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
 }
 
@@ -1213,32 +1213,36 @@ void web_handle_configDownload()
   strcat( concatString, html_footer );
   strcat( concatString, download_script_footer );
 
-  server.send(200, "text/html", concatString); //Send web page
+  server.send_P(200, "text/html", concatString); //Send web page
   delete[] concatString;
 }
 void web_handle_captive_connecttest()
 {
     //[](AsyncWebServerRequest *request) { request->redirect("http://logout.net"); });	// windows 11 captive portal workaround
+    Serial.println("web_handle_captive_connecttest");
     server.sendHeader("Location", "http://logout.net",true);
-    server.send(302, "text/plain", "");
+    server.send_P(302, "text/plain", "");
 }
 void web_handle_captive_wpad()
 {
     //[](AsyncWebServerRequest *request) { request->send(404); }); //Windows proxy check, 404 staps it asking
+    Serial.println("web_handle_captive_wpad");
     web_handle_404();
 }								
 void web_handle_captive_toLocalIP()
 {
   //[](AsyncWebServerRequest *request) { request->redirect(localIPURL); });		   // android captive portal redirect
-    String localIPURL = "http://" + localIP.toString();
+    Serial.println("web_handle_captive_toLocalIP");
+    String localIPURL = "http://" + localIP.toString() + "/config";
     server.sendHeader("Location", localIPURL,true);
-    server.send(302, "text/plain", "");
+    server.send_P(302, "text/plain", "");
 
 }
 
 void  web_handle_captive_ffx2()
 {
-    //[](AsyncWebServerRequest *request) { request->send(200); });					   // firefox captive portal call home
+    Serial.println("eb_handle_captive_ffx2");
+  //[](AsyncWebServerRequest *request) { request->send(200); });					   // firefox captive portal call home
     String s = ""; //Read HTML contents
     server.send(200, "text/html", s); //Send web page
 }
