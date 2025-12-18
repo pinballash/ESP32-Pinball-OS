@@ -37,7 +37,7 @@ To drive solenoids, you will need
 
 4 x DollaTek 4 Channels 4 Route MOSFET Button IRF540 V2.0 for Arduino <a href="https://www.amazon.co.uk/DollaTek-Channels-MOSFET-Button-Arduino/dp/B07MPB52GC/ref=sr_1_15?crid=2H95ZT40UJE51&keywords=mosfet+board&qid=1699020505&sprefix=mosfet+board%2Caps%2C93&sr=8-15">Here</a><br />
 
-https://youtu.be/F8u-vR-qiBk?si=ovRMBwixtoX6iaWV
+I have talked through the underside of the playfield in my video here: https://youtu.be/F8u-vR-qiBk?si=ovRMBwixtoX6iaWV
 
 <h2>Theory of operation</h2>
 <p>The ESP32 has two cores.  Core 1 is commonly used for the main loop, however we ignore this loop within this project as we will be operating on both cores and utilising interupts on Core 1.</p>
