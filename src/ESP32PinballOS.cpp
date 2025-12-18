@@ -129,7 +129,7 @@ void setup() {
 }
 
 void loop() {
-  
+  /*
   if(tso_PinballGame != "")
   {
     Serial.println("[TSO_PG]"+tso_PinballGame);
@@ -172,8 +172,10 @@ void loop() {
     Serial.println("[TSO_WEB]"+tso_Webserver);
     tso_Webserver = "";
   }
+    */
 
   //vTaskDelay(5000);//do nothing
+  /*
   if((millis() > mainLoopMillis + 5000) && (memoryStats == true))
   {
     mainLoopMillis = millis();
@@ -188,6 +190,6 @@ void loop() {
     //ProcessAudioShifts(audios[0].AudioObject); 
     //write_sr_audio();
   }
-
+  */
 }
 

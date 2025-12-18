@@ -93,10 +93,11 @@ void WiFiOperationsFunction( void * pvParameters)
         
       Serial.println("Using Soft AP - pausing other processes");
       //vTaskSuspend(NULL);
-      //vTaskDelete(NULL);
+      
       vTaskSuspend(ProcessLeds);
       vTaskSuspend(ProcessSwitchesAndRules);
       vTaskSuspend(DisplayController);
+      vTaskDelete(NULL);
       for(;;)
       {
           

@@ -3,7 +3,7 @@
 int WEBHz = 0;
 int CMOHz = 0;
 int DisplayControllerHz = 0;
-bool webOn = true;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
+bool webOn = false;//set to false to ensure the machine works well - ie: leds arent disrupted by the web
 bool chimesOn = true;
 
 unsigned long lastMillisSwINT = 0;
@@ -34,7 +34,7 @@ int WEB_Task_Mem_Alloc = 20000;
 
 int WiFi_CPU_Core_Selection = 0;
 int WiFi_CPU_Task_Priority = 49;
-int WiFi_Task_Mem_Alloc = 5000;
+int WiFi_Task_Mem_Alloc = 10000;
 
 int MachineState = 0; //this can be Bootup-0, Atract-1, Game-2, End Game-3, End Ball-4
 int lastMachineState = 0;
