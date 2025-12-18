@@ -12,6 +12,7 @@ char LED_display_chase(char LED_ID_array[], char LED_array_length, int flashesPe
 void LED_display_flashBlock(char LED_ID_array[], char LED_array_length, int flashesPerSecond);
 void LED_display_chase_snake();
 void LED_display_twinkle();
+int LED_display_thirds(int upcounter, int maxRows);
 
 /*
 * Function processAllLeds
@@ -74,7 +75,7 @@ void processAllLeds()
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attractStage == 3){
           attractStage = 4; //display sweep right
-          pfColCounter = 0;
+          pfColCounter = pfColCount-1;
           attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attractStage == 4){
@@ -84,7 +85,7 @@ void processAllLeds()
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attractStage == 5){
           attractStage = 6; //display chase right
-          pfColCounter = 0;
+          pfColCounter = pfColCount-1;
           attractUpdatesPerSecond = pfColCount * 2;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attractStage == 6){
@@ -100,6 +101,11 @@ void processAllLeds()
           attactSecondsPerScene = 4;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attractStage == 8){
+          attractStage = 9; //skip 9
+          attractUpdatesPerSecond = pfRowCount*2;
+          attactSecondsPerScene = 4;
+          attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
+        }else if(attractStage == 9){
           attractStage = 0;
           attractUpdatesPerSecond = 12;
           attactSecondsPerScene = 8;
@@ -171,6 +177,10 @@ void processAllLeds()
       {
         LED_display_twinkle();
 
+      }else if(attractStage == 9)
+      {
+        upcounter = LED_display_thirds(upcounter, pfRowCount);
+
       }
       
       ledUpdateMicros = micros();
@@ -211,6 +221,79 @@ Actual LED updates now happen here
     FastLED.show();  // update to the WS2812B Led Strip
   }
   runningLeds = false;
+}
+int LED_display_thirds(int upcounter, int maxRows)
+{
+  
+  int startLeftCol = 0;
+  int endLeftCol = (pfColCount/3)-1;
+  int startMiddleCol = endLeftCol+1;
+  int endMiddleCol = (2*(pfColCount/3))-1;
+  int startRightCol = endMiddleCol+1;
+  int endRightCol = pfColCount-1;
+  /*Serial.print("Left Col Start ");
+  Serial.println(startLeftCol);
+  Serial.print("Left Col End ");
+  Serial.println(endLeftCol);
+
+  Serial.print("Middle Col Start ");
+  Serial.println(startMiddleCol);
+  Serial.print("Middle Col End ");
+  Serial.println(endMiddleCol);
+
+  Serial.print("Right Col Start ");
+  Serial.println(startRightCol);
+  Serial.print("Right Col End ");
+  Serial.println(endRightCol);*/
+
+  //right side id x to pfColcount-1
+  for(int i = 0; i < pfColCount; i++)
+  {
+    //going up
+    if((i <= endMiddleCol) && ( i >= startMiddleCol)){
+      int ledId = pfMatrix[i][upcounter];
+      if(ledId >-1){
+          PinballLED* thisCLed = LEDs[ledId].ledObject;
+          if(thisCLed->isEnabled() == false)
+          {
+            thisCLed->enable();
+            thisCLed->setFlashSpeed(0);
+            thisCLed->resetCalculatedRGB();
+            thisCLed->updateLed();
+          }else{
+            thisCLed->disable();
+            thisCLed->resetCalculatedRGB();
+            thisCLed->updateLed();      
+          }
+        }
+    }else{
+      int reverseUpCounter = (maxRows-1)-upcounter;
+      int ledId = pfMatrix[i][reverseUpCounter];
+      if(ledId >-1){
+        PinballLED* thisCLed = LEDs[ledId].ledObject;
+        if(thisCLed->isEnabled() == false)
+        {
+          thisCLed->enable();
+          thisCLed->setFlashSpeed(0);
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();
+        }else{
+          thisCLed->disable();
+          thisCLed->resetCalculatedRGB();
+          thisCLed->updateLed();      
+        }
+      }
+    }
+    
+  }   
+  upcounter++;
+  if(upcounter < maxRows)
+  {
+    //do nothing
+  }else{
+    upcounter=0;
+  }
+  return upcounter;
 }
 
 int LED_display_chase_pf_up(int rowCounter, int maxRows) //return pfRowCounter
