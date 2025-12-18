@@ -102,6 +102,7 @@ void processAllLeds()
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
         }else if(attractStage == 8){
           attractStage = 9; //skip 9
+          upcounter = 0;
           attractUpdatesPerSecond = pfRowCount*2;
           attactSecondsPerScene = 4;
           attractSwitchCount = attactSecondsPerScene*attractUpdatesPerSecond;
